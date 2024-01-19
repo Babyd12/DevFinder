@@ -1,0 +1,164 @@
+<?php
+
+namespace App\Entity;
+
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BriefRepository;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+#[ORM\Entity(repositoryClass: BriefRepository::class)]
+#[ApiResource]
+
+#[GetCollection(
+    forceEager: false,
+    normalizationContext: [ 'groups' => ['brief:index'] ]
+)]
+
+#[Get(
+    forceEager: true,
+    normalizationContext: [ 'groups' => ['brief:show'] ]
+)]
+
+#[Post(
+    denormalizationContext: [ 'groups' => ['brief:create'] ]
+)]
+
+#[Put(
+    denormalizationContext: [ 'groups' => ['brief:update'] ]
+)]
+
+#[Delete()]
+
+class Brief
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    private ?string $titre = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['brief:show', 'brief:create', 'brief:update'])]
+    private ?string $lient_support = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    private ?string $niveau_de_competence = null;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['brief:show', 'brief:create', 'brief:update'])]
+    private ?string $lien_du_livrable = null;
+
+    #[ORM\ManyToMany(targetEntity: Apprenant::class, inversedBy: 'briefs')]
+    #[Groups(['brief:show'])]
+    private Collection $apprenant;
+
+    public function __construct()
+    {
+        $this->apprenant = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(string $titre): static
+    {
+        $this->titre = $titre;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getLientSupport(): ?string
+    {
+        return $this->lient_support;
+    }
+
+    public function setLientSupport(string $lient_support): static
+    {
+        $this->lient_support = $lient_support;
+
+        return $this;
+    }
+
+    public function getNiveauDeCompetence(): ?string
+    {
+        return $this->niveau_de_competence;
+    }
+
+    public function setNiveauDeCompetence(string $niveau_de_competence): static
+    {
+        $this->niveau_de_competence = $niveau_de_competence;
+
+        return $this;
+    }
+
+    public function getLienDuLivrable(): ?string
+    {
+        return $this->lien_du_livrable;
+    }
+
+    public function setLienDuLivrable(string $lien_du_livrable): static
+    {
+        $this->lien_du_livrable = $lien_du_livrable;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Apprenant>
+     */
+    public function getApprenant(): Collection
+    {
+        return $this->apprenant;
+    }
+
+    public function addApprenant(Apprenant $apprenant): static
+    {
+        if (!$this->apprenant->contains($apprenant)) {
+            $this->apprenant->add($apprenant);
+        }
+
+        return $this;
+    }
+
+    public function removeApprenant(Apprenant $apprenant): static
+    {
+        $this->apprenant->removeElement($apprenant);
+
+        return $this;
+    }
+}
