@@ -12,12 +12,28 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProjetRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CustomApprenantController;
+use App\Controller\CustomProjetController;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Post(
+         
+            uriTemplate: '/api/project-{projectId}/apprenant-{apprenantId}',
+            routeName: 'participateToProject',
+            controller: CustomProjetController::class,
+            normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
+            denormalizationContext: ['groups' => 'apprenant:participate'],
+
+        ),
+        
+       
+    ]
+)]
 
 #[GetCollection(
     normalizationContext: [ 'groups' => ['projet:index'] ]
@@ -63,16 +79,20 @@ class Projet
     private ?\DateTimeInterface $date_limite = null;
 
     #[ORM\ManyToOne(inversedBy: 'projets')]
-    #[Groups(['projet:show'])]
+    #[Groups([ 'projet:create', 'projet:show'])]
     private ?Association $association = null;
 
     #[ORM\ManyToMany(targetEntity: LangageDeProgrammation::class, inversedBy: 'projets')]
     #[Groups(['projet:show'])]
     private Collection $langage_de_programmation;
 
+    #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
+    private Collection $apprenants;
+
     public function __construct()
     {
         $this->langage_de_programmation = new ArrayCollection();
+        $this->apprenants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -160,6 +180,33 @@ class Projet
     public function removeLangageDeProgrammation(LangageDeProgrammation $langageDeProgrammation): static
     {
         $this->langage_de_programmation->removeElement($langageDeProgrammation);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Apprenant>
+     */
+    public function getApprenants(): Collection
+    {
+        return $this->apprenants;
+    }
+
+    public function addApprenant(Apprenant $apprenant): static
+    {
+        if (!$this->apprenants->contains($apprenant)) {
+            $this->apprenants->add($apprenant);
+            $apprenant->addProjet($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApprenant(Apprenant $apprenant): static
+    {
+        if ($this->apprenants->removeElement($apprenant)) {
+            $apprenant->removeProjet($this);
+        }
 
         return $this;
     }

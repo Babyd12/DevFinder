@@ -4,34 +4,65 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
+        app_apprenant_provider:
             entity:
-                class: App\Entity\User
+                class: App\Entity\Apprenant
                 property: email
+        app_association_provider:
+            entity:
+                class: App\Entity\Association
+                property: email    
+        all_users:
+            chain:
+                providers: ['app_apprenant_provider', 'app_association_provider']
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
         main:
             lazy: true
-            provider: app_user_provider
+            provider: all_users
             entry_point: jwt
             json_login:
                 check_path: /auth
                 username_path: email
-                password_path: password
+                password_path: mot_de_passe
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            
+
+            logout:
+                path: /api/logout
             jwt: ~
-            refresh_jwt:
-                check_path: /api/token/refresh
+                # target: /api
+
+            # refresh_jwt:
+            #     check_path: /api/token/refresh
+
+        # api:
+        #     lazy: true
+        #     provider: app_apprenant_provider
+        #     entry_point: jwt
+        #     json_login:
+        #         check_path: /auth
+        #         username_path: email
+        #         password_path: mot_de_passe
+        #         success_handler: lexik_jwt_authentication.handler.authentication_success
+        #         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        #     jwt: ~
+        #     refresh_jwt:
+        #         check_path: /api/token/refresh
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             # switch_user: true
+
+
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used

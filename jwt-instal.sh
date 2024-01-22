@@ -14,3 +14,4 @@ openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem -passi
 #Ces commandes supprimeront la ligne contenant "JWT_PASSPHRASE" dans le fichier .env et ajouteront la nouvelle ligne avec la valeur contenu dans le "echo"
 sed -i '/JWT_PASSPHRASE/d' .env
 echo 'JWT_PASSPHRASE=JWT_PASSPHRASE' >> .env
+

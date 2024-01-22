@@ -8,5 +8,10 @@ auth:
     path: /auth
     methods: ['POST']
 
+api_logout:
+    path: /api/logout
+    methods: ['POST']
+    # controller: App\Controller\LogoutController::logout
+
 # api_refresh_token:
 #     path: /api/token/refresh 
