@@ -1,0 +1,27 @@
+api_platform:
+    title: Hello API Platform of Mciré
+    version: 1.0.0
+    eager_loading:
+        fetch_partial: true
+    formats:
+        jsonld: ['application/json']
+    docs_formats:
+        jsonld: ['application/json']
+        jsonopenapi: ['application/vnd.openapi+json']
+        html: ['text/html']
+    defaults:
+        pagination_client_enabled: true
+        pagination_client_items_enabled: true
+    enable_swagger: true
+    swagger:
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
+
+    # path_patterns:
+        # '^/apprenants':
+ 
+    description: 'API for managing apprenants.'
+
+    
