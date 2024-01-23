@@ -43,9 +43,6 @@ use Symfony\Component\Validator\Constraints\Hostname;
             denormalizationContext: ['groups' => 'apprenant:participate'],
             
         ),
-
-        
-       
     ]
 )]
 
@@ -105,6 +102,12 @@ class Projet
 
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
     private Collection $apprenants;
+
+    #[ORM\Column(length: 255)]
+    // #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
+    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    private ?string $statu = null;
+
 
     public function __construct()
     {
@@ -227,4 +230,18 @@ class Projet
 
         return $this;
     }
+
+    public function getStatu(): ?string
+    {
+        return $this->statu;
+    }
+
+    public function setStatu(string $statu): static
+    {
+        $this->statu = $statu;
+
+        return $this;
+    }
+
+   
 }

@@ -77,10 +77,11 @@ security:
         # - { path: ^/admin, roles: IS_AUTHENTICATED_FULLY  }
         
         - { path: ^/api, roles: PUBLIC_ACCESS }
+        - { path: ^/api/auth, roles: PUBLIC_ACCESS }
         - { path: ^/api/apprenant/inscription, roles: PUBLIC_ACCESS }
         - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
 
-        - { path: ^/api/apprenant, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/apprenant, roles: [IS_AUTHENTICATED_FULLY, ROLE_APPRENANT ]}
         
 when@test:
     security:
