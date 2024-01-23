@@ -32,11 +32,18 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             
-
-            logout:
-                path: /api/logout
             jwt: ~
-                # target: /api
+           
+
+        # api:
+        #     pattern:   ^/api
+        #     stateless: true
+        #     provider: all_users
+        #     jwt: ~
+
+            # logout:
+            #     path: /api/logout
+            #     # target: /api
 
             # refresh_jwt:
             #     check_path: /api/token/refresh
@@ -68,8 +75,12 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: IS_AUTHENTICATED_FULLY  }
+        
         - { path: ^/api, roles: PUBLIC_ACCESS }
+        - { path: ^/api/apprenant/inscription, roles: PUBLIC_ACCESS }
         - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
+
+        - { path: ^/api/apprenant, roles: IS_AUTHENTICATED_FULLY }
         
 when@test:
     security:

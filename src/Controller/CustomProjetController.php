@@ -6,6 +6,7 @@ use App\Entity\Projet;
 use App\Entity\Apprenant;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,12 +15,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class CustomProjetController extends AbstractController
 {
 
+    private Security $security;
 
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
 
-    #[Route('/api/project-{projectId}/apprenant-{apprenantId}', name: 'participateToProject', methods: ['POST'])]
+    #[Route('/apprenant/participer/projet-{projectId}', name: 'participateToProject', methods: ['GET'])]
     public function addApprenantToProject(Request $request, EntityManagerInterface $entityManager, string $projectId, string $apprenantId): JsonResponse
     {
 
+        $user = $this->security->getUser();
+
+        if ($user === null) {
+            // Gérer le cas où l'utilisateur n'est pas connecté
+            return $this->json(['error' => 'User not authenticated'], 401);
+        }
+
+        dd($user);
         // Récupérer le projet et l'apprenant depuis la base de données
         $projet = $entityManager->getRepository(Projet::class)->find($projectId);
         $apprenant = $entityManager->getRepository(Apprenant::class)->find($apprenantId);
@@ -49,5 +63,8 @@ class CustomProjetController extends AbstractController
         return new JsonResponse(['message' => 'L\'apprenant a été ajouté au projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
 
-    
+    #[Route('/api/projet/quitter/projet-{projectId}-{apprenantId}', name: 'leaveAProject', methods: ['POST'])]
+    public function removeApprenantToProject()
+    {
+    }
 }

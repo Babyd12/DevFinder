@@ -16,26 +16,43 @@ use App\Controller\CustomApprenantController;
 use App\Controller\CustomProjetController;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use phpDocumentor\Reflection\DocBlock\Tag;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 #[ApiResource(
+    security: "is_granted('ROLE_USER')",
     operations: [
-        new Post(
-         
-            uriTemplate: '/api/project-{projectId}/apprenant-{apprenantId}',
-            routeName: 'participateToProject',
+        new Get(
+            shortName: 'Module Gestion Participation Projet',
+            uriTemplate: '/apprenant/participer/projet-{projectId}',
+            // routeName: 'participateToProject',
             controller: CustomProjetController::class,
             normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
             denormalizationContext: ['groups' => 'apprenant:participate'],
-
+            
         ),
+        new Get(
+            shortName: 'Module Gestion Participation Projet',
+            name: 'publication',
+            uriTemplate: '/apprenant/quitter/projet-{projectId}-{apprenantId}',
+            // routeName: 'participateToProject',
+            controller: CustomProjetController::class,
+            normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
+            denormalizationContext: ['groups' => 'apprenant:participate'],
+            
+        ),
+
         
        
     ]
 )]
 
 #[GetCollection(
+  
+    description: 'Affiche tout les projet',
+    name:'un nom simple a comprndre',
     normalizationContext: [ 'groups' => ['projet:index'] ]
 )]
 
