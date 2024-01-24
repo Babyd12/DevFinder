@@ -25,7 +25,7 @@ class PasswordSubscriber implements EventSubscriberInterface
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
-        if (($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise)  &&
+        if ( ($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise)  &&
             in_array($method, [Request::METHOD_POST, Request::METHOD_PUT, Request::METHOD_PATCH]) &&
             method_exists($entity, 'getPassword') && $entity->getPassword() !== null
         ) {

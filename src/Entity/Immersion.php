@@ -13,29 +13,38 @@ use App\Repository\ImmersionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ImmersionRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    shortName: 'Module gestion de publication immersion -Administrateur',
+)]
 
 #[GetCollection(
     forceEager: false,
+    uriTemplate:'/immersion/liste',
     normalizationContext: [ 'groups' => ['immersion:index'] ]
 )]
 
 #[Get(
     forceEager: true,
+    uriTemplate:'/immersion/show',
     normalizationContext: [ 'groups' => ['immersion:show'] ]
 )]
 
 #[Post(
+    uriTemplate:'/immersion/ajouter',
     denormalizationContext: [ 'groups' => ['immersion:create'] ]
 )]
 
 #[Put(
+    uriTemplate:'/immersion/update',
     denormalizationContext: [ 'groups' => ['immersion:update'] ]
 )]
 
-#[Delete()]
+#[Delete(
+    uriTemplate:'/immersion/supprimer',
+)]
 
 class Immersion
 {

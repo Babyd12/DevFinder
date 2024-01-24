@@ -41,9 +41,9 @@ security:
         #     provider: all_users
         #     jwt: ~
 
-            # logout:
-            #     path: /api/logout
-            #     # target: /api
+            logout:
+                path: /api/logout
+                # target: /api
 
             # refresh_jwt:
             #     check_path: /api/token/refresh

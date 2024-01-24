@@ -13,29 +13,38 @@ use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: BriefRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    shortName:'Module gestion de publication brief -Administrateur',
+)]
 
 #[GetCollection(
+    uriTemplate: 'brief/liste',
     forceEager: false,
     normalizationContext: [ 'groups' => ['brief:index'] ]
 )]
 
 #[Get(
+    uriTemplate: 'brief/show',
     forceEager: true,
     normalizationContext: [ 'groups' => ['brief:show'] ]
 )]
 
 #[Post(
+    uriTemplate: 'brief/publier',
     denormalizationContext: [ 'groups' => ['brief:create'] ]
 )]
 
 #[Put(
+    uriTemplate: 'brief/update',
     denormalizationContext: [ 'groups' => ['brief:update'] ]
 )]
 
-#[Delete()]
+#[Delete(
+    uriTemplate: 'brief/delete',
+)]
 
 class Brief
 {

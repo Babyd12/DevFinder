@@ -19,8 +19,6 @@ api_platform:
                 name: Authorization
                 type: header
 
-    # path_patterns:
-        # '^/apprenants':
  
     description: 'API for managing apprenants.'
 

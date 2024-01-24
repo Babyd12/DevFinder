@@ -15,7 +15,9 @@ use MessageFormatter;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    // shortName:'Module gestion de publication -Apprenant'
+)]
 
 #[GetCollection(
     normalizationContext: [ 'groups' => ['read'] ]

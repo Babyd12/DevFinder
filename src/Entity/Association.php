@@ -18,29 +18,38 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AssociationRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    shortName: 'Module gestion de compte -Association',
+)]
 
 #[GetCollection(
+    uriTemplate: 'association/liste',
     normalizationContext: [ 'groups' => ['association:index'] ]
 )]
 
 #[Get(
+    uriTemplate: 'association/show/{id}',
     forceEager: true,
     normalizationContext: [ 'groups' => ['association:show'] ]
 )]
 
 #[Post(
+    uriTemplate: 'association/inscription',
     denormalizationContext: [ 'groups' => ['association:create'] ]
 )]
 
 #[Put(
+    uriTemplate: 'association/update',
     denormalizationContext: [ 'groups' => ['association:update'] ]
 )]
 #[Patch(
+    uriTemplate: '  association/change_password/{id}',
     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
 )]
 
-#[Delete()]
+#[Delete(
+    uriTemplate: 'association/delete',
+)]
 
 class Association implements UserInterface, PasswordAuthenticatedUserInterface
 {

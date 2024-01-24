@@ -22,51 +22,65 @@ use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 #[ApiResource(
-    security: "is_granted('ROLE_USER')",
+    shortName: 'Module Gestion de Participation -Projet',
+    security: "is_granted('ROLE_APPRENANT')",
     operations: [
         new Get(
-            shortName: 'Module Gestion Participation Projet',
-            uriTemplate: '/apprenant/participer/projet-{projectId}',
+            uriTemplate:'/apprenant/participer/projet/{projectId}',
             // routeName: 'participateToProject',
             controller: CustomProjetController::class,
             normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
             denormalizationContext: ['groups' => 'apprenant:participate'],
-            
+            securityMessage: 'Only authenticated users can access this resource.',
         ),
         new Get(
-            shortName: 'Module Gestion Participation Projet',
-            name: 'publication',
-            uriTemplate: '/apprenant/quitter/projet-{projectId}-{apprenantId}',
-            // routeName: 'participateToProject',
+            uriTemplate: '/apprenant/quitter/projet/{projetId}',
+            // uriTemplate:'/apprenant/projet/quitter/projet/{projetId}',
+            // routeName: 'quitterProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
-            denormalizationContext: ['groups' => 'apprenant:participate'],
+            normalizationContext: [ 'groups' => 'apprenantQuitterPojet:show' ],
+            denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
             
         ),
     ]
 )]
 
 #[GetCollection(
-  
+    security: "is_granted('ROLE_ASSOCIATION')",
+    shortName: 'Module Gestion de Publication Projet -Association',
+    uriTemplate:'/projet/liste',
     description: 'Affiche tout les projet',
     name:'un nom simple a comprndre',
     normalizationContext: [ 'groups' => ['projet:index'] ]
 )]
 
 #[Get(
+    security: "is_granted('ROLE_ASSOCIATION')",
+    shortName: 'Module Gestion de Publication Projet -Association',
+    uriTemplate:'/projet/show',
     forceEager: true,
     normalizationContext: [ 'groups' => ['projet:show'] ]
 )]
 
 #[Post(
+    security: "is_granted('ROLE_ASSOCIATION')",
+    shortName: 'Module Gestion de Publication Projet -Association',
+    uriTemplate:'/projet/ajouter',
     denormalizationContext: [ 'groups' => ['projet:create'] ]
 )]
 
 #[Put(
+    security: "is_granted('ROLE_ASSOCIATION')",
+    shortName: 'Module Gestion de Publication Projet -Association',
+    uriTemplate:'/projet/update',
     denormalizationContext: [ 'groups' => ['projet:update'] ]
 )]
 
-#[Delete()]
+#[Delete(
+    security: "is_granted('ROLE_ASSOCIATION')",
+    shortName: 'Module Gestion de Publication Projet -Association',
+    uriTemplate:'/projet/supprimer',
+)]
 
 
 class Projet
@@ -74,6 +88,7 @@ class Projet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    // #[Groups(['apprenant:participate', 'projet:create', 'projet:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

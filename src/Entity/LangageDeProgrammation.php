@@ -15,26 +15,34 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\LangageDeProgrammationRepository;
 
 #[ORM\Entity(repositoryClass: LangageDeProgrammationRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    shortName:'Module gestion de publication Langage de programmation -Association',
+)]
 
 #[GetCollection(
+    uriTemplate:'/langage/liste',
     normalizationContext: [ 'groups' => ['langageDeProgrammation:index'] ]
 )]
 
 #[Get(
+    uriTemplate:'/langage/show',
     forceEager: true,
     normalizationContext: [ 'groups' => ['langageDeProgrammation:show'] ]
 )]
 
 #[Post(
+    uriTemplate:'/langage/ajouter',
     denormalizationContext: [ 'groups' => ['langageDeProgrammation:create'] ]
 )]
 
 #[Put(
+    uriTemplate:'/langage/update',
     denormalizationContext: [ 'groups' => ['langageDeProgrammation:update'] ]
 )]
 
-#[Delete()]
+#[Delete(
+    uriTemplate:'/langage/supprimer',
+)]
 
 
 class LangageDeProgrammation

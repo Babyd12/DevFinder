@@ -5,8 +5,9 @@ namespace App\Controller;
 use App\Entity\Projet;
 use App\Entity\Apprenant;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Project;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,13 +20,12 @@ class CustomProjetController extends AbstractController
 
     public function __construct(Security $security)
     {
+
         $this->security = $security;
     }
 
-    #[Route('/apprenant/participer/projet-{projectId}', name: 'participateToProject', methods: ['GET'])]
-    public function addApprenantToProject(Request $request, EntityManagerInterface $entityManager, string $projectId, string $apprenantId): JsonResponse
+    public function getSecurity(EntityManagerInterface $entityManager, string $projectId)
     {
-
         $user = $this->security->getUser();
 
         if ($user === null) {
@@ -33,19 +33,35 @@ class CustomProjetController extends AbstractController
             return $this->json(['error' => 'User not authenticated'], 401);
         }
 
-        dd($user);
+
+        $apprenantLogged  = $user->getUserIdentifier();
         // Récupérer le projet et l'apprenant depuis la base de données
         $projet = $entityManager->getRepository(Projet::class)->find($projectId);
-        $apprenant = $entityManager->getRepository(Apprenant::class)->find($apprenantId);
+        $apprenant = $entityManager->getRepository(Apprenant::class)->findOneByEmail($apprenantLogged);
 
         // Vérifier si le projet et l'apprenant existent
         if (!$projet || !$apprenant) {
-            return new JsonResponse("Le projet ou l'apprenant n'existe pas", Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => "Le projet ou l'apprenant n'existe pas"], Response::HTTP_NOT_FOUND);
         }
+        return ['apprenant' => $apprenant, 'projet' => $projet];
+    }
+
+    #[Route('/apprenant/participer/projet/{projectId}', methods: ['GET'])]
+    public function addApprenantToProject(EntityManagerInterface $entityManager, string $projectId): JsonResponse
+    {
+
+        $security = $this->getSecurity($entityManager, $projectId);
+        if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
+            // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
+            return $security;
+        }
+
+        $projet = $security['projet'];
+        $apprenant = $security['apprenant'];
 
         // Vérifier si l'apprenant est déjà inscrit au projet
         if ($projet->getApprenants()->contains($apprenant)) {
-            return new JsonResponse("Vous participer déjà à ce projet", Response::HTTP_CONFLICT);
+            return new JsonResponse(["message" => "Vous participer déjà à ce projet"], Response::HTTP_CONFLICT);
         }
 
         // Ajouter l'apprenant au projet en utilisant la méthode addApprenant
@@ -60,11 +76,36 @@ class CustomProjetController extends AbstractController
             'Date_limite' => $data->getDateLimite(),
 
         ];
-        return new JsonResponse(['message' => 'L\'apprenant a été ajouté au projet avec succès', 'données' => $showData], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'Vous avez été ajouté au projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
 
-    #[Route('/api/projet/quitter/projet-{projectId}-{apprenantId}', name: 'leaveAProject', methods: ['POST'])]
-    public function removeApprenantToProject()
+    #[Route('/apprenant/quitter/projet/{projetId}', methods: ['GET'])]
+    public function removeApprenantToProject(EntityManagerInterface $entityManager, string $projetId)
     {
+        $security = $this->getSecurity($entityManager, $projetId);
+        if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
+            // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
+            return $security;
+        }
+
+        $projet = $security['projet'];
+        $apprenant = $security['apprenant'];
+
+        // Vérifier si l'apprenant est déjà inscrit au projet
+        if (!$projet->getApprenants()->contains($apprenant)) {
+            return new JsonResponse(["message" => "Vous tentez de retirer un apprenant innexistant de ce projet"], Response::HTTP_CONFLICT);
+        }
+
+        // Ajouter l'apprenant au projet en utilisant la méthode addApprenant
+        $projet->removeApprenant($apprenant);
+        $entityManager->flush();
+        $showData = [
+            'Titre' => $projet->getTitre(),
+            'Description' => $projet->getDescription(),
+            'Nombre de participant' => $projet->getNombreDeParticipant(),
+            'Date_limite' => $projet->getDateLimite(),
+
+        ];
+        return new JsonResponse(['message' => 'Vous avez été retiré du projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
 }
