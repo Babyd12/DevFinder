@@ -18,7 +18,7 @@ jobs:
           
       - name: deploy
         run: 
-          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
+          sshpass -e ssh -o stricthostkeychecking=no -p $SSH_PASS ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
           "cd public_html/ &&
           git pull &&
           composer install &&
