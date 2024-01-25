@@ -18,9 +18,9 @@ jobs:
           
       - name: deploy
         run: 
-          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} <<EOF
-            cd /var/www
-            git pull origin master
-            php artisan migrate --force
-          EOF
-#test 4
+          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.DEV_FINDER_USER }}@${{ secrets.DEV_FINDER_HOST }}
+          "cd public_html/ &&
+          git pull &&
+          composer install &&
+          php bin/console d:m:m -n"
+#test 3
