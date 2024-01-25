@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SSHPASS: ${{ secrets.DEV_FINDER_SECRET }}
+      SSHPASS: ${{ secrets.APP_PASS }}
 
     steps:
       - uses: actions/checkout@v2
@@ -18,7 +18,7 @@ jobs:
           
       - name: deploy
         run: 
-          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.DEV_FINDER_USER }}@${{ secrets.DEV_FINDER_HOST }}
+          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
           "cd public_html/ &&
           git pull &&
           composer install &&
