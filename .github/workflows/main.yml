@@ -28,3 +28,4 @@ jobs:
           sshpass -e ssh -v -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull"
           composer install
           php bin/console doctrine:migrations:migrate --no-interaction
+          
