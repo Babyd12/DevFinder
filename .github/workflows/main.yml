@@ -6,9 +6,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
-    env:
-      SSHPASS: ${{ secrets.DEV_FINDER_SECRET }}
+    environment: dev
+    env: 
+      SSHPASS: ${{ secrets.APP_USER }}
 
     steps:
       - uses: actions/checkout@v2
