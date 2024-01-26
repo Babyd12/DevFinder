@@ -22,7 +22,7 @@ jobs:
 
       - name: Display variables
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
-        
+
       - name: Deploy
         run: |
           sshpass -e ssh -v -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull"
