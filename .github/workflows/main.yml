@@ -19,7 +19,8 @@ jobs:
           
       - name: deploy
         run: 
-          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
-          # "cd public_html/ && git pull &&
+          sshpass -p 'Deploy999' ssh -o StrictHostKeyChecking=no deploy@159.203.166.191
+          "cd public_html/ && git pull"
+          # sshpass -e ssh -o stricthostkeychecking=no deploy@159.203.166.191
           # composer install &&
           # php bin/console d:m:m -n"
