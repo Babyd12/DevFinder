@@ -26,7 +26,7 @@ security:
             provider: all_users
             entry_point: jwt
             json_login:
-                check_path: /auth
+                check_path: /api/auth
                 username_path: email
                 password_path: mot_de_passe
                 success_handler: lexik_jwt_authentication.handler.authentication_success
