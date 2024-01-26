@@ -9,7 +9,7 @@ jobs:
     
     
     env:
-      SSHPASS: ${{ secrets.APP_PASS}}
+      SSHPASS: ${{ secrets.APP_PASS }}
 
     steps:
       - uses: actions/checkout@v2
