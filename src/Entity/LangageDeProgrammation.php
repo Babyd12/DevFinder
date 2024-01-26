@@ -25,13 +25,14 @@ use App\Repository\LangageDeProgrammationRepository;
 )]
 
 #[Get(
-    uriTemplate: '/langage/show',
+    uriTemplate: '/langage/show/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['langageDeProgrammation:show']]
 )]
 
 #[Post(
     uriTemplate: '/langage/ajouter',
+    // security: "is_granted('ROLE_ASSOCIATION')",
     denormalizationContext: ['groups' => ['langageDeProgrammation:create']]
 )]
 

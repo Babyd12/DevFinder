@@ -36,7 +36,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[Get(
   
-    uriTemplate: 'apprenant/show',
+    uriTemplate: 'apprenant/show/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['apprenant:show']]
 )]

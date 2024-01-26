@@ -57,7 +57,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[Get(
     security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/show{id}',
+    uriTemplate:'/projet/voirplus/{id}',
     forceEager: true,
     normalizationContext: [ 'groups' => ['projet:show'] ]
 )]
@@ -72,7 +72,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[Put(
     security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/update',
+    uriTemplate:'/projet/mise_a_jour',
     denormalizationContext: [ 'groups' => ['projet:update'] ]
 )]
 
@@ -88,7 +88,7 @@ class Projet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['apprenant:participate', 'projet:create', 'projet:update'])]
+    // #[Groups(['apprenant:participate', 'projet:create', 'projet:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
