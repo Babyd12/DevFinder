@@ -22,6 +22,6 @@ jobs:
           
       - name: Deploy
         run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull"
+          sshpass -e ssh -v -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull"
           composer install
           php bin/console doctrine:migrations:migrate --no-interaction
