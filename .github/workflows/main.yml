@@ -19,9 +19,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y sshpass
-          
+
+      - name: Display variables
+        run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
+        
       - name: Deploy
         run: |
-          sshpass -e ssh -v -o StrictHostKeyChecking=no deploy@159.203.166.191 "cd public_html/ && git pull"
+          sshpass -e ssh -v -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull"
           composer install
           php bin/console doctrine:migrations:migrate --no-interaction
