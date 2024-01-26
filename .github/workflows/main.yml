@@ -1,4 +1,5 @@
 name: CD
+
 on:
   push:
     branches: [ master ]
@@ -11,21 +12,16 @@ jobs:
       SSHPASS: ${{ secrets.APP_PASS }}
 
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: APT UPDATE and INSTALL SSHPASS
-        run: 
-          sudo apt update && sudo apt install sshpass
-          
-      - name: deploy
-        run: 
-          sshpass -e ssh -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
-          "cd public_html/ && git pull"
-          # composer install &&
-          # php bin/console d:m:m -n"
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-# {
-# "APP_PASS": "Deploy999",
-# "APP_USER": "deploy",
-# "APP_HOST": "159.203.166.191"
-# }
+      - name: APT UPDATE and INSTALL SSHPASS
+        run: |
+          sudo apt update
+          sudo apt install -y sshpass
+          
+      - name: Deploy
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull"
+          composer install
+          php bin/console doctrine:migrations:migrate --no-interaction
