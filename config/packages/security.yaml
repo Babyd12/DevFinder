@@ -48,16 +48,16 @@ security:
             # refresh_jwt:
             #     check_path: /api/token/refresh
 
-        # api:
-        #     lazy: true
-        #     provider: app_apprenant_provider
-        #     entry_point: jwt
-        #     json_login:
-        #         check_path: /auth
-        #         username_path: email
-        #         password_path: mot_de_passe
-        #         success_handler: lexik_jwt_authentication.handler.authentication_success
-        #         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        api:
+            # lazy: true
+            # provider: app_apprenant_provider
+            # entry_point: jwt
+            # json_login:
+            #     check_path: /person/auth
+            #     username_path: email
+            #     password_path: mot_de_passe
+            #     success_handler: lexik_jwt_authentication.handler.authentication_success
+            #     failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         #     jwt: ~
         #     refresh_jwt:

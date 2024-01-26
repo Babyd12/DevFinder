@@ -5,8 +5,9 @@ controllers:
     type: attribute
 
 auth:
-    path: /api/auth
+    path: /api/connexion
     methods: ['POST']
+    
 app_logout:
     path: /api/logout
     methods: ['POST']
