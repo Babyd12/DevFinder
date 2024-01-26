@@ -24,13 +24,8 @@ jobs:
       - name: Display variables
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
 
-      - name: Git workflow configuration
-        run: echo " git stash" 
-          echo " git stash pop" 
-
-
       - name: Deploy
         run: |
-          sshpass -e ssh -v -o StrictHostKeyChecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull origin master --force"
+          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull origin master --force"
           composer install
           php bin/console doctrine:migrations:migrate -n 
