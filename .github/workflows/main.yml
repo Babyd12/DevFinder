@@ -24,13 +24,20 @@ jobs:
       - name: Display variables
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
 
+      - name: Clean old migrations
+        run: |
+          rm -rf migrations/*
+
       - name: Deploy
         run: |
           sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull origin master --force"
           composer install
-          rm -rf migrations/*
           php bin/console doctrine:migrations:dump-schema
           php bin/console doctrine:migrations:migrate -n 
         # php bin/console doctrine:migrations:diff
 
-        #jout un
+      - name: After deployment jwt key publish 
+        run: |
+          ./jwt-instal.sh
+          chmod 600 var/jwt/private.pem
+          chmod 644 var/jwt/public.pem 
