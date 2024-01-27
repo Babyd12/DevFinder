@@ -11,6 +11,7 @@ jobs:
     environment: dev
     env:
       SSHPASS: ${{ secrets.APP_PASS }}
+      PROJECT_PATH: "/home/1203757.cloudwaysapps.com/sfcastmajs/public_html"
 
     steps:
       - name: Checkout Repository
@@ -32,6 +33,7 @@ jobs:
         run: |
           sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull origin master --force"
           composer install &
+          chmod -R 755 ${{ env.PROJECT_PATH }} &
           php bin/console doctrine:migrations:migrate -n 
         #  php bin/console doctrine:migrations:dump-schema
         # php bin/console doctrine:migrations:diff
