@@ -11,7 +11,7 @@ jobs:
     environment: dev
     env:
       SSHPASS: ${{ secrets.APP_PASS }}
-      PROJECT_PATH: "/home/1203757.cloudwaysapps.com/sfcastmajs/public_html"
+      # PROJECT_PATH: "/home/1203757.cloudwaysapps.com/sfcastmajs/public_html"
 
     steps:
       - name: Checkout Repository
@@ -46,9 +46,9 @@ jobs:
         run: |
           composer install --no-scripts 
           
-      - name: set permissions on the repository project
-        run: |
-          chmod -R 755 ${{ env.PROJECT_PATH }} 
+      # - name: set permissions on the repository project
+      #   run: |
+      #     chmod -R 755 
 
       - name: Make migration
         run: |
