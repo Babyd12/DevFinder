@@ -11,7 +11,7 @@ jobs:
     environment: dev
     env:
       SSHPASS: ${{ secrets.APP_PASS }}
-      PROJECT_PATH: "/home/1203757.cloudwaysapps.com/sfcastmajs"
+      PROJECT_PATH: "/home/1203757.cloudwaysapps.com/sfcastmajs/public_html"
 
     steps:
       - name: Checkout Repository
@@ -25,8 +25,6 @@ jobs:
       - name: Display variables
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
 
-      # - name: Set permissions on migrations
-      #   run: chmod -R 755 migrations/ 
 
       # - name: Clean old migrations
       #   run: |
