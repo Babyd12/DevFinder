@@ -26,9 +26,7 @@ jobs:
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
 
 
-      # - name: Clean old migrations
-      #   run: |
-      #     rm -rf migrations/*
+    
 
       - name: Deploy
         run: |
@@ -46,9 +44,9 @@ jobs:
         run: |
           composer install --no-scripts 
           
-      # - name: set permissions on the repository project
-      #   run: |
-      #     chmod -R 755 
+      - name: Clean old migrations
+        run: |
+          rm -rf migrations/*
 
       - name: Make migration
         run: |
