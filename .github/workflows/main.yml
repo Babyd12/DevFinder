@@ -51,13 +51,13 @@ jobs:
       - name: Make migration
         run: |
 
-          php bin/console doctrine:migrations:migrate --conn=default
+          php bin/console doctrine:migrations:migrate --dry-run
 
         #  php bin/console doctrine:migrations:dump-schema
         # php bin/console doctrine:migrations:diff
 
-      # - name: After deployment jwt key publish 
-      #   run: |
-      #     ./jwt-instal.sh 
-      #     chmod 600 var/jwt/private.pem
-      #     chmod 644 var/jwt/public.pem 
+      - name: After deployment jwt key publish 
+        run: |
+          ./jwt-instal.sh 
+          chmod 600 var/jwt/private.pem
+          chmod 644 var/jwt/public.pem 
