@@ -40,6 +40,6 @@ jobs:
 
       # - name: After deployment jwt key publish 
       #   run: |
-      #     ./jwt-instal.sh
+      #     ./jwt-instal.sh 
       #     chmod 600 var/jwt/private.pem
       #     chmod 644 var/jwt/public.pem 
