@@ -23,9 +23,9 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
-    security: "is_granted('ROLE_APPRENANT')",
     operations: [
         new Get(
+            security: "is_granted('ROLE_APPRENANT')",
             uriTemplate:'/apprenant/participer/projet/{projectId}',
             // routeName: 'participateToProject',
             controller: CustomProjetController::class,
@@ -34,6 +34,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
             securityMessage: 'Only authenticated users can access this resource.',
         ),
         new Get(
+            security: "is_granted('ROLE_APPRENANT')",
             uriTemplate: '/apprenant/quitter/projet/{projetId}',
             // uriTemplate:'/apprenant/projet/quitter/projet/{projetId}',
             // routeName: 'quitterProjet',
@@ -46,7 +47,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[GetCollection(
-    shortName: 'Module Gestion de Publication Projet -Association',
+    shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/liste',
     description: 'Affiche tout les projet',
     name:'un nom simple a comprndre',
@@ -54,22 +55,22 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[Get(
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/show{id}',
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate:'/projet/{id}',
     forceEager: true,
     normalizationContext: [ 'groups' => ['projet:show'] ]
 )]
 
 #[Post(
     security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
+    shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/ajouter',
     denormalizationContext: [ 'groups' => ['projet:create'] ]
 )]
 
 #[Put(
-    shortName: 'Module Gestion de Publication Projet -Association',
-    // uriTemplate:'/projet/{id}',
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate:'/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == association.getId() ) ",
     securityMessage: 'Sorry, but you are not this projet owner.',
     denormalizationContext: [ 'groups' => ['projet:update'] ]
@@ -77,8 +78,8 @@ use Symfony\Component\Validator\Constraints\Hostname;
 
 #[Delete(
     security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/supprimer',
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate:'/projet/{id}',
 )]
 
 
@@ -117,10 +118,10 @@ class Projet
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
     private Collection $apprenants;
 
-    // #[ORM\Column(length: 255)]
-    #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
+    #[ORM\Column(length: 255)]
+    // #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
-    private ?ProjetStatu $statu = null;
+    private ?string $statu = null;
 
 
     public function __construct()
@@ -245,12 +246,12 @@ class Projet
         return $this;
     }
 
-    public function getStatu(): ?ProjetStatu
+    public function getStatu(): ?string
     {
         return $this->statu;
     }
 
-    public function setStatu(?ProjetStatu $statu): static
+    public function setStatu(?string $statu): static
     {
         $this->statu = $statu;
 
