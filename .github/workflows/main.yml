@@ -30,10 +30,9 @@ jobs:
 
       - name: Deploy
         run: |
-          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ &&
-          git pull &&
-          composer install &&
-          php bin/console d:m:m -n"
+          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull origin master --force"
+          composer install &
+          php bin/console doctrine:migrations:migrate -n 
         #  php bin/console doctrine:migrations:dump-schema
         # php bin/console doctrine:migrations:diff
 
