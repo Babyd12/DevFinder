@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ImmersionRepository::class)]
+/*
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
 )]
@@ -45,7 +46,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[Delete(
     uriTemplate:'/immersion/supprimer',
 )]
-
+*/
 class Immersion
 {
     #[ORM\Id]

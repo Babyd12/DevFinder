@@ -16,55 +16,55 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
-#[ApiResource(
-    shortName: 'Module gestion de recrutement -Entreprise',
-    operations: [
-        new Get(
-            uriTemplate: 'entreprise/recruter/apprenant/{id}',
+// #[ApiResource(
+//     shortName: 'Module gestion de recrutement -Entreprise',
+//     operations: [
+//         new Get(
+//             uriTemplate: 'entreprise/recruter/apprenant/{id}',
             
-        ),
-    ]
-)]
+//         ),
+//     ]
+// )]
 
 
-#[GetCollection(
-    shortName: 'Module gestion de compte -Entreprise',
-    uriTemplate: 'entreprise/liste',
-    description: 'Modifie toi',
-    name: 'nom temporaire',
-    normalizationContext: [ 'groups' => ['association:index'] ]
-)]
+// #[GetCollection(
+//     shortName: 'Module gestion de compte -Entreprise',
+//     uriTemplate: 'entreprise/liste',
+//     description: 'Modifie toi',
+//     name: 'nom temporaire',
+//     normalizationContext: [ 'groups' => ['association:index'] ]
+// )]
 
-#[Get(
-    shortName: 'Module gestion de compte -Entreprise',
-    uriTemplate: 'entreprise/show',
+// #[Get(
+//     shortName: 'Module gestion de compte -Entreprise',
+//     uriTemplate: 'entreprise/show',
 
-    forceEager: true,
-    normalizationContext: [ 'groups' => ['association:show'] ]
-)]
+//     forceEager: true,
+//     normalizationContext: [ 'groups' => ['association:show'] ]
+// )]
 
-#[Post(
-    shortName: 'Module gestion de compte -Entreprise',
-    uriTemplate: 'entreprise/inscription',
-    denormalizationContext: [ 'groups' => ['association:create'] ]
-)]
+// #[Post(
+//     shortName: 'Module gestion de compte -Entreprise',
+//     uriTemplate: 'entreprise/inscription',
+//     denormalizationContext: [ 'groups' => ['association:create'] ]
+// )]
 
-#[Put(
-    shortName: 'Module gestion de compte -Entreprise',
-    uriTemplate: 'entreprise/update',
-    denormalizationContext: [ 'groups' => ['association:update'] ]
-)]
+// #[Put(
+//     shortName: 'Module gestion de compte -Entreprise',
+//     uriTemplate: 'entreprise/update',
+//     denormalizationContext: [ 'groups' => ['association:update'] ]
+// )]
 
-#[Patch(
-    shortName: 'Module gestion de compte -Entreprise',
-    uriTemplate: 'entreprise/change_mot_de_passe',
-    denormalizationContext: [ 'groups' => ['association:updateOne'] ]
-)]
+// #[Patch(
+//     shortName: 'Module gestion de compte -Entreprise',
+//     uriTemplate: 'entreprise/change_mot_de_passe',
+//     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
+// )]
 
-#[Delete(
-    shortName: 'Module gestion de compte -Entreprise',
-    uriTemplate: 'entreprise/supprimerCompte',
-)]
+// #[Delete(
+//     shortName: 'Module gestion de compte -Entreprise',
+//     uriTemplate: 'entreprise/supprimerCompte',
+// )]
 
 class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
 {

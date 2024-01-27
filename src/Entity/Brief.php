@@ -16,6 +16,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: BriefRepository::class)]
+/*
 #[ApiResource(
     shortName:'Module gestion de publication brief -Administrateur',
 )]
@@ -45,6 +46,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[Delete(
     uriTemplate: 'brief/delete',
 )]
+*/
 
 class Brief
 {

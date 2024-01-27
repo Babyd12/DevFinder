@@ -75,13 +75,30 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         # - { path: ^/admin, roles: IS_AUTHENTICATED_FULLY  }
-        
-        - { path: ^/api, roles: PUBLIC_ACCESS }
-        - { path: ^/api/auth, roles: PUBLIC_ACCESS }
-        - { path: ^/api/apprenant/inscription, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(login|token/refresh), roles: PUBLIC_ACCESS }
+        # General acccess control
+        # - { path: '.*liste$', roles: 'PUBLIC_ACCESS', methods: [ GET] }
+        # - { path: '.*\d+$', roles: 'PUBLIC_ACCESS', methods: [ GET ] }
+        - { path: '.*(?:liste|\d+)$', roles: 'PUBLIC_ACCESS', methods: [GET] }
 
-        - { path: ^/api/apprenant, roles: [IS_AUTHENTICATED_FULLY, ROLE_APPRENANT ]}
+        - { path: '^/api/', roles: IS_AUTHENTICATED_FULLY}
+        
+        # specific access control
+            # public URI path
+        - { path: /api/auth, roles: PUBLIC_ACCESS }
+
+        # - { path: '^/api/.*show/\d+$', roles: 'PUBLIC_ACCESS' }
+
+        - { path: /api/association/, roles: ROLE_ASSOCIATION }
+
+        # - { path: /api/auth, roles: PUBLIC_ACCESS }
+        # - { path: /api/apprenant/inscription, roles: PUBLIC_ACCESS }
+        # - { path: /api/projet/liste, roles: PUBLIC_ACCESS }
+        # - { path: /api/association/liste, roles: PUBLIC_ACCESS }
+    
+        # # - { path: ^/api/(login|token/refresh), roles: IS_AUTHENTICATED_FULLY }
+
+        # - { path: ^/api/apprenant, roles:  ROLE_APPRENANT }
+      
         
 when@test:
     security:

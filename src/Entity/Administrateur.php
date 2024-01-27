@@ -15,6 +15,7 @@ use MessageFormatter;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
+/*
 #[ApiResource(
     // shortName:'Module gestion de publication -Apprenant'
 )]
@@ -41,6 +42,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 
 #[Delete()]
+*/
 
 class Administrateur
 {

@@ -20,6 +20,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: ApprenantRepository::class)]
+/*
 #[ApiResource(
     shortName: 'Module gestion de compte -Apprenant',
     description: "Cette API permet la gestion des comptes des apprenants. Elle offre des fonctionnalités telles que la création, la lecture, la mise à jour et la suppression de comptes apprenants. Les utilisateurs peuvent s'inscrire, se connecter, mettre à jour leurs informations de compte, etc.",
@@ -62,6 +63,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[Delete(
     uriTemplate: 'apprenant/delete',
 )]
+*/
 
 class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 {

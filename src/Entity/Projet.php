@@ -46,7 +46,6 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[GetCollection(
-    security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication Projet -Association',
     uriTemplate:'/projet/liste',
     description: 'Affiche tout les projet',
@@ -55,7 +54,6 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[Get(
-    security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication Projet -Association',
     uriTemplate:'/projet/show{id}',
     forceEager: true,
@@ -70,9 +68,10 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[Put(
-    security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/update',
+    // uriTemplate:'/projet/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == association.getId() ) ",
+    securityMessage: 'Sorry, but you are not this projet owner.',
     denormalizationContext: [ 'groups' => ['projet:update'] ]
 )]
 

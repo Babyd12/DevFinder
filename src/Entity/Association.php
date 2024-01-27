@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -18,37 +19,44 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AssociationRepository::class)]
+
 #[ApiResource(
     shortName: 'Module gestion de compte -Association',
+    
 )]
 
 #[GetCollection(
     uriTemplate: 'association/liste',
-    normalizationContext: [ 'groups' => ['association:index'] ]
+    normalizationContext: [ 'groups' => ['association:index'] ],
 )]
 
 #[Get(
-    uriTemplate: 'association/show/{id}',
+    uriTemplate: 'association/{id}',
     forceEager: true,
     normalizationContext: [ 'groups' => ['association:show'] ]
 )]
 
 #[Post(
+    security: "is_granted('ROLE_ASSOCIATION')",
     uriTemplate: 'association/inscription',
     denormalizationContext: [ 'groups' => ['association:create'] ]
 )]
 
 #[Put(
-    uriTemplate: 'association/update',
-    denormalizationContext: [ 'groups' => ['association:update'] ]
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == request.query.get('association')",
+    uriTemplate: 'association/{id}',
+    denormalizationContext: [ 'groups' => ['association:update'] ],
 )]
+
 #[Patch(
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == request.query.get('association')",
     uriTemplate: '  association/change_password/{id}',
     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
 )]
 
 #[Delete(
-    uriTemplate: 'association/delete',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == request.query.get('association')",
+    uriTemplate: 'association/{id}',
 )]
 
 class Association implements UserInterface, PasswordAuthenticatedUserInterface
