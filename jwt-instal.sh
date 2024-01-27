@@ -17,4 +17,4 @@ sed -i '/JWT_PASSPHRASE/d' .env
 echo 'JWT_PASSPHRASE=JWT_PASSPHRASE' >> .env
 
 
-php bin/console doctrine:migrations:migrate --no-interaction
+# php bin/console doctrine:migrations:migrate --no-interaction
