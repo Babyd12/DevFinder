@@ -16,3 +16,5 @@ openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem -passi
 sed -i '/JWT_PASSPHRASE/d' .env
 echo 'JWT_PASSPHRASE=JWT_PASSPHRASE' >> .env
 
+
+php bin/console doctrine:migrations:migrate --no-interaction
