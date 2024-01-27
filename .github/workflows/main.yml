@@ -25,15 +25,15 @@ jobs:
       - name: Display variables
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
 
-      - name: Set permissions on migrations
-        run: chmod -R 755 migrations/ 
+      # - name: Set permissions on migrations
+      #   run: chmod -R 755 migrations/ 
 
-      - name: Clean old migrations
-        run: |
-          rm -rf migrations/*
+      # - name: Clean old migrations
+      #   run: |
+      #     rm -rf migrations/*
 
       - name: Set specific permissions on project
-        run: chmod -R 755 ${{ env.PROJECT_PATH }}/public_html
+        run: chmod -R 755 ${{ env.PROJECT_PATH }}
 
       - name: Deploy
         run: |
