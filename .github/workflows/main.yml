@@ -32,9 +32,6 @@ jobs:
       #   run: |
       #     rm -rf migrations/*
 
-      - name: Set specific permissions on project
-        run: chmod -R 755 ${{ env.PROJECT_PATH }}
-
       - name: Deploy
         run: |
           sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "cd public_html/ && git pull origin master --force"
