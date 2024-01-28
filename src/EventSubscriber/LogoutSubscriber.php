@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use ApiPlatform\Symfony\EventListener\EventPriorities;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,16 +13,18 @@ class LogoutSubscriber implements EventSubscriberInterface
     public function onLogoutEvent(LogoutEvent $event): void
     {
         // dd('event logout');
-        if( in_array('application/json', $event->getRequest()->getAcceptableContentTypes(), true ) )
+        if( ($event->getResponse()->getStatusCode() === JsonResponse::HTTP_OK ) )
         {
-            $event->setResponse(new JsonResponse('Vous avez été déconnecté avec succes',Response::HTTP_NO_CONTENT ));
+            $message = 'Déconnexion réussie.';
+            $response = new JsonResponse(['message' => $message], JsonResponse::HTTP_OK);
+            $event->setResponse($response);
         }
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            LogoutEvent::class => 'onLogoutEvent',
+            LogoutEvent::class => ['onLogoutEvent', EventPriorities::POST_RESPOND ]
         ];
     }
 }

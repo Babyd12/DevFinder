@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: ApprenantRepository::class)]
-/*
+
 #[ApiResource(
     shortName: 'Module gestion de compte -Apprenant',
     description: "Cette API permet la gestion des comptes des apprenants. Elle offre des fonctionnalités telles que la création, la lecture, la mise à jour et la suppression de comptes apprenants. Les utilisateurs peuvent s'inscrire, se connecter, mettre à jour leurs informations de compte, etc.",
@@ -37,7 +37,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[Get(
   
-    uriTemplate: 'apprenant/show',
+    uriTemplate: 'apprenant/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['apprenant:show']]
 )]
@@ -50,7 +50,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[Put(
-    uriTemplate: 'apprenant/update',
+    uriTemplate: 'apprenant/{id}',
+    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getAssociation(user) == user ",
     denormalizationContext: ['groups' => ['apprenant:update']]
 )]
 
@@ -61,16 +62,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[Delete(
-    uriTemplate: 'apprenant/delete',
+    uriTemplate: 'apprenant/{id}',
 )]
-*/
+
 
 class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    // #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -88,7 +88,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\ManyToOne(inversedBy: 'apprenants')]
+    #[ORM\ManyToOne(targetEntity: Immersion::class, inversedBy: 'apprenants')]
     #[Groups(['apprenant:show'])]
     private ?Immersion $immersion = null;
 

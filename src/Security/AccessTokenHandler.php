@@ -1,8 +1,7 @@
 <?php
 
 namespace App\Security;
-
-use Symfony\Component\Security\Core\Security;
+use \Symfony\Bundle\SecurityBundle\Security ;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 

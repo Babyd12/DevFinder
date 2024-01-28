@@ -17,21 +17,24 @@ class PasswordSubscriber implements EventSubscriberInterface
 
     public function __construct(private UserPasswordHasherInterface $userPasswordHasherInterface)
     {
-        // dd($userPasswordHasherInterface);
+        dump('password has been changed'); die();
     }
 
     public function hashPassword(ViewEvent $event): void
     {
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
+        dump('password has been changed'); die();
 
         if ( ($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise)  &&
             in_array($method, [Request::METHOD_POST, Request::METHOD_PUT, Request::METHOD_PATCH]) &&
             method_exists($entity, 'getPassword') && $entity->getPassword() !== null
         ) {
+            dump('hfso'); die();
             $hashedPassword = $this->userPasswordHasherInterface->hashPassword($entity, $entity->getPassword());
             $entity->setMotDePasse($hashedPassword);
         } else {
+            dump('password has been changed'); die();
             return;
         }
     }

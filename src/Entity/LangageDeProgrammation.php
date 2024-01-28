@@ -45,7 +45,7 @@ use App\Repository\LangageDeProgrammationRepository;
 
 #[Delete(
     uriTemplate: '/langage/{id}',
-    // securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and object.isUsedInProjects() == false",
+    securityPostDenormalize: " ( is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMIN') ) and object.isUsedInProjects() == false",
 
     
 )]

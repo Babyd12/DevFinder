@@ -16,8 +16,8 @@ class ExceptionListener
     public function __invoke(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        
-        if ($exception instanceof HttpExceptionInterface) {
+        dd($exception);
+  /*      if ($exception instanceof HttpExceptionInterface) {
             switch (true) {
                 case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
                     $errorMessage = sprintf('Action non autorisée: code %s', $exception->getCode());
@@ -40,6 +40,6 @@ class ExceptionListener
             $event->setResponse($response);
         }
     
-    
+    */
     }
 }
