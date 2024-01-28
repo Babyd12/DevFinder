@@ -46,7 +46,7 @@ class CustomProjetController extends AbstractController
         return ['apprenant' => $apprenant, 'projet' => $projet];
     }
 
-    #[Route('/apprenant/participer/projet/{id}', methods: ['GET'])]
+    #[Route('/api/apprenant/participer/projet/{id}', name: 'participerProjet', methods: ['GET'])]
     public function addApprenantToProject(EntityManagerInterface $entityManager, string $id): JsonResponse
     {
 
@@ -79,10 +79,10 @@ class CustomProjetController extends AbstractController
         return new JsonResponse(['message' => 'Vous avez été ajouté au projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
 
-    #[Route('/apprenant/quitter/projet/{projetId}', methods: ['GET'])]
-    public function removeApprenantToProject(EntityManagerInterface $entityManager, string $projetId)
+    #[Route('/api/apprenant/quitter/projet/{id}', name: 'quitterProjet',  methods: ['GET'])]
+    public function removeApprenantToProject(EntityManagerInterface $entityManager, string $id)
     {
-        $security = $this->getSecurity($entityManager, $projetId);
+        $security = $this->getSecurity($entityManager, $id);
         if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
             // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
             return $security;

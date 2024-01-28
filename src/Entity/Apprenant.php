@@ -43,7 +43,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[Post(
-
     uriTemplate: 'apprenant/inscription',
     name: 'créer un compte',
     denormalizationContext: ['groups' => ['apprenant:create']],
@@ -51,20 +50,21 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[Put(
     uriTemplate: 'apprenant/{id}',
-    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getAssociation(user) == user ",
+    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     denormalizationContext: ['groups' => ['apprenant:update']]
 )]
 
 #[Patch(
     uriTemplate: 'apprenant/change_password/{id}',
+    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     normalizationContext: ['groups' => ['apprenant:updateOne']],
     denormalizationContext: ['groups' => ['apprenant:updateOne']]
 )]
 
 #[Delete(
+    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     uriTemplate: 'apprenant/{id}',
 )]
-
 
 class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 {

@@ -26,7 +26,7 @@ class UserStatuSubscriber implements EventSubscriberInterface
     {
         $entity = $event->getControllerResult();
         $this->logger->info('addProjetStatu is called.');
-        dd('user stattus');
+      
         if (($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise)  &&
             method_exists($entity, 'getRoles') && 
             $entity->getRoles() !== null

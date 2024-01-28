@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
         new Get(
             uriTemplate:'/apprenant/participer/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
-            // routeName: 'participateToProject',
+            routeName: 'participerProjet',
             controller: CustomProjetController::class,
             normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
             denormalizationContext: ['groups' => 'apprenant:participate'],
@@ -37,7 +37,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
         new Get(
             uriTemplate: '/apprenant/quitter/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
-            // routeName: 'quitterProjet',
+            routeName: 'quitterProjet',
             controller: CustomProjetController::class,
             normalizationContext: [ 'groups' => 'apprenantQuitterPojet:show' ],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],

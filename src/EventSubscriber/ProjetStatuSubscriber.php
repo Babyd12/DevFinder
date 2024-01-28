@@ -25,7 +25,7 @@ class ProjetStatuSubscriber implements EventSubscriberInterface
         
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
-        dd('vleer');
+
         if ($entity instanceof Projet  && $entity->getStatu() === 'En attente') {
             return;
         } elseif ($entity instanceof Projet && $method === Request::METHOD_POST) {

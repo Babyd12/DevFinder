@@ -19,14 +19,13 @@ class DeleteSubscriber implements EventSubscriberInterface
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
         
-        dd('dlelte');
-        if ($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise  ||
+        if ( (!$entity instanceof Apprenant || !$entity instanceof Association || !$entity instanceof Entreprise)  &&
             in_array($method, [Request::METHOD_DELETE]) ) {
-            $message = 'La ressource a été supprimée avec succès.';
-            $response = new JsonResponse(['message' => $message], JsonResponse::HTTP_OK);
-            $event->setResponse($response);
+            // $message = 'La ressource a été supprimée avec succès.';
+            // $response = new JsonResponse(['message' => $message], JsonResponse::HTTP_OK);
+            // $event->setResponse($response);
         } else {
-            dd('no delete');
+           return;
         }
     
     }

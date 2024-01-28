@@ -76,10 +76,9 @@ security:
     access_control:
         # - { path: ^/admin, roles: IS_AUTHENTICATED_FULLY  }
         # General acccess control
-        # - { path: '.*liste$', roles: 'PUBLIC_ACCESS', methods: [ GET] }
-        # - { path: '.*\d+$', roles: 'PUBLIC_ACCESS', methods: [ GET ] }
-        - { path: '.*(?:liste|\d+)$', roles: 'PUBLIC_ACCESS', methods: [GET] }
-
+        - { path: '.*inscription$', roles: 'PUBLIC_ACCESS', methods: [POST] } 
+        - { path: '.*liste$', roles: 'PUBLIC_ACCESS', methods: [GET] } 
+        - { path: '.*\d+$', roles: 'PUBLIC_ACCESS', methods: [GET] }
         - { path: '^/api/', roles: IS_AUTHENTICATED_FULLY}
         
         # specific access control
@@ -91,7 +90,6 @@ security:
         - { path: /api/association/, roles: ROLE_ASSOCIATION }
 
         # - { path: /api/auth, roles: PUBLIC_ACCESS }
-        # - { path: /api/apprenant/inscription, roles: PUBLIC_ACCESS }
         # - { path: /api/projet/liste, roles: PUBLIC_ACCESS }
         # - { path: /api/association/liste, roles: PUBLIC_ACCESS }
     

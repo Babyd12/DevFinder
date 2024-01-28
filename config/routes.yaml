@@ -8,5 +8,7 @@ auth:
     path: /auth
     methods: ['POST']
 app_logout:
-    path: /api/logout
+    path: 
+        en: /api/logout
+        fr: /deconnexion
     methods: ['POST']
