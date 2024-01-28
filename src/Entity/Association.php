@@ -43,20 +43,20 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 
 #[Put(
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == request.query.get('association')",
     uriTemplate: 'association/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     denormalizationContext: [ 'groups' => ['association:update'] ],
 )]
 
 #[Patch(
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == request.query.get('association')",
     uriTemplate: '  association/change_password/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
 )]
 
 #[Delete(
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == request.query.get('association')",
     uriTemplate: 'association/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
 )]
 
 class Association implements UserInterface, PasswordAuthenticatedUserInterface
@@ -68,7 +68,6 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private array $roles = [];
-
 
     #[ORM\Column(length: 255)]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]

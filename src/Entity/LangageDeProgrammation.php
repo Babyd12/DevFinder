@@ -25,23 +25,29 @@ use App\Repository\LangageDeProgrammationRepository;
 )]
 
 #[Get(
-    uriTemplate: '/langage/show',
+    uriTemplate: '/langage/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['langageDeProgrammation:show']]
 )]
 
 #[Post(
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION')",
     uriTemplate: '/langage/ajouter',
     denormalizationContext: ['groups' => ['langageDeProgrammation:create']]
 )]
 
 #[Put(
-    uriTemplate: '/langage/update',
+    uriTemplate: '/langage/{id}',
+    requirements: ['id' => '\d+'], 
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and object.isUsedInProjects() == false",
     denormalizationContext: ['groups' => ['langageDeProgrammation:update']]
 )]
 
 #[Delete(
-    uriTemplate: '/langage/supprimer',
+    uriTemplate: '/langage/{id}',
+    // securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and object.isUsedInProjects() == false",
+
+    
 )]
 
 
@@ -113,11 +119,20 @@ class LangageDeProgrammation
     }
 
     /**
-     * Vérifier si le langage est utilisé dans un projet
+     * Vérifier si le langage est utilisé dans au moins un projet
      */
     public function isUsedInProjects(): bool
-    {
-        return !$this->projets->isEmpty();
+    {   
+        $projets = $this->getProjets();
+        
+        foreach ($projets as $projet) 
+        {
+            if( $projet->getLangageDeProgrammation()->contains($this) && $projet->getStatu() !== 'En attente' )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function preRemove()

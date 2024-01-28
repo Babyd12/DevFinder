@@ -21,12 +21,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
+
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
         new Get(
+            uriTemplate:'/apprenant/participer/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
-            uriTemplate:'/apprenant/participer/projet/{projectId}',
             // routeName: 'participateToProject',
             controller: CustomProjetController::class,
             normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
@@ -34,19 +35,18 @@ use Symfony\Component\Validator\Constraints\Hostname;
             securityMessage: 'Only authenticated users can access this resource.',
         ),
         new Get(
+            uriTemplate: '/apprenant/quitter/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
-            uriTemplate: '/apprenant/quitter/projet/{projetId}',
-            // uriTemplate:'/apprenant/projet/quitter/projet/{projetId}',
             // routeName: 'quitterProjet',
             controller: CustomProjetController::class,
             normalizationContext: [ 'groups' => 'apprenantQuitterPojet:show' ],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
-            
         ),
     ]
 )]
 
 #[GetCollection(
+    
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/liste',
     description: 'Affiche tout les projet',
@@ -55,9 +55,9 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[Get(
+    forceEager: true,
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/{id}',
-    forceEager: true,
     normalizationContext: [ 'groups' => ['projet:show'] ]
 )]
 
@@ -71,15 +71,15 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[Put(
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getId() == association.getId() ) ",
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     securityMessage: 'Sorry, but you are not this projet owner.',
     denormalizationContext: [ 'groups' => ['projet:update'] ]
 )]
 
 #[Delete(
-    security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+    shortName: 'Module Gestion de Publication de Projet - Association',
 )]
 
 
@@ -107,8 +107,9 @@ class Projet
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
     private ?\DateTimeInterface $date_limite = null;
 
-    #[ORM\ManyToOne(inversedBy: 'projets')]
-    #[Groups([ 'projet:create', 'projet:show'])]
+    #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'projets')]
+    #[ORM\JoinColumn(nullable:false)]
+    #[Groups(['projet:show'])]
     private ?Association $association = null;
 
     #[ORM\ManyToMany(targetEntity: LangageDeProgrammation::class, inversedBy: 'projets')]
@@ -118,10 +119,10 @@ class Projet
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
     private Collection $apprenants;
 
-    #[ORM\Column(length: 255)]
-    // #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
+    // #[ORM\Column(length: 255)]
+    #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
-    private ?string $statu = null;
+    private ?ProjetStatu $statu = null;
 
 
     public function __construct()
@@ -246,12 +247,12 @@ class Projet
         return $this;
     }
 
-    public function getStatu(): ?string
+    public function getStatu(): ?ProjetStatu
     {
         return $this->statu;
     }
 
-    public function setStatu(?string $statu): static
+    public function setStatu(?ProjetStatu $statu): static
     {
         $this->statu = $statu;
 

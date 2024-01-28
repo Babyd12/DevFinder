@@ -24,7 +24,7 @@ class CustomProjetController extends AbstractController
         $this->security = $security;
     }
 
-    public function getSecurity(EntityManagerInterface $entityManager, string $projectId)
+    public function getSecurity(EntityManagerInterface $entityManager, string $id)
     {
         $user = $this->security->getUser();
 
@@ -36,7 +36,7 @@ class CustomProjetController extends AbstractController
 
         $apprenantLogged  = $user->getUserIdentifier();
         // Récupérer le projet et l'apprenant depuis la base de données
-        $projet = $entityManager->getRepository(Projet::class)->find($projectId);
+        $projet = $entityManager->getRepository(Projet::class)->find($id);
         $apprenant = $entityManager->getRepository(Apprenant::class)->findOneByEmail($apprenantLogged);
 
         // Vérifier si le projet et l'apprenant existent
@@ -46,11 +46,11 @@ class CustomProjetController extends AbstractController
         return ['apprenant' => $apprenant, 'projet' => $projet];
     }
 
-    #[Route('/apprenant/participer/projet/{projectId}', methods: ['GET'])]
-    public function addApprenantToProject(EntityManagerInterface $entityManager, string $projectId): JsonResponse
+    #[Route('/apprenant/participer/projet/{id}', methods: ['GET'])]
+    public function addApprenantToProject(EntityManagerInterface $entityManager, string $id): JsonResponse
     {
 
-        $security = $this->getSecurity($entityManager, $projectId);
+        $security = $this->getSecurity($entityManager, $id);
         if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
             // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
             return $security;
