@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
-/*
+/*   
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
