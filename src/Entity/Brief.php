@@ -24,27 +24,35 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[GetCollection(
     uriTemplate: 'brief/liste',
     forceEager: false,
-    normalizationContext: [ 'groups' => ['brief:index'] ]
+    normalizationContext: [ 'groups' => ['brief:index'] ],
+    denormalizationContext:[ 'groups' => ['brief:index'] ],
 )]
 
 #[Get(
-    uriTemplate: 'brief/show',
+    uriTemplate: 'brief/{id}',
     forceEager: true,
-    normalizationContext: [ 'groups' => ['brief:show'] ]
+    normalizationContext: [ 'groups' => ['brief:show'] ],
+    denormalizationContext: [ 'groups' => ['brief:show']],
 )]
 
 #[Post(
     uriTemplate: 'brief/publier',
-    denormalizationContext: [ 'groups' => ['brief:create'] ]
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+    normalizationContext: [ 'groups' => ['brief:create']],
+    denormalizationContext: [ 'groups' => ['brief:create'] ],
 )]
 
 #[Put(
-    uriTemplate: 'brief/update',
+    uriTemplate: 'brief/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+    normalizationContext: [ 'groups' => ['brief:update']],
     denormalizationContext: [ 'groups' => ['brief:update'] ]
+
 )]
 
 #[Delete(
-    uriTemplate: 'brief/delete',
+    uriTemplate: 'brief/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
 )]
 
 class Brief
