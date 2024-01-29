@@ -83,7 +83,7 @@ security:
         
         # specific access control
             # public URI path
-        - { path: /api/auth, roles: PUBLIC_ACCESS }
+        - { path: /auth, roles: PUBLIC_ACCESS }
 
         # - { path: '^/api/.*show/\d+$', roles: 'PUBLIC_ACCESS' }
 

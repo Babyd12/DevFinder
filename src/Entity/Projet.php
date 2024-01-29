@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Apprenant;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -12,16 +13,16 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProjetRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\Controller\CustomApprenantController;
 use App\Controller\CustomProjetController;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use Doctrine\Common\Collections\Collection;
+use App\Controller\CustomApprenantController;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
-
+/*
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
@@ -72,7 +73,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-    securityMessage: 'Sorry, but you are not this projet owner.',
+    // securityMessage: 'Sorry, but you are not this projet owner.',
     denormalizationContext: [ 'groups' => ['projet:update'] ]
 )]
 
@@ -81,7 +82,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
-
+*/
 
 class Projet
 {
@@ -251,7 +252,7 @@ class Projet
     {
         return $this->statu;
     }
-
+    
     public function setStatu(?ProjetStatu $statu): static
     {
         $this->statu = $statu;

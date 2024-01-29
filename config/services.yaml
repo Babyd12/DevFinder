@@ -24,3 +24,10 @@ services:
     # please note that last definitions always *replace* previous ones
     App\EventListener\ExceptionListener:
         tags: [kernel.event_listener]
+
+    App\State\SetUserToRelationClass:
+        bind:
+            $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+    App\State\RemoveUserToRelationClass:
+        bind: 
+            $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'

@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AssociationRepository::class)]
-
+/*
 #[ApiResource(
     shortName: 'Module gestion de compte -Association',
     
@@ -58,7 +58,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     uriTemplate: 'association/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
 )]
-
+*/
 class Association implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]

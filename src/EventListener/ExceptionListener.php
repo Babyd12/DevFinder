@@ -11,12 +11,13 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 
+
+
 class ExceptionListener
 {
     public function __invoke(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-        // dd($exception);
         if ($exception instanceof HttpExceptionInterface) {
             switch (true) {
                 case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
@@ -35,6 +36,13 @@ class ExceptionListener
                     $errorMessage = 'Erreur de rafraîchissement de l\'utilisateur sans identifiant.';
                     $errorMessage = sprintf('%s: code %s',$exception->getMessage(), $exception->getCode());
                     break;
+
+                // case $exception instanceof \Doctrine\ORM\Exception\ORMException && $this->isDeleteSuccessful($exception):
+                //     $errorMessage = 'Suppression réussie.';
+                //     $response = new JsonResponse(['message' => $errorMessage], JsonResponse::HTTP_OK);
+                //     $event->setResponse($response);
+                //     $statusCode = JsonResponse::HTTP_OK;
+                //     break;
 
                 default:
                     $errorMessage = sprintf('Erreur HTTP: %s', $exception->getCode());

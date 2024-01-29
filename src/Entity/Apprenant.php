@@ -58,7 +58,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     uriTemplate: 'apprenant/change_password/{id}',
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     normalizationContext: ['groups' => ['apprenant:updateOne']],
-    denormalizationContext: ['groups' => ['apprenant:updateOne']]
+    denormalizationContext: ['groups' => ['apprenant:updateOne']],
+    formats: ['json' => 'application/json']
 )]
 
 #[Delete(
@@ -100,10 +101,18 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['apprenant:show'])]
     private Collection $projet;
 
+    #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Competence::class)]
+    private Collection $competences;
+
+    #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
+    private Collection $entreprises;
+
     public function __construct()
     {
         $this->briefs = new ArrayCollection();
         $this->projet = new ArrayCollection();
+        $this->competences = new ArrayCollection();
+        $this->entreprises = new ArrayCollection();
     }
 
 
@@ -263,6 +272,63 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeProjet(Projet $projet): static
     {
         $this->projet->removeElement($projet);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Competence>
+     */
+    public function getCompetences(): Collection
+    {
+        return $this->competences;
+    }
+
+    public function addCompetence(Competence $competence): static
+    {
+        if (!$this->competences->contains($competence)) {
+            $this->competences->add($competence);
+            $competence->setApprenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompetence(Competence $competence): static
+    {
+        if ($this->competences->removeElement($competence)) {
+            // set the owning side to null (unless already changed)
+            if ($competence->getApprenant() === $this) {
+                $competence->setApprenant(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Entreprise>
+     */
+    public function getEntreprises(): Collection
+    {
+        return $this->entreprises;
+    }
+
+    public function addEntreprise(Entreprise $entreprise): static
+    {
+        if (!$this->entreprises->contains($entreprise)) {
+            $this->entreprises->add($entreprise);
+            $entreprise->addApprenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEntreprise(Entreprise $entreprise): static
+    {
+        if ($this->entreprises->removeElement($entreprise)) {
+            $entreprise->removeApprenant($this);
+        }
 
         return $this;
     }

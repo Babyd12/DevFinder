@@ -7,6 +7,8 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
@@ -16,55 +18,54 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
-// #[ApiResource(
-//     shortName: 'Module gestion de recrutement -Entreprise',
-//     operations: [
-//         new Get(
-//             uriTemplate: 'entreprise/recruter/apprenant/{id}',
+#[ApiResource(
+    shortName: 'Module gestion de recrutement -Entreprise',
+    operations: [
+        new Get(
+            uriTemplate: 'entreprise/recruter/apprenant/{id}',
             
-//         ),
-//     ]
-// )]
+        ),
+    ]
+)]
 
+#[GetCollection(
+    shortName: 'Module gestion de compte -Entreprise',
+    uriTemplate: 'entreprise/liste',
+    description: 'Modifie toi',
+    name: 'nom temporaire',
+    normalizationContext: [ 'groups' => ['entreprise:index'] ]
+)]
 
-// #[GetCollection(
-//     shortName: 'Module gestion de compte -Entreprise',
-//     uriTemplate: 'entreprise/liste',
-//     description: 'Modifie toi',
-//     name: 'nom temporaire',
-//     normalizationContext: [ 'groups' => ['association:index'] ]
-// )]
+#[Get(
+    shortName: 'Module gestion de compte -Entreprise',
+    uriTemplate: 'entreprise/{id}',
 
-// #[Get(
-//     shortName: 'Module gestion de compte -Entreprise',
-//     uriTemplate: 'entreprise/show',
+    forceEager: true,
+    normalizationContext: [ 'groups' => ['entreprise:show'] ]
+)]
 
-//     forceEager: true,
-//     normalizationContext: [ 'groups' => ['association:show'] ]
-// )]
+#[Post(
+    shortName: 'Module gestion de compte -Entreprise',
+    uriTemplate: 'entreprise/inscription',
+    denormalizationContext: [ 'groups' => ['entreprise:create'] ]
+)]
 
-// #[Post(
-//     shortName: 'Module gestion de compte -Entreprise',
-//     uriTemplate: 'entreprise/inscription',
-//     denormalizationContext: [ 'groups' => ['association:create'] ]
-// )]
+#[Put(
+    shortName: 'Module gestion de compte -Entreprise',
+    uriTemplate: 'entreprise/{id}',
+    denormalizationContext: [ 'groups' => ['entreprise:update'] ]
+)]
 
-// #[Put(
-//     shortName: 'Module gestion de compte -Entreprise',
-//     uriTemplate: 'entreprise/update',
-//     denormalizationContext: [ 'groups' => ['association:update'] ]
-// )]
+#[Patch(
+    shortName: 'Module gestion de compte -Entreprise',
+    uriTemplate: 'entreprise/change_mot_de_passe/{id}',
+    denormalizationContext: [ 'groups' => ['entreprise:updateOne'] ]
+)]
 
-// #[Patch(
-//     shortName: 'Module gestion de compte -Entreprise',
-//     uriTemplate: 'entreprise/change_mot_de_passe',
-//     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
-// )]
-
-// #[Delete(
-//     shortName: 'Module gestion de compte -Entreprise',
-//     uriTemplate: 'entreprise/supprimerCompte',
-// )]
+#[Delete(
+    shortName: 'Module gestion de compte -Entreprise',
+    uriTemplate: 'entreprise/{id}',
+)]
 
 class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -74,19 +75,28 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $email = null;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $mot_de_passe = null;
+
+    #[ORM\ManyToMany(targetEntity: Apprenant::class, inversedBy: 'entreprises')]
+    #[Groups(['entreprise:show',])]
+    private Collection $apprenants;
+
+    public function __construct()
+    {
+        $this->apprenants = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -170,5 +180,29 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Apprenant>
+     */
+    public function getApprenants(): Collection
+    {
+        return $this->apprenants;
+    }
+
+    public function addApprenant(Apprenant $apprenant): static
+    {
+        if (!$this->apprenants->contains($apprenant)) {
+            $this->apprenants->add($apprenant);
+        }
+
+        return $this;
+    }
+
+    public function removeApprenant(Apprenant $apprenant): static
+    {
+        $this->apprenants->removeElement($apprenant);
+
+        return $this;
     }
 }

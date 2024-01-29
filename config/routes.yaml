@@ -7,6 +7,7 @@ controllers:
 auth:
     path: /auth
     methods: ['POST']
+    
 app_logout:
     path: 
         en: /api/logout
