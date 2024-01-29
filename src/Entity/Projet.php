@@ -22,7 +22,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
-/*   
+
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
@@ -82,7 +82,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
-*/
+
 
 class Projet
 {

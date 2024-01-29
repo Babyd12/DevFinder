@@ -36,7 +36,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[Get(
-  
     uriTemplate: 'apprenant/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['apprenant:show']]
@@ -117,12 +116,18 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @return
+     * @see UserInterface
      *     
      */
     public function getPassword(): ?string
     {
         return $this->mot_de_passe;
+    }
+    public function setPassword(string $mot_de_passe): static
+    {
+        $this->mot_de_passe = $mot_de_passe;
+
+        return $this;
     }
 
     public function getId(): ?int

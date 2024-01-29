@@ -15,7 +15,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\LangageDeProgrammationRepository;
 
 #[ORM\Entity(repositoryClass: LangageDeProgrammationRepository::class)]
-/* 
 #[ApiResource(
     shortName: 'Module gestion de publication Langage de programmation -Association',
 )]
@@ -48,10 +47,9 @@ use App\Repository\LangageDeProgrammationRepository;
     uriTemplate: '/langage/{id}',
     securityPostDenormalize: " ( is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMIN') ) and object.isUsedInProjects() == false",
 
-    
 )]
 
-*/
+
 class LangageDeProgrammation
 {
     #[ORM\Id]

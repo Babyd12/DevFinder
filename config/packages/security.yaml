@@ -11,10 +11,15 @@ security:
         app_association_provider:
             entity:
                 class: App\Entity\Association
-                property: email    
+                property: email  
+        app_entreprise_provider:
+            entity:
+                class: App\Entity\Entreprise
+                property: email  
+
         all_users:
             chain:
-                providers: ['app_apprenant_provider', 'app_association_provider']
+                providers: ['app_apprenant_provider', 'app_association_provider', 'app_entreprise_provider']
 
     firewalls:
         dev:
