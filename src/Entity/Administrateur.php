@@ -24,22 +24,25 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[GetCollection(
     uriTemplate: '/administrateur',
-    normalizationContext: ['groups' => ['read']],
+    normalizationContext: ['groups' => ['admin:index']],
 )]
 
 #[Put(
-    uriTemplate: '/administrateur/{id}',
-    denormalizationContext: ['groups' => ['write:put']],
     requirements: ['id' => '\d+'],
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and object.isUsedInProjects() == false",
+    uriTemplate: '/administrateur/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    denormalizationContext: ['groups' => ['admin:update']],
+    normalizationContext: ['groups' => ['admin:updateRead']],
 )]
 
 #[Patch(
+    requirements: ['id' => '\d+'],
     uriTemplate: '/administrateur/change_password{id}',
-    denormalizationContext: ['groups' => ['write:patch']],
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     formats: ['json' => 'application/json'],
+    denormalizationContext: ['groups' => ['admin:updateOne']],
+    normalizationContext: ['groups' => ['admin:updateOne']],
 )]
-
 
 
 class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterface
@@ -50,15 +53,15 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read', 'readAll', 'write', 'write:put'])]
+    #[Groups(['admin:index', 'admin:update', 'admin:updateOne'])]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read', 'readAll', 'write', 'write:put'])]
+    #[Groups(['admin:index', 'admin:update', 'admin:updateOne'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['write', 'write:put', 'write:patch'])]
+    #[Groups(['admin:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\Column]
@@ -101,13 +104,17 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
     {
         return $this->mot_de_passe;
     }
-    
+     /**
+     * @see UserInterface
+     *     
+     */
     public function setPassword(string $mot_de_passe): static
     {
         $this->mot_de_passe = $mot_de_passe;
 
         return $this;
     }
+
     public function getMotDePasse(): ?string
     {
         return $this->mot_de_passe;
@@ -119,7 +126,6 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
 
         return $this;
     }
-
 
 
     /**
@@ -140,13 +146,11 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
         return (string) $this->email;
     }
 
-
     public function getRole(): string
     {
         $roles = $this->getRoles();
         return in_array('ROLE_ADMIN', $roles) ? 'ROLE_ADMIN' : null;
     }
-
 
     /**
      * @see UserInterface

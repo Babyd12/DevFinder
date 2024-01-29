@@ -16,10 +16,14 @@ security:
             entity:
                 class: App\Entity\Entreprise
                 property: email  
+        app_admin_provider:
+            entity:
+                class: App\Entity\Administrateur
+                property: email  
 
         all_users:
             chain:
-                providers: ['app_apprenant_provider', 'app_association_provider', 'app_entreprise_provider']
+                providers: ['app_apprenant_provider', 'app_association_provider', 'app_entreprise_provider', 'app_admin_provider']
 
     firewalls:
         dev:
@@ -38,35 +42,16 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             
             jwt: ~
-           
-
-        # api:
-        #     pattern:   ^/api
-        #     stateless: true
-        #     provider: all_users
-        #     jwt: ~
+    
+            # refresh_jwt:
+            #     check_path: /api/token/refresh
+                
 
             logout:
                 path: /api/logout
                 # target: /api
 
-            # refresh_jwt:
-            #     check_path: /api/token/refresh
 
-        # api:
-        #     lazy: true
-        #     provider: app_apprenant_provider
-        #     entry_point: jwt
-        #     json_login:
-        #         check_path: /auth
-        #         username_path: email
-        #         password_path: mot_de_passe
-        #         success_handler: lexik_jwt_authentication.handler.authentication_success
-        #         failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
-        #     jwt: ~
-        #     refresh_jwt:
-        #         check_path: /api/token/refresh
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

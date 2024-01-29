@@ -13,3 +13,5 @@ app_logout:
         en: /api/logout
         fr: /deconnexion
     methods: ['POST']
+
+# path: /api/token/refresh

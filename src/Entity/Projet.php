@@ -83,7 +83,6 @@ use Symfony\Component\Validator\Constraints\Hostname;
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
 
-
 class Projet
 {
     #[ORM\Id]

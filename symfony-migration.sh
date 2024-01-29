@@ -4,13 +4,17 @@
 mkdir -p migrations/versions
 
 # Déplace le contenu du dossier "migrations" dans le dossier "versions"
-mv migrations/* migrations/versions/
+# mv migrations/* migrations/versions/
+rm -r migrations/*
 
+yes | php bin/console doctrine:d:drop --force
+yes | php bin/console doctrine:d:create
 php bin/console doctrine:migrations:sync-metadata-storage
 php bin/console cache:clear
 # Exécute la commande make:migration
 php bin/console make:migration
 yes | php bin/console doctrine:migrations:migrate --no-interaction
 
-echo "Migration completed."
+php bin/console doctrine:fixtures:load --no-interaction
+echo "Installation complete vous pouvez éxécuter : php -S localhost:8000 -t public "
     
