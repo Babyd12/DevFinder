@@ -33,5 +33,9 @@ services:
             $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'
 
     App\State\GetUserLoggedProcessor:
-        arguments: 
+        bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
+    # App\State\GetUserLoggedInfoStateProvier:
+    #     bind: 
+    #         $processorInterface: '@api_platform.doctrine.orm.state.item_provider'

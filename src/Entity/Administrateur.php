@@ -14,6 +14,8 @@ use ApiPlatform\Metadata\GetCollection;
 use App\Controller\GetUserLoggedController;
 use App\Controller\MeController;
 use App\Repository\AdministrateurRepository;
+use App\State\GetUserLoggedInfoStateProvier;
+use App\State\GetUserLoggedProcessor;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -23,7 +25,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
 
 #[ApiResource(
-    shortName: 'Recupérer lutilisateuer conncté',
+   
     operations: [
         new Post(
             uriTemplate:'/get/user/logged',
@@ -36,6 +38,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
         ),
+
+        new Post(
+            shortName: 'Recuperer lutilisateuer connecte',
+            processor:GetUserLoggedProcessor::class,
+            uriTemplate:'/utilisateur/connecte',
+        ),
     ]
 )]
 
@@ -43,6 +51,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     shortName: 'Module gestion de publication -Administrateur',
     uriTemplate: '/administrateur',
     normalizationContext: ['groups' => ['admin:index']],
+    // provider: GetUserLoggedInfoStateProvier::class,
 )]
 
 #[Put(
