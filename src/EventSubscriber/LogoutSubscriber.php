@@ -12,7 +12,7 @@ class LogoutSubscriber implements EventSubscriberInterface
 {
     public function onLogoutEvent(LogoutEvent $event): void
     {
-        // dd('event logout');
+
         if( ($event->getResponse()->getStatusCode() === JsonResponse::HTTP_OK ) )
         {
             $message = 'Déconnexion réussie.';

@@ -11,7 +11,11 @@ use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\GetUserLoggedController;
+use App\Controller\MeController;
 use App\Repository\AdministrateurRepository;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -19,15 +23,30 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
 
 #[ApiResource(
-    shortName: 'Module gestion de publication -Administrateur'
+    shortName: 'Recupérer lutilisateuer conncté',
+    operations: [
+        new Post(
+            uriTemplate:'/get/user/logged',
+            security: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_ENTREPRISE') ",
+            // routeName: 'app_get_user_logged',
+            // controller: GetUserLoggedController::class,
+            routeName: '/user',
+            controller: MeController::class,
+            normalizationContext: ['groups' => 'apprenantPojet:show'],
+            denormalizationContext: ['groups' => 'apprenant:participate'],
+            securityMessage: 'Only authenticated users can access this resource.',
+        ),
+    ]
 )]
 
 #[GetCollection(
+    shortName: 'Module gestion de publication -Administrateur',
     uriTemplate: '/administrateur',
     normalizationContext: ['groups' => ['admin:index']],
 )]
 
 #[Put(
+    shortName: 'Module gestion de publication -Administrateur',
     requirements: ['id' => '\d+'],
     uriTemplate: '/administrateur/{id}',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
@@ -36,6 +55,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[Patch(
+    shortName: 'Module gestion de publication -Administrateur',
     requirements: ['id' => '\d+'],
     uriTemplate: '/administrateur/change_password{id}',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
@@ -45,7 +65,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 
-class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterface
+class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -104,7 +124,7 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
     {
         return $this->mot_de_passe;
     }
-     /**
+    /**
      * @see UserInterface
      *     
      */
@@ -170,4 +190,26 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
 
         return $this;
     }
+
+    public static function createFromPayload($username,  array $playload)
+    {
+        $user = new Administrateur();
+        return $user;
+    }
+
+    public function __toString()
+    {
+        return $this->getNomComplet(); // Adapté à votre entité, utilisez la méthode ou les propriétés nécessaires.
+    }
+
+
+    public function getUserLogged()
+    {
+        return new JsonResponse([
+            'Nom complet' => $this->getNomComplet(),
+            'email' => $this->getUserIdentifier(),
+            'role' => $this->getRole()
+    ]);
+    }
+
 }

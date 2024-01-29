@@ -16,37 +16,45 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ImmersionRepository::class)]
-/*
+
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
 )]
 
 #[GetCollection(
+    uriTemplate: 'immersion/liste',
     forceEager: false,
-    uriTemplate:'/immersion/liste',
-    normalizationContext: [ 'groups' => ['immersion:index'] ]
+    normalizationContext: [ 'groups' => ['immersion:index'] ],
+    denormalizationContext:[ 'groups' => ['immersion:index'] ],
 )]
 
 #[Get(
+    uriTemplate: 'immersion/{id}',
     forceEager: true,
-    uriTemplate:'/immersion/show',
-    normalizationContext: [ 'groups' => ['immersion:show'] ]
+    normalizationContext: [ 'groups' => ['immersion:show'] ],
+    denormalizationContext: [ 'groups' => ['immersion:show']],
 )]
 
 #[Post(
-    uriTemplate:'/immersion/ajouter',
-    denormalizationContext: [ 'groups' => ['immersion:create'] ]
+    uriTemplate: 'immersion/publier',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+    normalizationContext: [ 'groups' => ['immersion:create']],
+    denormalizationContext: [ 'groups' => ['immersion:create'] ],
 )]
 
 #[Put(
-    uriTemplate:'/immersion/update',
+    uriTemplate: 'immersion/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+    normalizationContext: [ 'groups' => ['immersion:update']],
     denormalizationContext: [ 'groups' => ['immersion:update'] ]
+
 )]
 
 #[Delete(
-    uriTemplate:'/immersion/supprimer',
+    uriTemplate: 'immersion/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
 )]
-*/
+
 class Immersion
 {
     #[ORM\Id]

@@ -31,3 +31,7 @@ services:
     App\State\RemoveUserToRelationClass:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'
+
+    App\State\GetUserLoggedProcessor:
+        arguments: 
+            $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'

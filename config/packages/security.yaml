@@ -40,7 +40,10 @@ security:
                 password_path: mot_de_passe
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            
+
+            # access_token:
+                # token_handler: App\Security\JwtDecoder
+
             jwt: ~
     
             # refresh_jwt:
@@ -51,6 +54,8 @@ security:
                 path: /api/logout
                 # target: /api
 
+            # access_token:
+            #     token_handler: App\Security\AccessTokenHandler
 
 
             # activate different ways to authenticate
@@ -69,7 +74,7 @@ security:
         - { path: '.*inscription$', roles: 'PUBLIC_ACCESS', methods: [POST] } 
         - { path: '.*liste$', roles: 'PUBLIC_ACCESS', methods: [GET] } 
         - { path: '.*\d+$', roles: 'PUBLIC_ACCESS', methods: [GET] }
-        - { path: '^/api/', roles: IS_AUTHENTICATED_FULLY}
+        # - { path: '^/api/', roles: IS_AUTHENTICATED_FULLY}
         
         # specific access control
             # public URI path

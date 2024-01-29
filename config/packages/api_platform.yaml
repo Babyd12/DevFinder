@@ -20,6 +20,6 @@ api_platform:
                 type: header
 
  
-    description: 'API for managing apprenants.'
+    description: 'README ~ Les end-point sont structuré de la manière suivante: [  Nom du module - Nom de lacteur qui intervient dans ce module ] '
 
     
