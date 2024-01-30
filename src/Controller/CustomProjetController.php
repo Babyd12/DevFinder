@@ -83,7 +83,6 @@ class CustomProjetController extends AbstractController
     {
         $security = $this->getSecurity($entityManager, $id);
         if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
-            // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
             return $security;
         }
 

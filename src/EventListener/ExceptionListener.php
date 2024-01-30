@@ -50,8 +50,8 @@ class ExceptionListener
                     break;
             } 
         
-            // $response = new JsonResponse(['error' => $errorMessage], $statusCode);
-            // $event->setResponse($response);
+            $response = new JsonResponse(['error' => $errorMessage], $statusCode);
+            $event->setResponse($response);
         } 
     
     

@@ -38,7 +38,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ),
 
         new Post(
-            shortName: 'Recuperer lutilisateuer connecte',
+            shortName: 'Récuperer l\'utilisateur connecté',
             processor:GetUserLoggedProcessor::class,
             uriTemplate:'/utilisateur/connecte',
             denormalizationContext: ['groups' => 'apprenant:connecte'],

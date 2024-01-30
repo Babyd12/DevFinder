@@ -9,9 +9,10 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
-use App\State\SetUserToRelationClass;
+use App\State\AddUserToRelationProcessor;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EntrepriseRepository;
+use App\State\RemoveUserToRelationProcessor;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -23,10 +24,18 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ApiResource(
     shortName: 'Module gestion de recrutement -Entreprise',
     operations: [
-        new Get(
+        new Post(
             requirements: ['id' => '\d+'],
             uriTemplate: 'entreprise/recruter/apprenant/{id}',
-            processor: SetUserToRelationClass::class,
+            processor: AddUserToRelationProcessor::class,
+            security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
+            denormalizationContext: ['entreprise:recruter'],
+            normalizationContext: ['entreprise:recruter'],
+        ),
+        new Post(
+            requirements: ['id' => '\d+'],
+            uriTemplate: 'entreprise/congedier/apprenant/{id}',
+            processor: RemoveUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
             denormalizationContext: ['entreprise:recruter'],
             normalizationContext: ['entreprise:recruter'],

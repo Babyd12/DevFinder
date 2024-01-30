@@ -13,3 +13,6 @@ app_logout:
         /deconnexion
     methods: ['POST']
 
+app_refresh:
+    path: /api/token/refresh
+    

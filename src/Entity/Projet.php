@@ -15,6 +15,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
 use App\Controller\CustomProjetController;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -47,12 +48,15 @@ use Symfony\Component\Validator\Constraints\Hostname;
 )]
 
 #[GetCollection(
-    
+    hydraContext: ['groups' => 'apprenantQuitterProjet'],
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate:'/projet/liste',
+
     description: 'Affiche tout les projet',
     name:'un nom simple a comprndre',
-    normalizationContext: [ 'groups' => ['projet:index'] ]
+    normalizationContext: [ 'groups' => ['projet:index'] ],
+    denormalizationContext: [ 'groups' => ['projet:index'] ],
+
 )]
 
 #[Get(

@@ -25,10 +25,11 @@ services:
     App\EventListener\ExceptionListener:
         tags: [kernel.event_listener]
 
-    App\State\SetUserToRelationClass:
+    App\State\AddUserToRelationProcessor:
         bind:
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
-    App\State\RemoveUserToRelationClass:
+
+    App\State\RemoveUserToRelationProcessor:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'
 
@@ -36,6 +37,6 @@ services:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
 
-    # App\State\GetUserLoggedInfoStateProvier:
+    # App\State\ShowCollectionsStateProvider:
     #     bind: 
-    #         $processorInterface: '@api_platform.doctrine.orm.state.item_provider'
+    #         $providerInterface: '@api_platform.doctrine.orm.state.collection_provider'
