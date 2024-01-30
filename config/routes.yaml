@@ -10,7 +10,6 @@ auth:
     
 app_logout:
     path: 
-        en: /api/logout
-        fr: /deconnexion
+        /deconnexion
     methods: ['POST']
 

@@ -18,4 +18,12 @@ class LogoutController extends AbstractController
         throw new \Exception('Don\'t forget to activate logout in security.yaml');
         // return new Response('', Response::HTTP_NO_CONTENT);
     }
+
+    #[Route('/api/login', name: 'api_login', methods:['POST'])]
+    public function login(AuthenticationUtils $authenticationUtils): never
+    {
+        // $authenticationUtils->get('security.token_storage')->setAuthenticated(false);
+        throw new \Exception('Don\'t forget to activate logout in security.yaml');
+        // return new Response('', Response::HTTP_NO_CONTENT);
+    }
 }

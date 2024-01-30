@@ -33,7 +33,6 @@ class CustomProjetController extends AbstractController
             return $this->json(['error' => 'User not authenticated'], 401);
         }
 
-
         $apprenantLogged  = $user->getUserIdentifier();
         // Récupérer le projet et l'apprenant depuis la base de données
         $projet = $entityManager->getRepository(Projet::class)->find($id);
@@ -104,7 +103,6 @@ class CustomProjetController extends AbstractController
             'Description' => $projet->getDescription(),
             'Nombre de participant' => $projet->getNombreDeParticipant(),
             'Date_limite' => $projet->getDateLimite(),
-
         ];
         return new JsonResponse(['message' => 'Vous avez été retiré du projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }

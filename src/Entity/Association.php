@@ -37,7 +37,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 
 #[Post(
-    security: "is_granted('ROLE_ASSOCIATION')",
     uriTemplate: 'association/inscription',
     denormalizationContext: [ 'groups' => ['association:create'] ]
 )]
@@ -49,7 +48,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 
 #[Patch(
-    uriTemplate: '  association/change_password/{id}',
+    uriTemplate: 'association/change_password/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
 )]

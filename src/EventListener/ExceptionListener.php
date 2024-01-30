@@ -21,8 +21,8 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             switch (true) {
                 case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
-                    $errorMessage = sprintf('Action non autorisée: code %s', $exception->getCode());
                     $statusCode = JsonResponse::HTTP_FORBIDDEN;
+                    $errorMessage = sprintf('Action non autorisée: code %s', $statusCode );
                     break;
         
                 // Ajoutez d'autres cas pour d'autres types d'exceptions HTTP si nécessaire
@@ -45,13 +45,13 @@ class ExceptionListener
                 //     break;
 
                 default:
-                    $errorMessage = sprintf('Erreur HTTP: %s', $exception->getCode());
-                    $statusCode = JsonResponse::HTTP_EXPECTATION_FAILED;
+                $statusCode = JsonResponse::HTTP_EXPECTATION_FAILED;
+                    $errorMessage = sprintf('Erreur HTTP: %s', $statusCode);
                     break;
-            }
+            } 
         
-            $response = new JsonResponse(['error' => $errorMessage], $statusCode);
-            $event->setResponse($response);
+            // $response = new JsonResponse(['error' => $errorMessage], $statusCode);
+            // $event->setResponse($response);
         } 
     
     

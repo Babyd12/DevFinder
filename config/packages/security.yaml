@@ -34,7 +34,7 @@ security:
             lazy: true
             provider: all_users
             entry_point: jwt
-            json_login:
+            json_login: 
                 check_path: /connexion
                 username_path: email
                 password_path: mot_de_passe
@@ -72,11 +72,11 @@ security:
         
         # specific access control
             # public URI path
-        - { path: /auth, roles: PUBLIC_ACCESS }
+        # - { path: /auth, roles: PUBLIC_ACCESS }
 
         # - { path: '^/api/.*show/\d+$', roles: 'PUBLIC_ACCESS' }
 
-        - { path: /api/association/, roles: ROLE_ASSOCIATION }
+        # - { path: /api/association/, roles: ROLE_ASSOCIATION }
 
         # - { path: /api/auth, roles: PUBLIC_ACCESS }
         # - { path: /api/projet/liste, roles: PUBLIC_ACCESS }

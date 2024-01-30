@@ -27,6 +27,7 @@ class GetUserLoggedProcessor implements ProcessorInterface
             $userData = [
                 'email' => $entity->getUserIdentifier(),
                 'Nom complet' => $entity->getNomComplet(),
+                'role' => $entity->getRoles(),
             ];
             return new JsonResponse($userData);
             // return $this->processorInterface->process($userData, $operation, $uriVariables, $context);
