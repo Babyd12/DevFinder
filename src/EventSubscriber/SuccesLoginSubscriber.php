@@ -16,18 +16,23 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
 {
     public function onLoginSuccessEvent(LoginSuccessEvent $event): void
     {
-        $content = $event->getResponse()->getContent();
-        $user = $event->getUser();
-        $data = json_decode($content, true);
-        $token = $data['token'];
-       
-        if ($user instanceof Administrateur || $user instanceof Apprenant  || $user instanceof Association || $user instanceof Entreprise) {
-            $user->getEmail();
-            $event->setResponse(new JsonResponse([
-                'Nom complet' => $user->getNomComplet(),
-                'email' => $user->getUserIdentifier(),
-                'token' => $token,
-            ], JsonResponse::HTTP_OK));
+        if ($event instanceof LoginSuccessEvent && $event->getResponse() !== null ) {
+            $content = $event->getResponse();
+            $content->getContent();
+            $user = $event->getUser();
+            $data = json_decode($content->getContent(), true);
+            $token = $data['token'];
+
+            if ($user instanceof Administrateur || $user instanceof Apprenant || $user instanceof Association || $user instanceof Entreprise) {
+                $user->getEmail();
+                $event->setResponse(new JsonResponse([
+                    'Nom complet' => $user->getNomComplet(),
+                    'email' => $user->getUserIdentifier(),
+                    'token' => $token,
+                ], JsonResponse::HTTP_OK));
+            } else {
+                return;
+            }
         }
     }
 

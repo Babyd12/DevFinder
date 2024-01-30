@@ -28,12 +28,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
    
     operations: [
         new Post(
-            uriTemplate:'/get/user/logged',
+            shortName: 'Deconnexion',
+            uriTemplate:'/deconnexion',
+            routeName: 'app_logout',
             security: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_ENTREPRISE') ",
-            // routeName: 'app_get_user_logged',
-            // controller: GetUserLoggedController::class,
-            routeName: '/user',
-            controller: MeController::class,
             normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
@@ -43,6 +41,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             shortName: 'Recuperer lutilisateuer connecte',
             processor:GetUserLoggedProcessor::class,
             uriTemplate:'/utilisateur/connecte',
+            denormalizationContext: ['groups' => 'apprenant:connecte'],
         ),
     ]
 )]

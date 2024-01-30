@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Administrateur;
+use App\Entity\Apprenant;
+use App\Entity\Association;
+use App\Entity\Entreprise;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,11 +22,11 @@ class MeController extends AbstractController
     public function __invoke()
     {
         $user = $this->security->getUser();
-        if ($user) {      
+        if ($user instanceof Apprenant || $user instanceof Association || $user instanceof Entreprise  || $user instanceof Administrateur) {      
             // return new Response((string)$user);
             $userData = [
                 'email' => $user->getUserIdentifier(),
-                'Nom complet' => (string)$user,
+                'Nom complet' =>$user->getNomComplet(),
             ];
             // Créez une JsonResponse avec les données formatées en JSON
             return new JsonResponse($userData);

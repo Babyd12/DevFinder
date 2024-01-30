@@ -3,6 +3,9 @@
 namespace App\State;
 
 use App\Entity\Apprenant;
+use App\Entity\Entreprise;
+use App\Entity\Association;
+use App\Entity\Administrateur;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -19,16 +22,16 @@ class GetUserLoggedProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $entity = $this->security->getUser();
-        if ($entity instanceof Apprenant) {
+        if ($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise  || $entity instanceof Administrateur ) {
 
             $userData = [
                 'email' => $entity->getUserIdentifier(),
                 'Nom complet' => $entity->getNomComplet(),
             ];
-            // return new JsonResponse($userData);
-            return $this->processorInterface->process($userData, $operation, $uriVariables, $context);
+            return new JsonResponse($userData);
+            // return $this->processorInterface->process($userData, $operation, $uriVariables, $context);
         }
-        return $this->processorInterface->process($data, $operation, $uriVariables, $context);
+        return new JsonResponse( ['error' => 'Veuillez vous connecter'], JsonResponse::HTTP_FORBIDDEN);
     }
 }
 
