@@ -7,6 +7,7 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\SetUserToRelationClass;
@@ -116,10 +117,15 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $projet;
 
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Competence::class)]
+    #[Groups(['apprenant:show'])]
     private Collection $competences;
 
     #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
     private Collection $entreprises;
+
+    #[ORM\Column(type: Types::BINARY, nullable: true)]
+    private $image = null;
+
 
     public function __construct()
     {
@@ -128,7 +134,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->competences = new ArrayCollection();
         $this->entreprises = new ArrayCollection();
     }
-
 
     /**
      * @see UserInterface
@@ -351,4 +356,18 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage($image): static
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+   
 }

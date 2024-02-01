@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Apprenant;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -9,11 +10,12 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
-use App\State\AddUserToRelationProcessor;
+use App\State\SetUserToRelationClass;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EntrepriseRepository;
-use App\State\RemoveUserToRelationProcessor;
+use App\State\AddUserToRelationProcessor;
 use Doctrine\Common\Collections\Collection;
+use App\State\RemoveUserToRelationProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Routing\Requirement\Requirement;
@@ -21,6 +23,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
+// #[ApiResource(
+//     shortName: 'Module gestion de recrutement -Entreprise',
+//     operations: [
+//         new Get(
+//             uriTemplate: 'entreprise/recruter/apprenant/{id}',
+            
+//         ),
+//     ]
+// )]
 #[ApiResource(
     shortName: 'Module gestion de recrutement -Entreprise',
     operations: [
