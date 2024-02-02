@@ -70,7 +70,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and (previous_object.getEmail() == user.getEmail() ) ",
     securityPostDenormalizeMessage: 'Vous n\'est pas apprenant ou le propriétaire de ce compte.',
     denormalizationContext: ['groups' => ['apprenant:update']],
-    normalizationContext: ['groups' => ['apprenant:update']],
+    // normalizationContext: ['groups' => ['apprenant:update']],
 )]
 
 #[Patch(
