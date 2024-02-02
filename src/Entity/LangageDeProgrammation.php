@@ -57,7 +57,7 @@ class LangageDeProgrammation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,  unique: true, type: 'string')]
     #[Groups(['langageDeProgrammation:show', 'langageDeProgrammation:index', 'langageDeProgrammation:create', 'langageDeProgrammation:update'])]
     private ?string $nom = null;
 

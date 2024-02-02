@@ -19,7 +19,9 @@ use App\State\RemoveUserToRelationProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
@@ -101,10 +103,14 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
+    #[Assert\Type(type:'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $nom_complet = null;
-
-    #[ORM\Column(length: 255)]
+    
+    #[ORM\Column(length: 255,  unique: true, type: 'string')]
+    #[Assert\Email( message: 'Veuillez entrer un format d\'email correcte.')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $email = null;
 
@@ -112,12 +118,29 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
+    #[Assert\PasswordStrength([
+        'minScore' => PasswordStrength::STRENGTH_VERY_STRONG,
+    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort' )]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\ManyToMany(targetEntity: Apprenant::class, inversedBy: 'entreprises')]
     #[Groups(['entreprise:show',])]
     private Collection $apprenants;
+
+    #[ORM\Column(length: 255,  unique: true, type: 'string')]
+    #[Assert\Regex('/^7[7-8-6-0-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: 0001462 2G3')]
+    private ?string $numero_identification_naitonal = null;
 
     public function __construct()
     {
@@ -188,7 +211,6 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_ENTREPRISE';
-
         return array_unique($roles);
     }
 
@@ -228,6 +250,42 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeApprenant(Apprenant $apprenant): static
     {
         $this->apprenants->removeElement($apprenant);
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getNumeroIdentificationNaitonal(): ?string
+    {
+        return $this->numero_identification_naitonal;
+    }
+
+    public function setNumeroIdentificationNaitonal(string $numero_identification_naitonal): static
+    {
+        $this->numero_identification_naitonal = $numero_identification_naitonal;
 
         return $this;
     }

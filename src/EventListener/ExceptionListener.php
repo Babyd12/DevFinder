@@ -46,7 +46,7 @@ class ExceptionListener
 
                 default:
                 $statusCode = JsonResponse::HTTP_EXPECTATION_FAILED;
-                    $errorMessage = sprintf('Erreur HTTP: %s', $statusCode);
+                    $errorMessage = sprintf('Erreur HTTP: %s, Detail: %s', $statusCode, $exception->getMessage());
                     break;
             } 
         

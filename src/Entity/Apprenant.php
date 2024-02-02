@@ -5,9 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
+use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\SetUserToRelationClass;
@@ -18,7 +18,9 @@ use Symfony\Bundle\SecurityBundle\Security;
 use App\Controller\CustomApprenantController;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: ApprenantRepository::class)]
@@ -89,20 +91,40 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
+    #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update'])]
     private ?string $nom_complet = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,  unique: true, type: 'string')]
+    #[Assert\Email( message: 'Veuillez entrer un format d\'email correcte.')]
     #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['apprenant:create', 'apprenant:update', 'apprenant:updateOne'])]
+    #[Assert\PasswordStrength([
+        'minScore' => PasswordStrength::STRENGTH_VERY_STRONG,
+    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort' )]
     private ?string $mot_de_passe = null;
 
     #[ORM\Column]
     // #[Groups(['apprenant:index', 'apprenant:update', 'apprenant:updateOne'])]
     private array $roles = [];
+
+    #[ORM\Column(type: Types::BINARY, nullable: true)]
+    private $image = null;
+
+    #[ORM\Column(length: 255, unique: true, type: 'string')]
+    #[Assert\Regex('/^7[7-8-6-0-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank( message: 'Ce champ ne peut pas être vide') ]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    private ?string $description = null;
+
 
     #[ORM\ManyToOne(targetEntity: Immersion::class, inversedBy: 'apprenants')]
     #[Groups(['apprenant:show'])]
@@ -123,8 +145,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
     private Collection $entreprises;
 
-    #[ORM\Column(type: Types::BINARY, nullable: true)]
-    private $image = null;
+    
 
 
     public function __construct()
@@ -236,8 +257,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         $roles = $this->getRoles();
         return in_array('ROLE_APPRENANT', $roles) ? 'ROLE_APPRENANT' : null;
     }
-
-
 
     /**
      * A visual identifier that represents this user.
@@ -365,6 +384,30 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setImage($image): static
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->telephone;
+    }
+
+    public function setTelephone(string $telephone): static
+    {
+        $this->telephone = $telephone;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

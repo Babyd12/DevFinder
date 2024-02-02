@@ -13,6 +13,7 @@ use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: BriefRepository::class)]
@@ -26,6 +27,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
     forceEager: false,
     normalizationContext: [ 'groups' => ['brief:index'] ],
     denormalizationContext:[ 'groups' => ['brief:index'] ],
+    outputFormats: [ 'json' => 'application/json']
 )]
 
 #[Get(
@@ -60,6 +62,7 @@ class Brief
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -67,6 +70,10 @@ class Brief
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 50, minMessage: 'veuillez saisir au moins 50 lettres')]
+    #[Assert\Type(type:'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?string $description = null;
 
@@ -76,9 +83,13 @@ class Brief
 
     #[ORM\Column(length: 255)]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.')]
     private ?string $niveau_de_competence = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Url(
+        message: 'L\'url {{ value }} n\'est pas une url valide',
+    )]
     #[Groups(['brief:show', 'brief:create', 'brief:update'])]
     private ?string $lien_du_livrable = null;
 

@@ -8,15 +8,18 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
-use App\State\SetUserToRelationClass;
 use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CompetenceRepository;
-use App\State\RemoveUserToRelationClass;
+use App\State\AddUserToRelationProcessor;
+use App\State\RemoveUserToRelationProcessor;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping\Id;
+use Symfony\Component\Validator\Constraints as Assert;
+
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CompetenceRepository::class)]
-/*
+
 #[ApiResource(
     shortName: 'Module gestion de compte -Apprenant'
 )]
@@ -35,7 +38,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[Post(
     uriTemplate:'/competence/ajouter',
-    processor:SetUserToRelationClass::class,
+    processor: AddUserToRelationProcessor::class,
     security: "is_granted('ROLE_APPRENANT')",
     denormalizationContext: [ 'groups' => ['competence:create'] ]
 )]
@@ -49,10 +52,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[Delete(
     uriTemplate:'/competence/{id}',
-    processor:RemoveUserToRelationClass::class,
+    processor:RemoveUserToRelationProcessor::class,
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant(user) == user ",
 )]
-*/
+
+#[UniqueEntity(
+    fields: ['nom', 'apprenant'],
+    errorPath: 'apprenant',
+    message: 'Cette compétence existe déjà pour cet apprenant.',
+)]
 
 class Competence
 {
@@ -66,6 +74,8 @@ class Competence
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank( message: 'Ce champ ne peut pas être vide') ]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Groups(['competence:show', 'competence:index', 'competence:create', 'competence:update'])]
     private ?string $description = null;
 

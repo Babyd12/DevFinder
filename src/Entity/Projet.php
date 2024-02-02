@@ -21,6 +21,8 @@ use App\Controller\CustomApprenantController;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 
@@ -87,6 +89,12 @@ use Symfony\Component\Validator\Constraints\Hostname;
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
 
+#[UniqueEntity(
+    fields: ['titre', 'association'],
+    errorPath: 'association',
+    message: 'Cette association a déjà un projet portant ce titre',
+)]
+
 class Projet
 {
     #[ORM\Id]
@@ -100,10 +108,14 @@ class Projet
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Assert\Type(type:'integer', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
     private ?int $nombre_de_participant = null;
 
@@ -123,11 +135,9 @@ class Projet
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
     private Collection $apprenants;
 
-    // #[ORM\Column(length: 255)]
     #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
     private ?ProjetStatu $statu = null;
-
 
     public function __construct()
     {

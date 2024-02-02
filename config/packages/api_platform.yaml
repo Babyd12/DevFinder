@@ -5,6 +5,7 @@ api_platform:
         fetch_partial: true
     formats:
         jsonld: ['application/json']
+        outputFormats: ['application/json']
     docs_formats:
         jsonld: ['application/json']
         jsonopenapi: ['application/vnd.openapi+json']
