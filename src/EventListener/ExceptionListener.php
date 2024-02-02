@@ -17,42 +17,42 @@ class ExceptionListener
 {
     public function __invoke(ExceptionEvent $event): void
     {
-        $exception = $event->getThrowable();
-        if ($exception instanceof HttpExceptionInterface) {
-            switch (true) {
-                case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
-                    $statusCode = JsonResponse::HTTP_FORBIDDEN;
-                    $errorMessage = sprintf('Action non autorisée: code %s', $statusCode );
-                    break;
+        // $exception = $event->getThrowable();
+        // if ($exception instanceof HttpExceptionInterface) {
+        //     switch (true) {
+        //         case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
+        //             $statusCode = JsonResponse::HTTP_FORBIDDEN;
+        //             $errorMessage = sprintf('Action non autorisée: code %s', $statusCode );
+        //             break;
         
-                // Ajoutez d'autres cas pour d'autres types d'exceptions HTTP si nécessaire
-                case $exception instanceof NotFoundHttpException:
-                    $errorMessage = sprintf('Ressource non trouvée: %s', $exception->getcode());
-                    $statusCode = JsonResponse::HTTP_NOT_FOUND;
-                    break;
+        //         // Ajoutez d'autres cas pour d'autres types d'exceptions HTTP si nécessaire
+        //         case $exception instanceof NotFoundHttpException:
+        //             $errorMessage = sprintf('Ressource non trouvée: %s', $exception->getcode());
+        //             $statusCode = JsonResponse::HTTP_NOT_FOUND;
+        //             break;
                 
-                case $exception instanceof \Symfony\Component\Security\Core\Exception\AuthenticationException &&
-                    strpos($exception->getMessage(), 'You cannot refresh a user from the EntityUserProvider') !== false:
-                    $errorMessage = 'Erreur de rafraîchissement de l\'utilisateur sans identifiant.';
-                    $errorMessage = sprintf('%s: code %s',$exception->getMessage(), $exception->getCode());
-                    break;
+        //         case $exception instanceof \Symfony\Component\Security\Core\Exception\AuthenticationException &&
+        //             strpos($exception->getMessage(), 'You cannot refresh a user from the EntityUserProvider') !== false:
+        //             $errorMessage = 'Erreur de rafraîchissement de l\'utilisateur sans identifiant.';
+        //             $errorMessage = sprintf('%s: code %s',$exception->getMessage(), $exception->getCode());
+        //             break;
 
-                // case $exception instanceof \Doctrine\ORM\Exception\ORMException && $this->isDeleteSuccessful($exception):
-                //     $errorMessage = 'Suppression réussie.';
-                //     $response = new JsonResponse(['message' => $errorMessage], JsonResponse::HTTP_OK);
-                //     $event->setResponse($response);
-                //     $statusCode = JsonResponse::HTTP_OK;
-                //     break;
+        //         // case $exception instanceof \Doctrine\ORM\Exception\ORMException && $this->isDeleteSuccessful($exception):
+        //         //     $errorMessage = 'Suppression réussie.';
+        //         //     $response = new JsonResponse(['message' => $errorMessage], JsonResponse::HTTP_OK);
+        //         //     $event->setResponse($response);
+        //         //     $statusCode = JsonResponse::HTTP_OK;
+        //         //     break;
 
-                default:
-                $statusCode = JsonResponse::HTTP_EXPECTATION_FAILED;
-                    $errorMessage = sprintf('Erreur HTTP: %s, Detail: %s', $statusCode, $exception->getMessage());
-                    break;
-            } 
+        //         default:
+        //         // $statusCode = JsonResponse::HTTP_EXPECTATION_FAILED;
+        //         //     $errorMessage = sprintf('Erreur HTTP: %s, Detail: %s', $statusCode, $exception->getMessage());
+        //             break;
+        //     } 
         
-            $response = new JsonResponse(['error' => $errorMessage], $statusCode);
-            $event->setResponse($response);
-        } 
+        //     $response = new JsonResponse(['error' => $errorMessage], $statusCode);
+        //     $event->setResponse($response);
+        // } 
     
     
     }

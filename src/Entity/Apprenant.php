@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ApprenantRepository::class)]
 
@@ -53,7 +54,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[Get(
     uriTemplate: 'apprenant/{id}',
     forceEager: true,
-    normalizationContext: ['groups' => ['apprenant:show']]
+    normalizationContext: ['groups' => ['apprenant:show']],
+    outputFormats: [ 'json' => 'application/json']
+   
 )]
 
 #[Post(
@@ -79,8 +82,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[Delete(
-    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user ",
+    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     uriTemplate: 'apprenant/{id}',
+)]
+
+#[UniqueEntity(
+    fields: 'email',
+    message: 'Cet email existe déjà.',
+)]
+#[UniqueEntity(
+    fields: 'telephone',
+    message: 'Ce numero existe déjà.',
 )]
 
 class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
@@ -103,10 +115,10 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['apprenant:create', 'apprenant:update', 'apprenant:updateOne'])]
     #[Assert\PasswordStrength([
-        'minScore' => PasswordStrength::STRENGTH_VERY_STRONG,
+        'minScore' => PasswordStrength::STRENGTH_WEAK,
     ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort' )]
+    #[Groups(['apprenant:create', 'apprenant:update', 'apprenant:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\Column]
@@ -117,14 +129,15 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private $image = null;
 
     #[ORM\Column(length: 255, unique: true, type: 'string')]
-    #[Assert\Regex('/^7[7-8-6-0-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Assert\Regex('/^\+221\s?\d{2}\s?\d{3}\s?\d{4}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank( message: 'Ce champ ne peut pas être vide') ]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $description = null;
-
 
     #[ORM\ManyToOne(targetEntity: Immersion::class, inversedBy: 'apprenants')]
     #[Groups(['apprenant:show'])]
@@ -144,9 +157,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
     private Collection $entreprises;
-
-    
-
 
     public function __construct()
     {

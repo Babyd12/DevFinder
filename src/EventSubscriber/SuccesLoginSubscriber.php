@@ -17,6 +17,7 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
     public function onLoginSuccessEvent(LoginSuccessEvent $event): void
     {
         if ($event instanceof LoginSuccessEvent && $event->getResponse() !== null ) {
+            dd('hello');
             $content = $event->getResponse();
             $content->getContent();
             $user = $event->getUser();

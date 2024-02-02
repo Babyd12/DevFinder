@@ -24,10 +24,10 @@ class GetUserLoggedController extends AbstractController
     }
 
     
-    #[Route('/api/get/user/logged', name: 'app_get_user_logged', methods: ['POST'] )]
+    #[Route('/connexion', name: 'app_get_user_logged', methods: ['POST'] )]
     public function index()
     {
-        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
-        return new JsonResponse( ['user' => $decodedJwtToken]);
+        // $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        // return new JsonResponse( ['user' => $decodedJwtToken]);
     }
 }

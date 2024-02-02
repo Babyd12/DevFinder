@@ -25,6 +25,7 @@ class GetUserLoggedProcessor implements ProcessorInterface
         if ($entity instanceof Apprenant || $entity instanceof Association || $entity instanceof Entreprise  || $entity instanceof Administrateur ) {
 
             $userData = [
+                'id' => $entity->getId(),
                 'email' => $entity->getUserIdentifier(),
                 'Nom complet' => $entity->getNomComplet(),
                 'role' => $entity->getRoles(),
