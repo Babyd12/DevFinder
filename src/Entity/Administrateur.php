@@ -11,9 +11,11 @@ use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CustumAdminController;
 use App\Controller\GetUserLoggedController;
 use App\Controller\MeController;
 use App\Repository\AdministrateurRepository;
+use App\State\AdminStateProvider;
 use App\State\GetUserLoggedInfoStateProvier;
 use App\State\GetUserLoggedProcessor;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
@@ -43,6 +45,26 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             uriTemplate:'/utilisateur/connecte',
             denormalizationContext: ['groups' => 'apprenant:connecte'],
         ),
+        new GetCollection(
+            shortName: 'Module gestion de compte -Administrateur',
+            uriTemplate:'/administrateur/liste/entreprises',
+            provider:CustumAdminController::class,
+            name: 'app_custum_admin_entreprises',
+            security:  "is_granted('ROLE_ADMIN')",
+        ),
+        new GetCollection(
+            shortName: 'Module gestion de compte -Administrateur',
+            uriTemplate:'/administrateur/liste/associations',
+            name: 'app_custum_admin_associations',
+            provider:CustumAdminController::class,
+        ),
+        new GetCollection(
+            shortName: 'Module gestion de compte -Administrateur',
+            uriTemplate:'/administrateur/liste/developpeurs',
+            provider:CustumAdminController::class,
+            name: 'app_custum_admin_developpeurs',
+
+        ),
     ]
 )]
 
@@ -69,7 +91,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     formats: ['json' => 'application/json'],
     denormalizationContext: ['groups' => ['admin:updateOne']],
-    normalizationContext: ['groups' => ['admin:updateOne']],
+    // normalizationContext: ['groups' => ['admin:updateOne']],
 )]
 
 
