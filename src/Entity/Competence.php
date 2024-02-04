@@ -25,34 +25,37 @@ use Symfony\Component\Serializer\Annotation\Groups;
 )]
 
 #[GetCollection(
-    uriTemplate:'/competence/liste',
+    uriTemplate: '/competence/liste',
     description: 'Affiche toutes les compétences',
-    normalizationContext: [ 'groups' => ['competence:index'] ]
+    normalizationContext: ['groups' => ['competence:index']],
+
 )]
 
 #[Get(
     forceEager: true,
-    uriTemplate:'/competence/{id}',
-    normalizationContext: [ 'groups' => ['competence:show'] ]
+    uriTemplate: '/competence/{id}',
+    normalizationContext: ['groups' => ['competence:show']],
+
+
 )]
 
 #[Post(
-    uriTemplate:'/competence/ajouter',
+    uriTemplate: '/competence/ajouter',
     processor: AddUserToRelationProcessor::class,
     security: "is_granted('ROLE_APPRENANT')",
-    denormalizationContext: [ 'groups' => ['competence:create'] ]
+    denormalizationContext: ['groups' => ['competence:create']]
 )]
 
 #[Put(
-    uriTemplate:'/competence/{id}',
+    uriTemplate: '/competence/{id}',
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant(user) == user ",
     securityMessage: 'Sorry, but you are not this competence owner.',
-    denormalizationContext: [ 'groups' => ['competence:update'] ]
+    denormalizationContext: ['groups' => ['competence:update']]
 )]
 
 #[Delete(
-    uriTemplate:'/competence/{id}',
-    processor:RemoveUserToRelationProcessor::class,
+    uriTemplate: '/competence/{id}',
+    processor: RemoveUserToRelationProcessor::class,
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant(user) == user ",
 )]
 
@@ -67,16 +70,32 @@ class Competence
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(
+        [
+            'competence:show',
+            'apprenant:show'
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['competence:show', 'competence:index', 'competence:create', 'competence:update'])]
+    #[Groups(
+        [
+            'competence:show', 'competence:index', 'competence:create', 'competence:update',
+            'apprenant:show'
+        ]
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank( message: 'Ce champ ne peut pas être vide') ]
+    #[Assert\NotBlank(message: 'Ce champ ne peut pas être vide')]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Groups(['competence:show', 'competence:index', 'competence:create', 'competence:update'])]
+    #[Groups(
+        [
+            'competence:show', 'competence:index', 'competence:create', 'competence:update',
+            'apprenant:show'
+        ]
+    )]
     private ?string $description = null;
 
     #[ORM\ManyToOne(targetEntity: Apprenant::class, inversedBy: 'competences')]

@@ -24,39 +24,41 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ApiResource(
     shortName: 'Module gestion de compte -Association',
+    // outputFormats: [ 'json' => 'application/json' ],
 )]
 
 #[GetCollection(
     uriTemplate: 'association/liste',
-    normalizationContext: [ 'groups' => ['association:index'] ],
+    normalizationContext: ['groups' => ['association:index']],
+
 )]
 
 #[Get(
     uriTemplate: 'association/{id}',
     forceEager: true,
-    normalizationContext: [ 'groups' => ['association:show'] ]
+    normalizationContext: ['groups' => ['association:show']]
 )]
 
 #[Post(
     uriTemplate: 'association/inscription',
-    denormalizationContext: [ 'groups' => ['association:create'] ]
+    denormalizationContext: ['groups' => ['association:create']]
 )]
 
 #[Put(
     uriTemplate: 'association/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-    denormalizationContext: [ 'groups' => ['association:update'] ],
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
+    denormalizationContext: ['groups' => ['association:update']],
 )]
 
 #[Patch(
     uriTemplate: 'association/change_password/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-    denormalizationContext: [ 'groups' => ['association:updateOne'] ]
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
+    denormalizationContext: ['groups' => ['association:updateOne']]
 )]
 
 #[Delete(
     uriTemplate: 'association/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
 )]
 
 class Association implements UserInterface, PasswordAuthenticatedUserInterface
@@ -64,50 +66,55 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('association:index', 'association:show')]
     private ?int $id = null;
 
     #[ORM\Column]
     private array $roles = [];
-    
+
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
+    #[Assert\NotBlank(message: 'Le champ {value} ne doit pas être vide')]
+
+    #[Assert\Length(min: 2, max: 20, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Email( message: 'Veuillez entrer un format d\'email correcte.')]
+    #[Assert\Email(message: 'Veuillez entrer un format d\'email correcte.')]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\PasswordStrength([
-        'minScore' => PasswordStrength::STRENGTH_VERY_STRONG,
-    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort' )]
-    #[Groups([ 'association:create', 'association:update', 'association:updateOne'])]
+        'minScore' => PasswordStrength::STRENGTH_WEAK,
+    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
+    #[Groups(['association:create', 'association:update', 'association:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]
-    #[Groups([ 'association:show'])]
+    #[Groups(['association:show'])]
     private Collection $projets;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: LangageDeProgrammation::class)]
-    #[Groups([ 'association:show'])]
+    #[Groups(['association:show'])]
     private Collection $langageDeProgrammations;
-
+    
     #[ORM\Column(length: 255, unique: true, type: 'string')]
-    #[Assert\Regex('/^7[7-8-6-0-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
     private ?string $telephone = null;
-    
+
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\NotBlank(message: 'Le champ  ne doit pas être vide')]
+    #[Assert\Length(min: 35, max: 200, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
     private ?string $description = null;
-    
+
     #[ORM\Column(length: 255)]
     #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: sept chiffres puis le cofi 0001462 2G3')]
+    #[Groups(['association:show', 'association:index', 'association:create'])]
     private ?string $numero_identification_naitonal = null;
 
     public function __construct()

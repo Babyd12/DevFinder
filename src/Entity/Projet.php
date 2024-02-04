@@ -30,11 +30,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
         new Get(
-            uriTemplate:'/apprenant/participer/projet/{id}',
+            uriTemplate: '/apprenant/participer/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
             routeName: 'participerProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
+            normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
         ),
@@ -43,7 +43,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             security: "is_granted('ROLE_APPRENANT')",
             routeName: 'quitterProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantQuitterPojet:show' ],
+            normalizationContext: ['groups' => 'apprenantQuitterPojet:show'],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
     ]
@@ -52,39 +52,39 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[GetCollection(
     hydraContext: ['groups' => 'apprenantQuitterProjet'],
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/liste',
+    uriTemplate: '/projet/liste',
 
     description: 'Affiche tout les projet',
-    name:'un nom simple a comprndre',
-    normalizationContext: [ 'groups' => ['projet:index'] ],
-    denormalizationContext: [ 'groups' => ['projet:index'] ],
+    name: 'un nom simple a comprndre',
+    normalizationContext: ['groups' => ['projet:index']],
+    denormalizationContext: ['groups' => ['projet:index']],
 
 )]
 
 #[Get(
     forceEager: true,
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/{id}',
-    normalizationContext: [ 'groups' => ['projet:show'] ]
+    uriTemplate: '/projet/{id}',
+    normalizationContext: ['groups' => ['projet:show']]
 )]
 
 #[Post(
     security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/ajouter',
-    denormalizationContext: [ 'groups' => ['projet:create'] ]
+    uriTemplate: '/projet/ajouter',
+    denormalizationContext: ['groups' => ['projet:create']]
 )]
 
 #[Put(
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/{id}',
+    uriTemplate: '/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     // securityMessage: 'Sorry, but you are not this projet owner.',
-    denormalizationContext: [ 'groups' => ['projet:update'] ]
+    denormalizationContext: ['groups' => ['projet:update']]
 )]
 
 #[Delete(
-    uriTemplate:'/projet/{id}',
+    uriTemplate: '/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
@@ -100,32 +100,79 @@ class Projet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['apprenant:participate', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'apprenant:participate', 'projet:create', 'projet:update',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+        ]
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+
+
+        ]
+    )]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Assert\Type(type:'integer', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Assert\Type(type: 'integer', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?int $nombre_de_participant = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?\DateTimeInterface $date_limite = null;
 
     #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(nullable:false)]
-    #[Groups(['projet:show'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(
+        [
+            'projet:show',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?Association $association = null;
 
     #[ORM\ManyToMany(targetEntity: LangageDeProgrammation::class, inversedBy: 'projets')]
@@ -265,13 +312,11 @@ class Projet
     {
         return $this->statu;
     }
-    
+
     public function setStatu(?ProjetStatu $statu): static
     {
         $this->statu = $statu;
 
         return $this;
     }
-
-   
 }

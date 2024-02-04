@@ -22,6 +22,11 @@ class CustomApprenantController extends AbstractController
 
         $this->security = $security;
     }
+
+    private function getUserId()
+    {
+        
+    }
     
     public function getSecurity(EntityManagerInterface $entityManager, string $id)
     {
@@ -29,7 +34,7 @@ class CustomApprenantController extends AbstractController
 
         if ($user === null) {
             // Gérer le cas où l'utilisateur n'est pas connecté
-            return $this->json(['error' => 'User not authenticated'], 401);
+            return $this->json(['error' => 'Veuillez vous connecter '], 401);
         }
 
         $apprenantLogged  = $user->getUserIdentifier();
@@ -45,10 +50,29 @@ class CustomApprenantController extends AbstractController
     }
 
 
-    // #[Route('entreprise/recruter/apprenant/{id}', name: 'addApprenantToProjet', methods: ['POST'] )]
-    public function addApprenantToProjet( EntityManagerInterface $entityManager, int $apprenantId, int $projetId )
+
+    #[Route('/api/apprenant/projets', name: 'mesProjets', methods: ['GET', 'POST'] )]
+    public function mesProjets( EntityManagerInterface $entityManager)
     {
+       
+        $user = $this->security->getUser();
+
+        if ($user === null) {
+            // Gérer le cas où l'utilisateur n'est pas connecté
+            return $this->json(['error' => 'User not authenticated'], 401);
+        }
+
+        $apprenantLogged  = $user->getUserIdentifier();
+        $apprenant = $entityManager->getRepository(Apprenant::class)->findOneByEmail($apprenantLogged);
+        $apprenantProjets = $apprenant->getProjet() ;
         
-        
+        dd($apprenant->getPojet());
+        return new JsonResponse( $apprenant->getProjet());
+
+    }
+
+    #[Route('/api/apprenant/pj', name: 'apprenantPj', methods: ['GET', 'get', 'Get']) ]
+    public function test(){
+        dd('bonsource;');
     }
 }

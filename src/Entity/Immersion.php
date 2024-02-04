@@ -26,27 +26,27 @@ use Symfony\Component\Validator\Constraints\Hostname;
     uriTemplate: 'immersion/liste',
     forceEager: false,
     normalizationContext: ['groups' => ['immersion:index']],
-    denormalizationContext: ['groups' => ['immersion:index']],
+    // denormalizationContext: ['groups' => ['immersion:index']],
 )]
 
 #[Get(
     uriTemplate: 'immersion/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['immersion:show']],
-    denormalizationContext: ['groups' => ['immersion:show']],
+    // denormalizationContext: ['groups' => ['immersion:show']],
 )]
 
 #[Post(
     uriTemplate: 'immersion/publier',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-    normalizationContext: ['groups' => ['immersion:create']],
+    // normalizationContext: ['groups' => ['immersion:create']],
     denormalizationContext: ['groups' => ['immersion:create']],
 )]
 
 #[Put(
     uriTemplate: 'immersion/{id}',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-    normalizationContext: ['groups' => ['immersion:update']],
+    // normalizationContext: ['groups' => ['immersion:update']],
     denormalizationContext: ['groups' => ['immersion:update']]
 
 )]

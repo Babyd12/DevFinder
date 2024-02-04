@@ -24,7 +24,7 @@ class CustomProjetController extends AbstractController
         $this->security = $security;
     }
 
-    public function getSecurity(EntityManagerInterface $entityManager, string $id)
+    public function getUserLogged(EntityManagerInterface $entityManager, string $id)
     {
         $user = $this->security->getUser();
 
@@ -37,22 +37,34 @@ class CustomProjetController extends AbstractController
         // Récupérer le projet et l'apprenant depuis la base de données
         $projet = $entityManager->getRepository(Projet::class)->find($id);
         $apprenant = $entityManager->getRepository(Apprenant::class)->findOneByEmail($apprenantLogged);
-
+        
         // Vérifier si le projet et l'apprenant existent
         if (!$projet || !$apprenant) {
-            return new JsonResponse(["message" => "Le projet ou l'apprenant n'existe pas"], Response::HTTP_NOT_FOUND);
+            return new JsonResponse(["message" => "Le projet ou l'apprenant n'existe pas ou n'est pas connecté"], Response::HTTP_NOT_FOUND);
         }
         return ['apprenant' => $apprenant, 'projet' => $projet];
     }
 
+
+    /**
+     * @see UserLogged 
+     */
     #[Route('/api/apprenant/participer/projet/{id}', name: 'participerProjet', methods: ['GET'])]
     public function addApprenantToProject(EntityManagerInterface $entityManager, string $id): JsonResponse
     {
 
-        $security = $this->getSecurity($entityManager, $id);
-        if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
-            // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
-            return $security;
+        $security = $this->getUserLogged($entityManager, $id);
+        if ($security instanceof JsonResponse) {
+            $securityCode = $security->getStatusCode();
+            switch ($securityCode) {
+                case 404:
+                    return $security;
+                    break;
+                case 401:
+                    // L'utilisateur n'est pas authentifié, vous pouvez traiter cela ici si nécessaire
+                    return $security;
+                    break;
+            }
         }
 
         $projet = $security['projet'];
@@ -81,7 +93,7 @@ class CustomProjetController extends AbstractController
     #[Route('/api/apprenant/quitter/projet/{id}', name: 'quitterProjet',  methods: ['GET'])]
     public function removeApprenantToProject(EntityManagerInterface $entityManager, string $id)
     {
-        $security = $this->getSecurity($entityManager, $id);
+        $security = $this->getUserLogged($entityManager, $id);
         if ($security instanceof JsonResponse && $security->getStatusCode() === 401) {
             return $security;
         }

@@ -38,6 +38,10 @@ services:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
 
-    # App\State\ShowCollectionsStateProvider:
+    # App\State\GetApprenantProjetProcessor:
     #     bind: 
-    #         $providerInterface: '@api_platform.doctrine.orm.state.collection_provider'
+    #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
+    # App\State\GetApprenantProvider:
+    #     bind: 
+    #         $providerInterface: '@api_platform.doctrine.orm.state.item_provider'

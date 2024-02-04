@@ -25,33 +25,25 @@ use Symfony\Component\Validator\Constraints\PasswordStrength;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
-// #[ApiResource(
-//     shortName: 'Module gestion de recrutement -Entreprise',
-//     operations: [
-//         new Get(
-//             uriTemplate: 'entreprise/recruter/apprenant/{id}',
-            
-//         ),
-//     ]
-// )]
+
 #[ApiResource(
     shortName: 'Module gestion de recrutement -Entreprise',
+    normalizationContext: ['entreprise:recruter'],
+    denormalizationContext: ['entreprise:recruter'],
+    outputFormats: ['json' => 'application/json'],
+    
     operations: [
         new Post(
-            requirements: ['id' => '\d+'],
+            requirements: ['id' => '\d+' ],
             uriTemplate: 'entreprise/recruter/apprenant/{id}',
             processor: AddUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
-            denormalizationContext: ['entreprise:recruter'],
-            normalizationContext: ['entreprise:recruter'],
         ),
         new Post(
             requirements: ['id' => '\d+'],
             uriTemplate: 'entreprise/congedier/apprenant/{id}',
             processor: RemoveUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
-            denormalizationContext: ['entreprise:recruter'],
-            normalizationContext: ['entreprise:recruter'],
         ),
     ]
 )]
@@ -61,33 +53,34 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     uriTemplate: 'entreprise/liste',
     description: 'Modifie toi',
     name: 'nom temporaire',
-    normalizationContext: [ 'groups' => ['entreprise:index'] ]
+    normalizationContext: ['groups' => ['entreprise:index']],
+    
 )]
 
 #[Get(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/{id}',
-
     forceEager: true,
-    normalizationContext: [ 'groups' => ['entreprise:show'] ]
+    normalizationContext: ['groups' => ['entreprise:show']]
+
 )]
 
 #[Post(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/inscription',
-    denormalizationContext: [ 'groups' => ['entreprise:create'] ]
+    denormalizationContext: ['groups' => ['entreprise:create']]
 )]
 
 #[Put(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/{id}',
-    denormalizationContext: [ 'groups' => ['entreprise:update'] ]
+    denormalizationContext: ['groups' => ['entreprise:update']]
 )]
 
 #[Patch(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/change_mot_de_passe/{id}',
-    denormalizationContext: [ 'groups' => ['entreprise:updateOne'] ]
+    denormalizationContext: ['groups' => ['entreprise:updateOne']]
 )]
 
 #[Delete(
@@ -100,17 +93,18 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:update', 'entreprise:recruter'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
-    #[Assert\Type(type:'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $nom_complet = null;
-    
+
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Email( message: 'Veuillez entrer un format d\'email correcte.')]
+    #[Assert\Email(message: 'Veuillez entrer un format d\'email correcte.')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $email = null;
 
@@ -119,9 +113,9 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\PasswordStrength([
-        'minScore' => PasswordStrength::STRENGTH_VERY_STRONG,
-    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort' )]
-    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
+        'minScore' => PasswordStrength::STRENGTH_WEAK,
+    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\ManyToMany(targetEntity: Apprenant::class, inversedBy: 'entreprises')]
@@ -129,17 +123,20 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $apprenants;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Regex('/^7[7-8-6-0-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Assert\Regex('/^\+221[7-8604]\d{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement: 78 444 5235) ')]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\'\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: 0001462 2G3')]
+    #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: sept chiffres puis le cofi 0001462 2G3')]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $numero_identification_naitonal = null;
 
     public function __construct()
@@ -193,7 +190,7 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-       /**
+    /**
      * A visual identifier that represents this user.
      *
      * @see UserInterface
