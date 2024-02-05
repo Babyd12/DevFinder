@@ -131,13 +131,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(targetEntity: Immersion::class, inversedBy: 'apprenants')]
-    #[Groups(['apprenant:show'])]
-    private ?Immersion $immersion = null;
-
-    #[ORM\ManyToMany(targetEntity: Brief::class, mappedBy: 'apprenant')]
-    #[Groups(['apprenant:show'])]
-    private Collection $briefs;
 
     #[ORM\ManyToMany(targetEntity: Projet::class, inversedBy: 'apprenants')]
     #[Groups(['apprenant:show'])]
@@ -150,12 +143,16 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
     private Collection $entreprises;
 
+    #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Livrable::class)]
+    private Collection $livrables;
+
     public function __construct()
     {
-        $this->briefs = new ArrayCollection();
+
         $this->projet = new ArrayCollection();
         $this->competences = new ArrayCollection();
         $this->entreprises = new ArrayCollection();
+        $this->livrables = new ArrayCollection();
     }
 
     /**
@@ -215,44 +212,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getImmersion(): ?Immersion
-    {
-        return $this->immersion;
-    }
 
-    public function setImmersion(?Immersion $immersion): static
-    {
-        $this->immersion = $immersion;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Brief>
-     */
-    public function getBriefs(): Collection
-    {
-        return $this->briefs;
-    }
-
-    public function addBrief(Brief $brief): static
-    {
-        if (!$this->briefs->contains($brief)) {
-            $this->briefs->add($brief);
-            $brief->addApprenant($this);
-        }
-
-        return $this;
-    }
-
-    public function removeBrief(Brief $brief): static
-    {
-        if ($this->briefs->removeElement($brief)) {
-            $brief->removeApprenant($this);
-        }
-
-        return $this;
-    }
 
     public function getRole(): string
     {
@@ -410,6 +370,36 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDescription(string $description): static
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Livrable>
+     */
+    public function getLivrables(): Collection
+    {
+        return $this->livrables;
+    }
+
+    public function addLivrable(Livrable $livrable): static
+    {
+        if (!$this->livrables->contains($livrable)) {
+            $this->livrables->add($livrable);
+            $livrable->setApprenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLivrable(Livrable $livrable): static
+    {
+        if ($this->livrables->removeElement($livrable)) {
+            // set the owning side to null (unless already changed)
+            if ($livrable->getApprenant() === $this) {
+                $livrable->setApprenant(null);
+            }
+        }
 
         return $this;
     }

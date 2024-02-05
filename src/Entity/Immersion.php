@@ -80,21 +80,13 @@ class Immersion
     #[Groups(['immersion:show', 'immersion:create', 'immersion:update'])]
     private ?string $lien_support = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\Regex(
-        '/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/',
-        message: "Le lien GitHub '{{ value }}' n'est pas valide."
-    )]
-    #[Groups(['immersion:show', 'immersion:create', 'immersion:update'])]
-    private ?string $lien_du_livrable = null;
+    #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
+    private Collection $livrables;
     
-    #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Apprenant::class)]
-    #[Groups(['immersion:show'])]
-    private Collection $apprenants;
 
     public function __construct()
     {
-        $this->apprenants = new ArrayCollection();
+        $this->livrables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -138,45 +130,35 @@ class Immersion
         return $this;
     }
 
-    public function getLienDuLivrable(): ?string
-    {
-        return $this->lien_du_livrable;
-    }
-
-    public function setLienDuLivrable(string $lien_du_livrable): static
-    {
-        $this->lien_du_livrable = $lien_du_livrable;
-
-        return $this;
-    }
 
     /**
-     * @return Collection<int, Apprenant>
+     * @return Collection<int, Livrable>
      */
-    public function getApprenants(): Collection
+    public function getLivrables(): Collection
     {
-        return $this->apprenants;
+        return $this->livrables;
     }
 
-    public function addApprenant(Apprenant $apprenant): static
+    public function addLivrable(Livrable $livrable): static
     {
-        if (!$this->apprenants->contains($apprenant)) {
-            $this->apprenants->add($apprenant);
-            $apprenant->setImmersion($this);
+        if (!$this->livrables->contains($livrable)) {
+            $this->livrables->add($livrable);
+            $livrable->setImmersion($this);
         }
 
         return $this;
     }
 
-    public function removeApprenant(Apprenant $apprenant): static
+    public function removeLivrable(Livrable $livrable): static
     {
-        if ($this->apprenants->removeElement($apprenant)) {
+        if ($this->livrables->removeElement($livrable)) {
             // set the owning side to null (unless already changed)
-            if ($apprenant->getImmersion() === $this) {
-                $apprenant->setImmersion(null);
+            if ($livrable->getImmersion() === $this) {
+                $livrable->setImmersion(null);
             }
         }
 
         return $this;
     }
+
 }

@@ -47,7 +47,7 @@ security:
             #     check_path: /api/token/refresh
 
             logout:
-                path: /api/logout
+                path:  app_logout
                 # target: /api
 
 
