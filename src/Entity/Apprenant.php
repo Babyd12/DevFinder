@@ -288,7 +288,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->competences;
     }
-
+   
     public function addCompetence(Competence $competence): static
     {
         if (!$this->competences->contains($competence)) {
