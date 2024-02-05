@@ -26,9 +26,9 @@ class LivrableTest extends TestCase
         $this->assertNull($this->livrable->getId());
     }
 
-    public function getLienDuLivrable(): void 
-    {   
-        $lientDuLivrable = 'google.com' ;
+    public function getLienDuLivrable(): void
+    {
+        $lientDuLivrable = 'google.com';
         $this->livrable->setLienDuLivrable($lientDuLivrable);
         $this->assertEquals($lientDuLivrable, $this->livrable->getLienDuLivrable());
     }
@@ -36,8 +36,14 @@ class LivrableTest extends TestCase
     public function testsetLienDuLivrable(): void
     {
         $lienDuLivrable = 'https://dev-t0gt7fxfqc4r13lt.us.auth0.com/api/v2/';
-    $this->livrable->setLienDuLivrable($lienDuLivrable);
-    $this->assertEquals($lienDuLivrable, $this->livrable->getLienDuLivrable());
+        $this->livrable->setLienDuLivrable($lienDuLivrable);
+        $this->assertEquals($lienDuLivrable, $this->livrable->getLienDuLivrable());
     }
 
+    public function getApprenant(): void
+    {
+        $apprenant = new Apprenant();
+        $apprenants = $this->livrable->getApprenant($apprenant);
+        $this->assertInstanceOf(Collection::class, $apprenants);
+    }
 }
