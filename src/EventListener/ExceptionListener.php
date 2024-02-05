@@ -11,8 +11,6 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 
-
-
 class ExceptionListener
 {
     public function __invoke(ExceptionEvent $event): void
@@ -53,7 +51,5 @@ class ExceptionListener
             $response = new JsonResponse(['error' => $errorMessage], $statusCode);
             $event->setResponse($response);
         } 
-    
-    
     }
 }
