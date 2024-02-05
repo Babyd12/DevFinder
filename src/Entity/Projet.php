@@ -28,11 +28,11 @@ use Symfony\Component\Validator\Constraints\Hostname;
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
         new Get(
-            uriTemplate:'/apprenant/participer/projet/{id}',
+            uriTemplate: '/apprenant/participer/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
             routeName: 'participerProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
+            normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
         ),
@@ -41,7 +41,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
             security: "is_granted('ROLE_APPRENANT')",
             routeName: 'quitterProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantQuitterPojet:show' ],
+            normalizationContext: ['groups' => 'apprenantQuitterPojet:show'],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
     ]
@@ -50,39 +50,39 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[GetCollection(
     hydraContext: ['groups' => 'apprenantQuitterProjet'],
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/liste',
+    uriTemplate: '/projet/liste',
 
     description: 'Affiche tout les projet',
-    name:'un nom simple a comprndre',
-    normalizationContext: [ 'groups' => ['projet:index'] ],
-    denormalizationContext: [ 'groups' => ['projet:index'] ],
+    name: 'un nom simple a comprndre',
+    normalizationContext: ['groups' => ['projet:index']],
+    denormalizationContext: ['groups' => ['projet:index']],
 
 )]
 
 #[Get(
     forceEager: true,
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/{id}',
-    normalizationContext: [ 'groups' => ['projet:show'] ]
+    uriTemplate: '/projet/{id}',
+    normalizationContext: ['groups' => ['projet:show']]
 )]
 
 #[Post(
     security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/ajouter',
-    denormalizationContext: [ 'groups' => ['projet:create'] ]
+    uriTemplate: '/projet/ajouter',
+    denormalizationContext: ['groups' => ['projet:create']]
 )]
 
 #[Put(
     shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate:'/projet/{id}',
+    uriTemplate: '/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     // securityMessage: 'Sorry, but you are not this projet owner.',
-    denormalizationContext: [ 'groups' => ['projet:update'] ]
+    denormalizationContext: ['groups' => ['projet:update']]
 )]
 
 #[Delete(
-    uriTemplate:'/projet/{id}',
+    uriTemplate: '/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
@@ -92,27 +92,52 @@ class Projet
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['apprenant:participate', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'apprenant:participate', 'projet:create', 'projet:update',
+            'apprenant:show'
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'apprenant:show'
+        ]
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'apprenant:show'
+        ]
+    )]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'apprenant:show'
+        ]
+    )]
     private ?int $nombre_de_participant = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'apprenant:show'
+        ]
+    )]
     private ?\DateTimeInterface $date_limite = null;
 
     #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(nullable:false)]
+    #[ORM\JoinColumn(nullable: false)]
     #[Groups(['projet:show'])]
     private ?Association $association = null;
 
@@ -127,7 +152,6 @@ class Projet
     #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
     private ?ProjetStatu $statu = null;
-
 
     public function __construct()
     {
@@ -255,13 +279,11 @@ class Projet
     {
         return $this->statu;
     }
-    
+
     public function setStatu(?ProjetStatu $statu): static
     {
         $this->statu = $statu;
 
         return $this;
     }
-
-   
 }

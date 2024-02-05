@@ -23,6 +23,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
 #[ApiResource(
     shortName: 'Module gestion de recrutement -Entreprise',
+    outputFormats: ['json' => 'application/json'],
     operations: [
         new Post(
             requirements: ['id' => '\d+'],
@@ -48,33 +49,32 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     uriTemplate: 'entreprise/liste',
     description: 'Modifie toi',
     name: 'nom temporaire',
-    normalizationContext: [ 'groups' => ['entreprise:index'] ]
+    normalizationContext: ['groups' => ['entreprise:index']]
 )]
 
 #[Get(
+    forceEager: true,
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/{id}',
-
-    forceEager: true,
-    normalizationContext: [ 'groups' => ['entreprise:show'] ]
+    normalizationContext: ['groups' => ['entreprise:show']]
 )]
 
 #[Post(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/inscription',
-    denormalizationContext: [ 'groups' => ['entreprise:create'] ]
+    denormalizationContext: ['groups' => ['entreprise:create']]
 )]
 
 #[Put(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/{id}',
-    denormalizationContext: [ 'groups' => ['entreprise:update'] ]
+    denormalizationContext: ['groups' => ['entreprise:update']]
 )]
 
 #[Patch(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/change_mot_de_passe/{id}',
-    denormalizationContext: [ 'groups' => ['entreprise:updateOne'] ]
+    denormalizationContext: ['groups' => ['entreprise:updateOne']]
 )]
 
 #[Delete(
@@ -87,25 +87,41 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(
+        [
+            'entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update',
+            // 'apprenant:show',
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
+    #[Groups(
+        [
+            'entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update',
+            // 'apprenant:show',
+        ]
+    )]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
+    #[Groups(
+        [
+            'entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update',
+            // 'apprenant:index',
+        ]
+    )]
     private ?string $email = null;
 
     #[ORM\Column]
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
+    #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update', 'apprenant:show'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\ManyToMany(targetEntity: Apprenant::class, inversedBy: 'entreprises')]
-    #[Groups(['entreprise:show',])]
+    #[Groups(['entreprise:show'])]
     private Collection $apprenants;
 
     public function __construct()
@@ -159,7 +175,7 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-       /**
+    /**
      * A visual identifier that represents this user.
      *
      * @see UserInterface
