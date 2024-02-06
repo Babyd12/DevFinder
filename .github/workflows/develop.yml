@@ -24,9 +24,14 @@ jobs:
       - name: Debug project location
         run: |
           ls -la
-          cd tests
-          ls -la
+      
+      - name: show in test
+        run: |
+            cd tests
 
+      - name: show in test
+        run: |
+          ls -la
       # - name: Change permissions of bootstrap.php
       #   run: |
       #     chmod -R +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
