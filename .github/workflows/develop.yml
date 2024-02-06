@@ -30,7 +30,7 @@ jobs:
 
       - name: Change permissions of bootstrap.php
         run: |
-          chmod +r /home/runner/work/DevFinder/DevFinder/Tests/bootstrap.php
+          chmod +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
 
 
       - name: Run Unit tests
