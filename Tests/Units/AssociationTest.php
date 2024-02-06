@@ -25,13 +25,13 @@ class AssociationTest extends TestCase
         $nom = "Nom de l'Association";
         $this->association->setNomComplet($nom);
         $this->assertEquals($nom, $this->association->getNomComplet());
+        
     }
 
     public function testGetEmail()
     {
         $email = 'test@example.com';
         $this->association->setEmail($email);
-
         $this->assertEquals($email, $this->association->getEmail());
     }
 
@@ -39,7 +39,6 @@ class AssociationTest extends TestCase
     {
         $password = 'testPassword';
         $this->association->setMotDePasse($password);
-
         $this->assertEquals($password, $this->association->getMotDePasse());
     }
 

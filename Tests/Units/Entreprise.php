@@ -36,7 +36,7 @@ class EntrepriseTest extends TestCase
         $this->assertEquals($email, $this->entreprise->getEmail());
     }
 
-    public function testGetMotDePasse()
+    public function testGetMotDePasse(): void
     {
         $password = 'testPassword';
         $this->entreprise->setMotDePasse($password);
@@ -44,7 +44,7 @@ class EntrepriseTest extends TestCase
         $this->assertEquals($password, $this->entreprise->getMotDePasse());
     }
 
-    public function testGetRole()
+    public function testGetRole(): void
     {
         $this->entreprise->setRoles(['ROLE_ASSOCIATION']);
         $this->assertEquals(['ROLE_ASSOCIATION'], $this->entreprise->getRoles());
