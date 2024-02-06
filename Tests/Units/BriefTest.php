@@ -17,7 +17,6 @@ class BriefTest extends TestCase
         $this->brief = new Brief();
     }
 
-    
     public function testGetId()
     {
         $this->assertNull($this->brief->getId());
