@@ -24,6 +24,14 @@ jobs:
       - name: Install dependencies
         run: composer install
 
+      - name: Debug project location
+        run: |
+          ls -la
+          
+      - name: Change permissions of bootstrap.php
+        run: |
+          chmod +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
+
       - name: Run Unit tests
         run: php bin/phpunit
         
