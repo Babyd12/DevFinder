@@ -25,23 +25,22 @@ jobs:
         run: |
           ls -la
       
-      - name: change directory in to test
-        run: |
-            cd Tests
+      # - name: change directory in to test
+      #   run: |
+      #       cd Tests
 
-      - name: show in test
-        run: |
-          ls -la
+      # - name: show in test
+      #   run: |
+      #     ls -la
       # - name: Change permissions of bootstrap.php
       #   run: | 
       #     chmod -R +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
 
-      # - name: Run Unit tests
-      #   run: php bin/phpunit
+      - name: Run Unit tests
+        run: phpunit --bootstrap Tests/bootstrap.php
 
-      # # Ajoutez une action pour envoyer une notification en cas d'échec des tests
-      # - name: Notify on test failure
-      #   if: failure()
-      #   run: echo "Les tests ont échoué. Veuillez vérifier les résultats."
 
-      # Ajoutez d'autres étapes au besoin...
+      # Ajoutez une action pour envoyer une notification en cas d'échec des tests
+      - name: Notify on test failure
+        if: failure()
+        run: echo "Les tests ont échoué. Veuillez vérifier les résultats."
