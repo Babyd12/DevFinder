@@ -11,16 +11,11 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 
-
-
-
 class ExceptionListener
 {
     public function __invoke(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
-
-
 
         if ($exception instanceof HttpExceptionInterface) {
             switch (true) {

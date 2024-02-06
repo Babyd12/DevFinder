@@ -38,7 +38,6 @@ class GetUserLoggedProcessor implements ProcessorInterface
 }
 
 
-
 // #[Route('/api/user', name: 'app_me')]
 // public function __invoke()
 // {

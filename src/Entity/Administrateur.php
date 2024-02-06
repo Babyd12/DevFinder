@@ -73,7 +73,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 
-class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
+class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -198,18 +198,6 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
 
         return $this;
     }
-
-    public static function createFromPayload($username,  array $playload)
-    {
-        $user = new Administrateur();
-        return $user;
-    }
-
-    public function __toString()
-    {
-        return $this->getNomComplet(); // Adapté à votre entité, utilisez la méthode ou les propriétés nécessaires.
-    }
-
 
     public function getUserLogged()
     {

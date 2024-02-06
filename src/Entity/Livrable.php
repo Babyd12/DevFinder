@@ -106,7 +106,7 @@ class Livrable
 
         return $this;
     }
-
+    
     public function getBrief(): ?Brief
     {
         return $this->brief;
