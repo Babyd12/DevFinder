@@ -25,9 +25,9 @@ jobs:
         run: |
           ls -la
       
-      - name: show in test
+      - name: change directory in to test
         run: |
-            cd tests
+            cd Tests
 
       - name: show in test
         run: |
