@@ -35,9 +35,9 @@ jobs:
       # - name: Change permissions of bootstrap.php
       #   run: | 
       #     chmod -R +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
-
+      
       - name: Run Unit tests
-        run: phpunit --bootstrap Tests/bootstrap.php
+        run:  php bin/phpunit --bootstrap Tests/bootstrap.php
 
 
       # Ajoutez une action pour envoyer une notification en cas d'échec des tests
