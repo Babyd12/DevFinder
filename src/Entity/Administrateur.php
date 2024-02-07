@@ -51,6 +51,9 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             provider:CustumAdminController::class,
             name: 'app_custum_admin_utilisateur',
             security:  "is_granted('ROLE_ADMIN')",
+            schemes: [
+                'liste des developpeur' => Apprenant::class,
+            ]
         ),
 
         // new GetCollection(
