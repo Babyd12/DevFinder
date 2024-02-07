@@ -51,8 +51,6 @@ class CustumAdminController extends AbstractController
             'utilisateurs' =>$arrayUser,
         ]);
     }
-
-
     
 
 }
