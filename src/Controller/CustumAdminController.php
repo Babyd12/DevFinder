@@ -40,6 +40,18 @@ class CustumAdminController extends AbstractController
             'liste des entreprises' =>$this->entityManager->getRepository(Entreprise::class)->findAll(),
         ]);
     }
+    #[Route('/api/administrateur/liste/s', name: 'app_custum_admin_utilisateur')]
+    public function listeUtilisateurs(): JsonResponse
+    { 
+        return $this->json([
+            'liste des entreprises' =>$this->entityManager->getRepository(Entreprise::class)->findAll(),
+            'liste des developpeurs' =>$this->entityManager->getRepository(Apprenant::class)->findAll(),
+            'liste des associations' => $this->entityManager->getRepository(Association::class)->findAll(),
 
+        ]);
+    }
+
+
+    
 
 }

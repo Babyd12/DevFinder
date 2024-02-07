@@ -47,24 +47,32 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ),
         new GetCollection(
             shortName: 'Module gestion de compte -Administrateur',
-            uriTemplate:'/administrateur/liste/entreprises',
+            uriTemplate:'/administrateur/liste/utilisateur',
             provider:CustumAdminController::class,
-            name: 'app_custum_admin_entreprises',
+            name: 'app_custum_admin_utilisateur',
             security:  "is_granted('ROLE_ADMIN')",
         ),
-        new GetCollection(
-            shortName: 'Module gestion de compte -Administrateur',
-            uriTemplate:'/administrateur/liste/associations',
-            name: 'app_custum_admin_associations',
-            provider:CustumAdminController::class,
-        ),
-        new GetCollection(
-            shortName: 'Module gestion de compte -Administrateur',
-            uriTemplate:'/administrateur/liste/developpeurs',
-            provider:CustumAdminController::class,
-            name: 'app_custum_admin_developpeurs',
 
-        ),
+        // new GetCollection(
+        //     shortName: 'Module gestion de compte -Administrateur',
+        //     uriTemplate:'/administrateur/liste/entreprises',
+        //     provider:CustumAdminController::class,
+        //     name: 'app_custum_admin_entreprises',
+        //     security:  "is_granted('ROLE_ADMIN')",
+        // ),
+        // new GetCollection(
+        //     shortName: 'Module gestion de compte -Administrateur',
+        //     uriTemplate:'/administrateur/liste/associations',
+        //     name: 'app_custum_admin_associations',
+        //     provider:CustumAdminController::class,
+        // ),
+        // new GetCollection(
+        //     shortName: 'Module gestion de compte -Administrateur',
+        //     uriTemplate:'/administrateur/liste/developpeurs',
+        //     provider:CustumAdminController::class,
+        //     name: 'app_custum_admin_developpeurs',
+
+        // ),
     ]
 )]
 
