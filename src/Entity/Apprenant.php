@@ -44,7 +44,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[Post(
     uriTemplate: 'apprenant/inscription',
-    name: 'créer un compte',
+    name: 'créer un compte', 
     denormalizationContext: ['groups' => ['apprenant:create']],
 )]
 
@@ -101,7 +101,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $mot_de_passe = null;
 
     #[ORM\Column]
-    // #[Groups(['apprenant:index', 'apprenant:update', 'apprenant:updateOne'])]
     private array $roles = [];
 
     #[ORM\ManyToOne(targetEntity: Immersion::class, inversedBy: 'apprenants')]
