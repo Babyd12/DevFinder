@@ -23,7 +23,7 @@ class EntreprisetFixtures extends Fixture
         $entreprise = new Entreprise();
         $entreprise->setNomComplet('entreprise');
         $entreprise->setEmail($email);
-        $password = $this->hasher->hashPassword($entreprise, 'password');
+        $password = $this->hasher->hashPassword($entreprise, 'Animaleman24@');
         $entreprise->setMotDePasse($password);
         $entreprise->setTelephone('784443232');
         $entreprise->setDescription('This is the new description  for this entreprise user and will be used   to authenticate');

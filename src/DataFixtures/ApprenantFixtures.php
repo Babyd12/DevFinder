@@ -22,7 +22,7 @@ class ApprenantFixtures extends Fixture
         $apprenant = new Apprenant();
         $apprenant->setNomComplet('apprenant');
         $apprenant->setEmail($email);
-        $password = $this->hasher->hashPassword($apprenant, 'password');
+        $password = $this->hasher->hashPassword($apprenant, 'Animaleman24@');
         $apprenant->setMotDePasse($password);
         $apprenant->setTelephone('784443232');
         $apprenant->setDescription('This is the new description  for this apprenant user and will be used   to authenticate');

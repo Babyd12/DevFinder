@@ -88,7 +88,7 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\PasswordStrength([
         'minScore' => PasswordStrength::STRENGTH_WEAK,
     ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
-    #[Groups(['association:create', 'association:update', 'association:updateOne'])]
+    #[Groups(['association:create', 'association:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]

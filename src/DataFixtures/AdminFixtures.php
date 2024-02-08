@@ -24,7 +24,7 @@ class AdminFixtures extends Fixture
         $admin = new Administrateur();
         $admin->setNomComplet('admin');
         $admin->setEmail($email);
-        $password = $this->hasher->hashPassword($admin, 'password');
+        $password = $this->hasher->hashPassword($admin, 'Animaleman24@');
         $admin->setPassword($password);
         $admin->setRoles($admin->getRoles());
         $exist  = $manager->getRepository(Administrateur::class)->findOneBy(['email' => $email]);

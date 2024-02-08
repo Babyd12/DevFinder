@@ -21,7 +21,7 @@ class AssociationTest extends ApiTestCase
 
         $entityManager =  $client->getContainer()->get(EntityManagerInterface::class);
         $associaitonExistante = $entityManager->getRepository(Association::class)->findOneBy(['email' => $email]);
-        if (!$associaitonExistante) {
+        if ($associaitonExistante == null) {
             // L'utilisateur n'existe pas, procédez à l'inscription
             $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
             $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
@@ -30,7 +30,7 @@ class AssociationTest extends ApiTestCase
             $data = [
                 "nom_complet" => 'Mon Association',
                 "email" => $email,
-                "mot_de_passe" => password_hash('Animaleman24@', PASSWORD_BCRYPT),
+                "mot_de_passe" => 'Animaleman24@',
                 "telephone" => $telephoneSenegal,
                 "description" => $description,
                 "numero_identification_naitonal" => $numero_identificacion,
@@ -43,13 +43,15 @@ class AssociationTest extends ApiTestCase
             $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
             $this->assertResponseStatusCodeSame(201);
             $this->assertEquals(201, $client->getResponse()->getStatusCode());
-        }
+        } else {
+            $client->request('GET', '/api/association/' . $associaitonExistante->getId(), [
+                'headers' => ['Accept' => 'application/json']
 
-        $client->request('GET', '/api/association/' . $associaitonExistante->getId(), [
-            'headers' => ['Accept' => 'application/json']
-        ]);
-        $this->assertResponseStatusCodeSame(200);
-        $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+            ]);
+            // var_dump($client->getResponse()->getContent()); die();
+            $this->assertResponseStatusCodeSame(200);
+            $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+        }
 
         // $this->assertJsonContains(
         //     [
@@ -63,13 +65,13 @@ class AssociationTest extends ApiTestCase
         // $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
     }
-    
-    public function connexion_association(): void
+
+    public function test_connexion_association(): void
     {
         $client = static::createClient();
         $data = [
             'email' => 'association@association.com',
-            'mot_de_passe' => 'password',
+            'mot_de_passe' => 'Animaleman24@'
         ];
 
         $response =  $client->request('POST', '/connexion', [
@@ -88,9 +90,9 @@ class AssociationTest extends ApiTestCase
      * @var this->jwtToken hydrater depuis connexion_association 
      * @
      */
-    public function recuperer_utilisateur_connecter(): void
+    public function test_recuperer_utilisateur_connecter(): void
     {
-        $this->connexion_association();
+        $this->test_connexion_association();
         $client = static::createClient();
         $response =  $client->request('POST', '/api/utilisateur/connecte', [
             'headers' => ['Accept' => 'application/json'],
@@ -140,7 +142,6 @@ class AssociationTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(201);
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
-
 
     public function test_afficher_liste_des_associations(): void
     {
@@ -203,10 +204,8 @@ class AssociationTest extends ApiTestCase
     {
         $client = static::createClient();
         $faker = Factory::create();
-        // je connecte une association
-        $this->connexion_association();
         // je récupère les informations de l'association connecté de façons sécurisé
-        $this->recuperer_utilisateur_connecter();
+        $this->test_recuperer_utilisateur_connecter();
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
         $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
@@ -228,20 +227,18 @@ class AssociationTest extends ApiTestCase
         $this->assertResponseHeaderSame('content-type', 'application/json');
     }
 
-
-
     public function test_recuperer_une_association_via_son_id(): void
     {
         $client = static::createClient();
         $email = 'association@association.com';
-    
+
         $entityManager =  $client->getContainer()->get(EntityManagerInterface::class);
         $associationExistante = $entityManager->getRepository(Association::class)->findOneBy(['email' => $email]);
-    
-      $client->request('GET', '/api/association/' . $associationExistante->getId(), [
+
+        $client->request('GET', '/api/association/' . $associationExistante->getId(), [
             'headers' => ['Accept' => 'application/json']
         ]);
-    
+
         $this->assertResponseStatusCodeSame(200);
         $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
         $this->assertJsonContains([
@@ -254,22 +251,32 @@ class AssociationTest extends ApiTestCase
         ]);
     }
 
+    public function test_supprimer_compte_association_sans_token(): void
+    {
+        $client = static::createClient();
+        $client->request('DELETE', '/api/association/1', [
+            'headers' => ['Accept' => 'application/json']
+        ]);
+
+        $this->assertResponseHeaderSame('content-type', 'application/json');
+        $this->assertResponseStatusCodeSame(401);
+        $this->assertEquals(401, $client->getResponse()->getStatusCode());
+        $this->assertJsonContains(['message' => 'JWT Token not found']);
+    }
+
     public function test_supprimer_compte_association_avec_token(): void
     {
         $client = static::createClient();
         $faker = Factory::create();
-        // je connecte une association
-        $this->connexion_association();
-        // je récupère les informations de l'association connecté de façons sécurisé
-        $this->recuperer_utilisateur_connecter();
-
-        $client->request('DELETE', '/api/association/'.$this->utilisateurConnecte['id'], [
+        $this->test_inscription_association_par_defaut_si_aucun_compte();
+        $this->test_recuperer_utilisateur_connecter();
+        $client->request('DELETE', '/api/association/' . $this->utilisateurConnecte['id'], [
             'headers' => ['Accept' => 'application/json'],
             'auth_bearer' => $this->jwtToken,
         ]);
-
+        dump($client->getResponse()->getContent());
         $this->assertResponseStatusCodeSame(200);
         $this->assertResponseHeaderSame('content-type', 'application/json');
+       
     }
 }
-

@@ -22,7 +22,7 @@ class AssociationFixtures extends Fixture
         $association = new Association();
         $association->setNomComplet('association');
         $association->setEmail($email);
-        $password = $this->hasher->hashPassword($association, 'password');
+        $password = $this->hasher->hashPassword($association, 'Animaleman24@');
         $association->setMotDePasse($password);
         $association->setTelephone('784443232');
         $association->setDescription('This is the new description  for this association user and will be used   to authenticate');
