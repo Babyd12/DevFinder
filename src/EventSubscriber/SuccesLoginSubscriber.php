@@ -30,6 +30,7 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
                     'Nom complet' => $user->getNomComplet(),
                     'email' => $user->getUserIdentifier(),
                     'token' => $token,
+                    'id' => $user->getId(),
                 ], JsonResponse::HTTP_OK));
             }
         }
