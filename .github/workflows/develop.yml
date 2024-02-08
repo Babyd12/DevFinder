@@ -35,11 +35,11 @@ jobs:
       # - name: Change permissions of bootstrap.php
       #   run: | 
       #     chmod -R +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
-      # - name: Prepare env database
-      #   run: |
-      #     php bin/console d:d:c --if-not-exists
-      #     php bin/console d:m:m --env=test
-      #     php bin/console d:f:l --env=test
+      - name: Set up Database
+        run: |
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:migrations:migrate --no-interaction --env=test
+          php bin/console doctrine:fixtures:load --no-interaction --env=test
 
       - name: Run Unit tests
         run:  php bin/phpunit 
