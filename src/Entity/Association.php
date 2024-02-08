@@ -22,7 +22,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ApiResource(
     shortName: 'Module gestion de compte -Association',
-    
+    operations: [
+        new Patch(
+            uriTemplate: 'association/monitorer/{id}',  
+            securityPostDenormalize: "is_granted('ROLE_ADMINISTRATEUR') ",
+            denormalizationContext: [ 'groups' => ['association:monitorer'] ], 
+            normalizationContext: [ 'groups' => ['association:monitorer'] ],
+        )
+    ]
 )]
 
 #[GetCollection(
@@ -53,6 +60,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: [ 'groups' => ['association:updateOne'] ]
 )]
 
+
 #[Delete(
     uriTemplate: 'association/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
@@ -77,7 +85,7 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([ 'association:create', 'association:update', 'association:updateOne'])]
+    #[Groups([ 'association:create', 'association:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]
@@ -87,6 +95,10 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: LangageDeProgrammation::class)]
     #[Groups([ 'association:show'])]
     private Collection $langageDeProgrammations;
+
+    #[ORM\Column(options:['default',false])]
+    #[Groups(['association:monitorer'])]
+    private ?bool $etat = null;
 
     public function __construct()
     {
@@ -236,5 +248,17 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function isEtat(): ?bool
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(bool $etat): static
+    {
+        $this->etat = $etat;
+
+        return $this;
     }
 }

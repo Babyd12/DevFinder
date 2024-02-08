@@ -41,8 +41,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['entreprise:recruter'],
             normalizationContext: ['entreprise:recruter'],
         ),
+
+        new Patch(
+            uriTemplate: 'entreprise/monitorer/{id}',
+            securityPostDenormalize: "is_granted('ROLE_ADMINISTRATEUR') ",
+            denormalizationContext: [ 'groups' => ['association:monitorer'] ]
+        )
     ]
 )]
+
 
 #[GetCollection(
     shortName: 'Module gestion de compte -Entreprise',
@@ -123,6 +130,10 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Apprenant::class, inversedBy: 'entreprises')]
     #[Groups(['entreprise:show'])]
     private Collection $apprenants;
+
+    #[ORM\Column(options:['default',false])]
+    #[Groups(['association:monitorer'])]
+    private ?bool $etat = null;
 
     public function __construct()
     {
@@ -233,6 +244,18 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeApprenant(Apprenant $apprenant): static
     {
         $this->apprenants->removeElement($apprenant);
+
+        return $this;
+    }
+
+    public function isEtat(): ?bool
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(bool $etat): static
+    {
+        $this->etat = $etat;
 
         return $this;
     }
