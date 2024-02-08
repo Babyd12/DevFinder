@@ -27,7 +27,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             uriTemplate: 'association/monitorer/{id}',  
             securityPostDenormalize: "is_granted('ROLE_ADMINISTRATEUR') ",
             denormalizationContext: [ 'groups' => ['association:monitorer'] ], 
-            normalizationContext: [ 'groups' => ['association:monitorer'] ],
+           
         )
     ]
 )]

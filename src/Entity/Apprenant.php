@@ -32,7 +32,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Patch(
             uriTemplate: 'apprenant/monitorer/{id}',
             securityPostDenormalize: "is_granted('ROLE_ADMINISTRATEUR') ",
-            // denormalizationContext: [ 'groups' => ['association:monitorer'] ]
+            denormalizationContext: [ 'groups' => ['association:monitorer'] ]
         )
     ]
 )]

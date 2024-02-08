@@ -43,6 +43,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ),
 
         new Patch(
+            shortName: 'Module gestion de compte -Entreprise',
             uriTemplate: 'entreprise/monitorer/{id}',
             securityPostDenormalize: "is_granted('ROLE_ADMINISTRATEUR') ",
             denormalizationContext: [ 'groups' => ['association:monitorer'] ]
