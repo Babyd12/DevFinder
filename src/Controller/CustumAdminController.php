@@ -15,11 +15,10 @@ class CustumAdminController extends AbstractController
 {
     public function __construct(private EntityManagerInterface $entityManager)
     {
-        
     }
     #[Route('/api/administrateur/liste/associations', name: 'app_custum_admin_associations')]
     public function listeAssociations(): JsonResponse
-    { 
+    {
         return $this->json([
             'liste des associations' => $this->entityManager->getRepository(Association::class)->findAll(),
         ]);
@@ -27,30 +26,30 @@ class CustumAdminController extends AbstractController
 
     #[Route('/api/administrateur/liste/developpeurs', name: 'app_custum_admin_developpeurs')]
     public function listeApprenants(): JsonResponse
-    { 
+    {
         return $this->json([
-            'liste des developpeurs' =>$this->entityManager->getRepository(Apprenant::class)->findAll(),
+            'liste des developpeurs' => $this->entityManager->getRepository(Apprenant::class)->findAll(),
         ]);
     }
 
     #[Route('/api/administrateur/liste/entreprises', name: 'app_custum_admin_entreprises')]
     public function listeEntreprises(): JsonResponse
-    { 
+    {
         return $this->json([
-            'liste des entreprises' =>$this->entityManager->getRepository(Entreprise::class)->findAll(),
+            'liste des entreprises' => $this->entityManager->getRepository(Entreprise::class)->findAll(),
         ]);
     }
     #[Route('/api/administrateur/liste/utilisateur', name: 'app_custum_admin_utilisateur')]
     public function listeUtilisateurs(): JsonResponse
-    { 
-        $arrayUser = [];
-        $arrayUser = $this->entityManager->getRepository(Entreprise::class)->findAll();
-        $arrayUser = $this->entityManager->getRepository(Apprenant::class)->findAll();
-        $arrayUser = $this->entityManager->getRepository(Association::class)->findAll();
+    {
+        $entreprises = $this->entityManager->getRepository(Entreprise::class)->findAll();
+        $apprenants = $this->entityManager->getRepository(Apprenant::class)->findAll();
+        $associations = $this->entityManager->getRepository(Association::class)->findAll();
+
+        $arrayUser = array_merge($entreprises, $apprenants, $associations);
+
         return $this->json([
-            'utilisateurs' =>$arrayUser,
+            'utilisateurs' => $arrayUser,
         ]);
     }
-    
-
 }
