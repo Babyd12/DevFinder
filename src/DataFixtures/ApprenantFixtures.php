@@ -27,6 +27,7 @@ class ApprenantFixtures extends Fixture
         $apprenant->setTelephone('784443232');
         $apprenant->setDescription('This is the new description  for this apprenant user and will be used   to authenticate');
         $apprenant->setRoles($apprenant->getRoles());
+        $apprenant->setEtat(false);
         $exist  = $manager->getRepository(Apprenant::class)->findOneBy(['email' => $email]);
         if(!$exist){
             $manager->persist($apprenant);     

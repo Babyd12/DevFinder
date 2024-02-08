@@ -35,11 +35,15 @@ jobs:
       # - name: Change permissions of bootstrap.php
       #   run: | 
       #     chmod -R +r /home/runner/work/DevFinder/DevFinder/tests/bootstrap.php
-      
+      - name: Prepare env database
+        run: |
+          php bin/console d:d:c --if-not-exists
+          php bin/console d:m:m --env=test
+          php bin/console d:f:l --env=test
+
       - name: Run Unit tests
         run:  php bin/phpunit 
         # --bootstrap test/bootstrap.php
-
 
       # Ajoutez une action pour envoyer une notification en cas d'échec des tests
       - name: Notify on test failure

@@ -3,40 +3,40 @@
 namespace App\Tests\Functional;
 
 use Faker\Factory;
-use App\Entity\Association;
+use App\Entity\Apprenant;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 
-class AssociationTest extends ApiTestCase
+class ApprenantTest extends ApiTestCase
 {
     private string $jwtToken;
     private array $utilisateurConnecte;
 
-    public function test_inscription_association_par_defaut_si_aucun_compte(): void
+    public function test_inscription_apprenant_par_defaut_si_aucun_compte(): void
     {
         $client = static::createClient();
         $faker = Factory::create();
 
-        $email = 'association@association.com';
+        $email = 'apprenant@apprenant.com';
 
         $entityManager =  $client->getContainer()->get(EntityManagerInterface::class);
-        $associaitonExistante = $entityManager->getRepository(Association::class)->findOneBy(['email' => $email]);
+        $associaitonExistante = $entityManager->getRepository(Apprenant::class)->findOneBy(['email' => $email]);
         if ($associaitonExistante == null) {
             // L'utilisateur n'existe pas, procédez à l'inscription
             $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
-            $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
+           
             $description = $faker->regexify('[A-Za-z0-9]{36}');
 
             $data = [
-                "nom_complet" => 'Mon Association',
+                "nom_complet" => 'Mon Apprenant',
                 "email" => $email,
                 "mot_de_passe" => 'Animaleman24@',
                 "telephone" => $telephoneSenegal,
                 "description" => $description,
-                "numero_identification_naitonal" => $numero_identificacion,
+        
             ];
 
-            $client->request('POST', '/api/association/inscription', [
+            $client->request('POST', '/api/apprenant/inscription', [
                 'headers' => ['Accept' => 'application/json'],
                 'json' => $data
             ]);
@@ -44,7 +44,7 @@ class AssociationTest extends ApiTestCase
             $this->assertResponseStatusCodeSame(201);
             $this->assertEquals(201, $client->getResponse()->getStatusCode());
         } else {
-            $client->request('GET', '/api/association/' . $associaitonExistante->getId(), [
+            $client->request('GET', '/api/apprenant/' . $associaitonExistante->getId(), [
                 'headers' => ['Accept' => 'application/json']
 
             ]);
@@ -55,8 +55,8 @@ class AssociationTest extends ApiTestCase
 
         // $this->assertJsonContains(
         //     [
-        //         '@context' => '/api/contexts/Module%20gestion%20de%20compte%20-Association',
-        //         '@id' => '/api/association/liste',
+        //         '@context' => '/api/contexts/Module%20gestion%20de%20compte%20-Apprenant',
+        //         '@id' => '/api/apprenant/liste',
         //         "@type" => "hydra:Collection",
         //         'hydra:member' => [],
         //     ]
@@ -66,11 +66,11 @@ class AssociationTest extends ApiTestCase
 
     }
 
-    public function test_connexion_association(): void
+    public function test_connexion_apprenant(): void
     {
         $client = static::createClient();
         $data = [
-            'email' => 'association@association.com',
+            'email' => 'apprenant@apprenant.com',
             'mot_de_passe' => 'Animaleman24@'
         ];
 
@@ -86,13 +86,13 @@ class AssociationTest extends ApiTestCase
     }
 
     /**
-     * @see connexion_association
-     * @var this->jwtToken hydrater depuis connexion_association 
+     * @see connexion_apprenant
+     * @var this->jwtToken hydrater depuis connexion_apprenant 
      * @
      */
     public function test_recuperer_utilisateur_connecter(): void
     {
-        $this->test_connexion_association();
+        $this->test_connexion_apprenant();
         $client = static::createClient();
         $response =  $client->request('POST', '/api/utilisateur/connecte', [
             'headers' => ['Accept' => 'application/json'],
@@ -113,13 +113,13 @@ class AssociationTest extends ApiTestCase
         // var_dump($this->utilisateurConnecte);
     }
 
-    public function test_inscription_association(): void
+    public function test_inscription_apprenant(): void
     {
         $client = static::createClient();
         $faker = Factory::create();
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
-        $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
+       
         $description = $faker->regexify('[A-Za-z0-9]{36}');
 
         $data = [
@@ -128,26 +128,25 @@ class AssociationTest extends ApiTestCase
             "mot_de_passe" => password_hash('Animaleman24@', PASSWORD_BCRYPT),
             "telephone" => $telephoneSenegal,
             "description" => $description,
-            "numero_identification_naitonal" => $numero_identificacion,
         ];
 
         // var_dump($data);
 
-        $client->request('POST', '/api/association/inscription', [
+        $client->request('POST', '/api/apprenant/inscription', [
             'headers' => ['Accept' => 'application/json'],
             'json' => $data
         ]);
 
-        $this->assertResponseHeaderSame('accept-patch', 'application/merge-patch+json');
+        $this->assertResponseHeaderSame('accept-patch', 'application/json');
         $this->assertResponseStatusCodeSame(201);
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
 
-    public function test_afficher_liste_des_associations(): void
+    public function test_afficher_liste_des_apprenants(): void
     {
 
         $client =  static::createClient();
-        $client->request('GET', '/api/association/liste', ['headers' => ['Accept' => 'application/json']]);
+        $client->request('GET', '/api/apprenant/liste', ['headers' => ['Accept' => 'application/json']]);
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
@@ -156,8 +155,8 @@ class AssociationTest extends ApiTestCase
 
         // $this->assertJsonContains(
         //     [
-        //         '@context' => '/api/contexts/Module%20gestion%20de%20compte%20-Association',
-        //         '@id' => '/api/association/liste',
+        //         '@context' => '/api/contexts/Module%20gestion%20de%20compte%20-Apprenant',
+        //         '@id' => '/api/apprenant/liste',
         //         "@type" => "hydra:Collection",
         //         'hydra:member' => [],
         //     ]
@@ -165,13 +164,13 @@ class AssociationTest extends ApiTestCase
         // $this->assertArrayHasKey('hydra:totalItems', json_decode($client->getResponse()->getContent(), true));
     }
 
-    public function test_editer_association_sans_token(): void
+    public function test_editer_apprenant_sans_token(): void
     {
         $client = static::createClient();
         $faker = Factory::create();
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
-        $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
+       
         $description = $faker->regexify('[A-Za-z0-9]{36}');
 
         $data = [
@@ -180,9 +179,9 @@ class AssociationTest extends ApiTestCase
             "mot_de_passe" => password_hash('Animaleman24@', PASSWORD_BCRYPT),
             "telephone" => $telephoneSenegal,
             "description" => $description,
-            "numero_identification_naitonal" => $numero_identificacion,
+    
         ];
-        $client->request('PUT', '/api/association/1', [
+        $client->request('PUT', '/api/apprenant/1', [
             'headers' => ['Accept' => 'application/json'],
             'json' => $data
         ]);
@@ -194,31 +193,31 @@ class AssociationTest extends ApiTestCase
     }
 
     /**
-     * @see connexion association
+     * @see connexion apprenant
      * @return string token
      * 
      * @see recupere_utilisateur_connecter
-     * @return array instance d'une association 
+     * @return array instance d'une apprenant 
      */
-    public function test_editer_association_avec_token(): void
+    public function test_editer_apprenant_avec_token(): void
     {
         $client = static::createClient();
         $faker = Factory::create();
-        // je récupère les informations de l'association connecté de façons sécurisé
+        // je récupère les informations de l'apprenant connecté de façons sécurisé
         $this->test_recuperer_utilisateur_connecter();
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
-        $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
+       
         $description = $faker->regexify('[A-Za-z0-9]{36}');
 
         $data = [
             "nom_complet" => $faker->firstName() . ' ' . $faker->lastName(),
             "telephone" => $telephoneSenegal,
             "description" => $description,
-            "numero_identification_naitonal" => $numero_identificacion,
+    
         ];
 
-        $client->request('PUT', '/api/association/' .  $this->utilisateurConnecte['id'], [
+        $client->request('PUT', '/api/apprenant/' .  $this->utilisateurConnecte['id'], [
             'headers' => ['Accept' => 'application/json'],
             'auth_bearer' => $this->jwtToken,
             'json' => $data
@@ -227,34 +226,33 @@ class AssociationTest extends ApiTestCase
         $this->assertResponseHeaderSame('content-type', 'application/json');
     }
 
-    public function test_recuperer_une_association_via_son_id(): void
+    public function test_recuperer_une_apprenant_via_son_id(): void
     {
         $client = static::createClient();
-        $email = 'association@association.com';
-        
-        $entityManager =  $client->getContainer()->get(EntityManagerInterface::class);
-        $associationExistante = $entityManager->getRepository(Association::class)->findOneBy(['email' => $email]);
+        $email = 'apprenant@apprenant.com';
 
-        $client->request('GET', '/api/association/' . $associationExistante->getId(), [
+        $entityManager =  $client->getContainer()->get(EntityManagerInterface::class);
+        $apprenantExistante = $entityManager->getRepository(Apprenant::class)->findOneBy(['email' => $email]);
+
+        $client->request('GET', '/api/apprenant/' . $apprenantExistante->getId(), [
             'headers' => ['Accept' => 'application/json']
         ]);
 
         $this->assertResponseStatusCodeSame(200);
         $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
         $this->assertJsonContains([
-            // 'id' => $associationExistante->getId(),
-            'nom_complet' => $associationExistante->getNomComplet(),
-            'email' => $associationExistante->getEmail(),
-            'telephone' => $associationExistante->getTelephone(),
-            'description' => $associationExistante->getDescription(),
-            'numero_identification_naitonal' => $associationExistante->getNumeroIdentificationNaitonal(),
+            // 'id' => $apprenantExistante->getId(),
+            'nom_complet' => $apprenantExistante->getNomComplet(),
+            'email' => $apprenantExistante->getEmail(),
+            // 'telephone' => $apprenantExistante->getTelephone(),
+            // 'description' => $apprenantExistante->getDescription(),
         ]);
     }
 
-    public function test_supprimer_compte_association_sans_token(): void
+    public function test_supprimer_compte_apprenant_sans_token(): void
     {
         $client = static::createClient();
-        $client->request('DELETE', '/api/association/1', [
+        $client->request('DELETE', '/api/apprenant/1', [
             'headers' => ['Accept' => 'application/json']
         ]);
 
@@ -264,13 +262,13 @@ class AssociationTest extends ApiTestCase
         $this->assertJsonContains(['message' => 'JWT Token not found']);
     }
 
-    public function test_supprimer_compte_association_avec_token(): void
+    public function test_supprimer_compte_apprenant_avec_token(): void
     {
         $client = static::createClient();
         $faker = Factory::create();
-        $this->test_inscription_association_par_defaut_si_aucun_compte();
+        $this->test_inscription_apprenant_par_defaut_si_aucun_compte();
         $this->test_recuperer_utilisateur_connecter();
-        $client->request('DELETE', '/api/association/' . $this->utilisateurConnecte['id'], [
+        $client->request('DELETE', '/api/apprenant/' . $this->utilisateurConnecte['id'], [
             'headers' => ['Accept' => 'application/json'],
             'auth_bearer' => $this->jwtToken,
         ]);

@@ -28,6 +28,7 @@ class AssociationFixtures extends Fixture
         $association->setDescription('This is the new description  for this association user and will be used   to authenticate');
         $association->setNumeroIdentificationNaitonal('3243805 0LM');
         $association->setRoles($association->getRoles());
+        $association->setEtat(false);
         $exist  = $manager->getRepository(Association::class)->findOneBy(['email' => $email]);
         if(!$exist){
             $manager->persist($association);     

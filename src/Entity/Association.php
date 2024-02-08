@@ -116,6 +116,9 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['association:show', 'association:index', 'association:create'])]
     private ?string $numero_identification_naitonal = null;
 
+    #[ORM\Column]
+    private ?bool $etat = null;
+
     public function __construct()
     {
         $this->projets = new ArrayCollection();
@@ -297,6 +300,18 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNumeroIdentificationNaitonal(string $numero_identification_naitonal): static
     {
         $this->numero_identification_naitonal = $numero_identification_naitonal;
+
+        return $this;
+    }
+
+    public function isEtat(): ?bool
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(bool $etat): static
+    {
+        $this->etat = $etat;
 
         return $this;
     }

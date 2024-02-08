@@ -29,6 +29,7 @@ class EntreprisetFixtures extends Fixture
         $entreprise->setDescription('This is the new description  for this entreprise user and will be used   to authenticate');
         $entreprise->setNumeroIdentificationNaitonal('3243805 0LM');
         $entreprise->setRoles($entreprise->getRoles());
+        $entreprise->setEtat(false);
         $exist  = $manager->getRepository(Entreprise::class)->findOneBy(['email' => $email]);
         if(!$exist){
             $manager->persist($entreprise);     
