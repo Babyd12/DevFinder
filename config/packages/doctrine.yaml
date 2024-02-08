@@ -1,6 +1,7 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        driver: 'pdo_mysql'
         # driver: 'pdo_mysql'
         # host: 'db'  # Assurez-vous que 'db' est correct, ou utilisez l'adresse IP de votre base de données
         # port: null
