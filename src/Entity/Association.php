@@ -74,7 +74,6 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le champ {value} ne doit pas être vide')]
-
     #[Assert\Length(min: 2, max: 20, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]

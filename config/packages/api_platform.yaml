@@ -4,10 +4,14 @@ api_platform:
     eager_loading:
         fetch_partial: true
     formats:
-        jsonld: ['application/json']
-        outputFormats: ['application/json']
+        json: ['application/json']
+        jsonld: ['application/json+ld']
+        # outputFormats: ['application/json']
+        multipart: ['application/x-www-form-urlencoded']
+    
     docs_formats:
-        jsonld: ['application/json']
+        jsonld: ['application/json+ld']
+        json: ['application/json']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     defaults:
