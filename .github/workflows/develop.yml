@@ -21,10 +21,15 @@ jobs:
       - name: Install dependencies
         run: composer install
 
-      - name: Set up Database
-        run: |
-          php bin/console doctrine:database:create --if-not-exists --env=test
+      - name: Create database
+        run: php bin/console doctrine:database:create --if-not-exists --env=test
+      
+      - name: Migrate in env test
+        run:
           php bin/console doctrine:migrations:migrate --no-interaction --env=test
+      
+      - name: Run fixtures
+        run:
           php bin/console doctrine:fixtures:load --no-interaction --env=test
 
       - name: Run Unit tests
