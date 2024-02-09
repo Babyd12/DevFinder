@@ -128,6 +128,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable:true)]
     #[Assert\NotBlank(message: 'Ce champ ne peut pas être vide')]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\'\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
     #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $description = null;
 
