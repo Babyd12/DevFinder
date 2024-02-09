@@ -28,7 +28,7 @@ jobs:
 
       - name: Set up MySQL
         run: |
-          docker-php-extinstall mysqli pdo pdo_mysql zip
+          docker-php-ext-install mysqli pdo pdo_mysql zip
 
       - name: Wait for MySQL to be ready
         run: sleep 30
