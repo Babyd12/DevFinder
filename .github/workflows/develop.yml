@@ -28,23 +28,20 @@ jobs:
 
       - name: Set up MySQL
         run: |
-          docker run --name mysql-container -d -p 3306:3306 \
-          -e MYSQL_ROOT_PASSWORD=pass_test \
-          -e MYSQL_DATABASE=devfinder \
-          -e MYSQL_USER=root \
-          -e MYSQL_PASSWORD= \
-          mysql:5.7
+          docker-php-extinstall mysqli pdo pdo_mysql zip
 
       - name: Wait for MySQL to be ready
         run: sleep 30
 
       - name: Prepare database
         run: |
+          php bin/console doctrine:database:drop --force --env=test
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:fixtures:load --no-interaction
 
       - name: Install Composer dependencies
         run: composer install
+
 
       # - name: Start PHP server
       #   run: php artisan serve &
