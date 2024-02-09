@@ -27,12 +27,7 @@ jobs:
           curl -sS https://getcomposer.org/installer | php -- --disable-tls
           sudo mv composer.phar /usr/local/bin/composer
           composer install --no-scripts
-          composer require symfony/maker-bundle --dev
-
-      - name: Show maker bundle
-        run: composer show --all symfony/maker-bundle
-
-
+      
       - name: See Docker status
         run: docker ps
 
@@ -49,10 +44,6 @@ jobs:
   
       - name: Create test database
         run: php bin/console doctrine:database:create --env=test
-  
-      - name: Generate Doctrine migrations for test environment
-        run: php bin/console make:migration --env=test --no-interaction
-        
   
       - name: Execute Doctrine migrations for test environment
         run: php bin/console doctrine:migrations:migrate --env=test --no-interaction
