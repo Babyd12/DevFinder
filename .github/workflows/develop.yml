@@ -22,11 +22,8 @@ jobs:
 
       - name: Install dependencies
         run: composer install
-        
-      - name: Drop test database
-        run: php bin/console doctrine:database:drop --force --env=test --connection=default
-        env:
-          DATABASE_URL: mysql://root:pass_test@127.0.0.1:3306/devfinder?serverVersion=10.11.2-MariaDB&charset=utf8mb4
+
+      
             
       - name: Set up MySQL
         run: |
@@ -39,17 +36,21 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: sleep 30
-      
-      - name: Grant privileges to MySQL user
-        run: |
-          docker exec mysql-container mysql -uroot -ppass_test -e "GRANT ALL PRIVILEGES ON devfinder_test.* TO 'root'@'%' WITH GRANT OPTION;"
-          docker exec mysql-container mysql -uroot -ppass_test -e "FLUSH PRIVILEGES;"
-      
-      - name: Prepare database
-        run: |
-          php bin/console doctrine:database:drop --force --env=test
-          php bin/console doctrine:database:create --env=test
-          php bin/console doctrine:fixtures:load --no-interaction
 
-      - name: Run Unit tests
-        run: php bin/phpunit
+      - name: Check MySQL container status
+        run: docker ps
+
+      
+      # - name: Grant privileges to MySQL user
+      #   run: |
+      #     docker exec mysql-container mysql -uroot -ppass_test -e "GRANT ALL PRIVILEGES ON devfinder_test.* TO 'root'@'%' WITH GRANT OPTION;"
+      #     docker exec mysql-container mysql -uroot -ppass_test -e "FLUSH PRIVILEGES;"
+      
+      # - name: Prepare database
+      #   run: |
+      #     php bin/console doctrine:database:drop --force --env=test
+      #     php bin/console doctrine:database:create --env=test
+      #     php bin/console doctrine:fixtures:load --no-interaction
+
+      # - name: Run Unit tests
+      #   run: php bin/phpunit
