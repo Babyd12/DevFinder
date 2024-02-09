@@ -26,6 +26,8 @@ jobs:
           mv composer.phar /usr/local/bin/composer
           composer install --no-scripts
         
+      - name: Wait for MySQL to be ready
+        run: sleep 10
 
       - name: Set up MySQL
         run: |
