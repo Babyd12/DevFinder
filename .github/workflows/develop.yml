@@ -1,4 +1,4 @@
-name: Symfony Functional Tests
+name: CI
 
 on:
   push:
