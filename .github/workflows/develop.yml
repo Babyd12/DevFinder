@@ -31,11 +31,12 @@ jobs:
       - name: Set up MySQL
         run: |
           docker run --name mysql-container -d -p 3306:3306 \
-            -e MYSQL_ROOT_PASSWORD=pass_test \
-            -e MYSQL_DATABASE=devfinder_test \
-            -e MYSQL_USER=myapptest \
-            -e MYSQL_PASSWORD=pass_test \
-            mysql:5.7
+          -e MYSQL_ROOT_PASSWORD=pass_test \
+          -e MYSQL_DATABASE=devfinder_test \
+          -e MYSQL_USER=myapptest \
+          -e MYSQL_PASSWORD=pass_test \
+          mysql:5.7
+     
 
       - name: Wait for MySQL to be ready
         run: sleep 30
