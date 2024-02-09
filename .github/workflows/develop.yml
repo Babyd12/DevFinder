@@ -45,3 +45,4 @@ jobs:
 
       - name: Run functional tests
         run: php bin/phpunit
+      
