@@ -30,7 +30,8 @@ jobs:
           composer require symfony/maker-bundle --dev
 
       - name: Show maker bundle
-        run: composer show symfony/maker-bundle --dev
+        run: composer show --all symfony/maker-bundle
+
 
       - name: See Docker status
         run: docker ps
