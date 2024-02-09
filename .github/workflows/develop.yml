@@ -29,6 +29,9 @@ jobs:
           composer install --no-scripts
           composer require --dev symfony/maker-bundle
 
+      - name: Show maker bundle
+        run: composer show symfony/maker-bundle
+
       - name: See Docker status
         run: docker ps
 
