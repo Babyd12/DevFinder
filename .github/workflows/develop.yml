@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/f6-testUnitaire
 
 jobs:
   test:
