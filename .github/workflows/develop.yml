@@ -7,25 +7,8 @@ on:
       - feature/f6-testUnitaire
 
 jobs:
-  phpunit:
+  deploy:
     runs-on: ubuntu-latest
-    container:
-      image: php:8.1.2-apache
-
-    services:
-      mysql:
-        image: mysql:5.7
-        env:
-          MYSQL_ROOT_PASSWORD: pass_test
-          MYSQL_DATABASE: myapptest
-          MYSQL_USER: myapptest
-          MYSQL_PASSWORD: pass_test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
-    env:
-      DATABASE_URL: 'mysql://myapptest:pass_test@localhost:3306/myapptest'
 
     steps:
       - name: Checkout code
@@ -39,17 +22,32 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update && apt-get install -y git libzip-dev
-          curl -sS https://getcomposer.org/installer | php -- --disable-tls && mv composer.phar /usr/local/bin/composer
+          curl -sS https://getcomposer.org/installer | php -- --disable-tls
+          mv composer.phar /usr/local/bin/composer
           docker-php-ext-install mysqli pdo pdo_mysql zip
-          composer install
 
       - name: Set up MySQL
+        run: |
+          docker run --name mysql-container -d -p 3306:3306 \
+            -e MYSQL_ROOT_PASSWORD=pass_test \
+            -e MYSQL_DATABASE=myapptest \
+            -e MYSQL_USER=myapptest \
+            -e MYSQL_PASSWORD=pass_test \
+            mysql:5.7
+
+      - name: Prepare database
         run: |
           php bin/console doctrine:database:drop --force --env=test
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:fixtures:load --no-interaction
 
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Start PHP server
+        run: php artisan serve &
+
       - name: Run PHPUnit tests
         run: php bin/phpunit
 
- 
+      # allow_failure: false
