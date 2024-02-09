@@ -131,8 +131,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\'\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
     #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $description = null;
-
-
+ 
     #[ORM\ManyToMany(targetEntity: Projet::class, inversedBy: 'apprenants')]
     #[Groups(['apprenant:show'])]
     private Collection $projet;
