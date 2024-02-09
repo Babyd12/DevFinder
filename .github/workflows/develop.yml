@@ -22,11 +22,12 @@ jobs:
 
     - name: Install Composer and dependencies
       run: |
-        apt-get update
-        apt-get install -y git libzip-dev
+        sudo apt-get update
+        sudo apt-get install -y git libzip-dev
         curl -sS https://getcomposer.org/installer | php -- --disable-tls
-        mv composer.phar /usr/local/bin/composer
+        sudo mv composer.phar /usr/local/bin/composer
         composer install --no-scripts
+    
 
     - name: Configure and prepare database
       run: |
