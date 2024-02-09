@@ -39,13 +39,20 @@ jobs:
       - name : show current branch
         run: git branch
 
-      - name: Configure and prepare database
-        run: |
-          cp .env.test .env.local
-          php bin/console doctrine:database:create --env=test
-          php bin/console doctrine:migrations:generate --env=test --no-interaction
-          php bin/console doctrine:migrations:migrate --env=test --no-interaction
-          php bin/console doctrine:fixtures:load --env=test --no-interaction
+      - name: Copy test environment configuration
+        run: cp .env.test .env.local
+  
+      - name: Create test database
+        run: php bin/console doctrine:database:create --env=test
+  
+      - name: Generate Doctrine migrations for test environment
+        run: php bin/console doctrine:migrations:generate --env=test --no-interaction
+  
+      - name: Execute Doctrine migrations for test environment
+        run: php bin/console migrations:execute --up --no-interaction
+  
+      - name: Load fixtures for test environment
+        run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
       - name: Start Apache
         run: sudo service apache2 start
