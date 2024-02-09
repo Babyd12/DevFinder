@@ -125,7 +125,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable:true)]
     #[Assert\NotBlank(message: 'Ce champ ne peut pas être vide')]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Groups(['apprenant:create', 'apprenant:update'])]
