@@ -49,7 +49,7 @@ jobs:
         run: php bin/console doctrine:migrations:generate --env=test --no-interaction
   
       - name: Execute Doctrine migrations for test environment
-        run: php bin/console migrations:execute --up --no-interaction
+        run: php bin/console doctrine:migrations --env=test --no-interaction
   
       - name: Load fixtures for test environment
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
