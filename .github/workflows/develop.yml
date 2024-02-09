@@ -5,7 +5,7 @@ on:
       - develop
       - feature/f6-testUnitaire
 
-env: DATABASE_URL="mysql://root:@127.0.0.1:3306/devfinder?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
+env: DATABASE_URL: mysql://root:@127.0.0.1:3306/devfinder?serverVersion=10.11.2-MariaDB&charset=utf8mb4
 
 jobs:
   deploy:
