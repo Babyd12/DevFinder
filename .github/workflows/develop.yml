@@ -33,8 +33,8 @@ jobs:
           docker run --name mysql-container -d -p 3306:3306 \
           -e MYSQL_ROOT_PASSWORD=pass_test \
           -e MYSQL_DATABASE=devfinder_test \
-          -e MYSQL_USER=myapptest \
-          -e MYSQL_PASSWORD=pass_test \
+          -e MYSQL_USER=root \
+          -e MYSQL_PASSWORD= \
           mysql:5.7
      
 
