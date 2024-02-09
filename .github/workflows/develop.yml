@@ -52,5 +52,6 @@ jobs:
         ./jwt-instal.sh
         ./jwt-instal.sh
 
+
     - name: Run functional tests
       run: php bin/phpunit
