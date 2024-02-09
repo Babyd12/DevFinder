@@ -42,8 +42,14 @@ jobs:
       - name: Copy test environment configuration
         run: cp .env.test .env.local
   
+      - name: DROP test database
+        run: php bin/console doctrine:database:drop --env=test
+
       - name: Create test database
         run: php bin/console doctrine:database:create --env=test
+
+      - name: test make migration
+        run: php bin/console make:migration --env=test --no-interaction
   
       - name: Execute Doctrine migrations for test environment
         run: php bin/console doctrine:migrations:migrate --env=test --no-interaction
