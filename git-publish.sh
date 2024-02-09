@@ -7,4 +7,4 @@ git add .
 git commit -m "testFunctionnel"
 
 # Publie la fonctionnalité avec Git Flow
-git flow feature publish
+git push origin develop
