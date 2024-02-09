@@ -7,7 +7,7 @@ on:
       - feature/f6-testUnitaire
 
 env:
-  DATABASE_URL: "mysql://myapptest:pass_test@127.0.0.1:3306/myapptest?serverVersion=5.7&charset=utf8mb4"
+  DATABASE_URL: "mysql://root:@127.0.0.1:3306/devfinder_test?serverVersion=5.7&charset=utf8mb4"
 
 jobs:
   test:
@@ -27,12 +27,7 @@ jobs:
 
       - name: Set up MySQL
         run: |
-          docker run --name mysql-container -d -p 3306:3306 \
-            -e MYSQL_ROOT_PASSWORD=pass_test \
-            -e MYSQL_DATABASE=myapptest \
-            -e MYSQL_USER=myapptest \
-            -e MYSQL_PASSWORD=pass_test \
-            mysql:5.7
+          docker run --name mysql-container -d -p 3306:3306 
 
       - name: Wait for MySQL to be ready
         run: sleep 30
