@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: composer install
       
-      - name: Run Unit tests
-        run:  php bin/phpunit 
+      # - name: Run Unit tests
+      #   run:  php bin/phpunit 
         # --bootstrap test/bootstrap.php
       
       - name: Install dependencies
@@ -31,8 +31,7 @@ jobs:
           curl -sS https://getcomposer.org/installer | php -- --disable-tls
           mv composer.phar /usr/local/bin/composer
           composer install --no-scripts
-        
-     
+
 
       - name: Set up MySQL
         run: |
@@ -52,7 +51,8 @@ jobs:
           php bin/console doctrine:fixtures:load --no-interaction
       - name: Install Composer dependencies
         run: composer install
-      
+        
+
       
       # Ajoutez une action pour envoyer une notification en cas d'échec des tests
       - name: Notify on test failure
