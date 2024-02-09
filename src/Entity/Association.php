@@ -74,7 +74,6 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le champ {value} ne doit pas être vide')]
-
     #[Assert\Length(min: 2, max: 20, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
@@ -89,7 +88,7 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\PasswordStrength([
         'minScore' => PasswordStrength::STRENGTH_WEAK,
     ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
-    #[Groups(['association:create', 'association:update', 'association:updateOne'])]
+    #[Groups(['association:create', 'association:updateOne'])]
     private ?string $mot_de_passe = null;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]
@@ -116,6 +115,9 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: sept chiffres puis le cofi 0001462 2G3')]
     #[Groups(['association:show', 'association:index', 'association:create'])]
     private ?string $numero_identification_naitonal = null;
+
+    #[ORM\Column]
+    private ?bool $etat = null;
 
     public function __construct()
     {
@@ -298,6 +300,18 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     public function setNumeroIdentificationNaitonal(string $numero_identification_naitonal): static
     {
         $this->numero_identification_naitonal = $numero_identification_naitonal;
+
+        return $this;
+    }
+
+    public function isEtat(): ?bool
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(bool $etat): static
+    {
+        $this->etat = $etat;
 
         return $this;
     }

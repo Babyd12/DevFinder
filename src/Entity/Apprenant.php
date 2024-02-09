@@ -38,7 +38,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[GetCollection(
     uriTemplate: 'apprenant/liste',
     description: 'Modifie toi',
-    name: 'nom temporaire',
     normalizationContext: ['groups' => ['apprenant:index', ]]
 )]
 
@@ -145,6 +144,9 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Livrable::class)]
     private Collection $livrables;
+
+    #[ORM\Column]
+    private ?bool $etat = null;
 
     public function __construct()
     {
@@ -400,6 +402,18 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
                 $livrable->setApprenant(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isEtat(): ?bool
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(bool $etat): static
+    {
+        $this->etat = $etat;
 
         return $this;
     }

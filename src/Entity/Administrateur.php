@@ -8,18 +8,19 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Delete;
+use App\Controller\MeController;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
+use App\State\GetUserLoggedProcessor;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CustumAdminController;
 use App\Controller\GetUserLoggedController;
-use App\Controller\MeController;
 use App\Repository\AdministrateurRepository;
 use App\State\GetUserLoggedInfoStateProvier;
-use App\State\GetUserLoggedProcessor;
-use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
@@ -38,10 +39,12 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         ),
 
         new Post(
-            shortName: 'Récuperer l\'utilisateur connecté',
-            processor:GetUserLoggedProcessor::class,
+            shortName: 'Récuperer l\'utilisateur connecté V2',
+            controller:CustumAdminController::class,
+            name: 'app_admin_recuperer_utilisateur_connecter',
             uriTemplate:'/utilisateur/connecte',
             denormalizationContext: ['groups' => 'apprenant:connecte'],
+            // outputFormats: ['json' => 'application/json'],
         ),
     ]
 )]

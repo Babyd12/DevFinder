@@ -17,3 +17,12 @@ yes | php bin/console doctrine:migrations:migrate --no-interaction
 
 php bin/console doctrine:fixtures:load --no-interaction
 echo "Installation complete vous pouvez éxécuter : php -S localhost:8000 -t public "
+
+
+
+#for functional test syfony
+#composer require --dev symfony/browser-kit symfony/http-client
+#php bin/console doctrine:database:create --env=test
+#php bin/console d:m:m --env=test --no-interaction
+#php bin/console d:f:l --env=test --no-interaction
+
