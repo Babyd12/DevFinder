@@ -7,6 +7,9 @@ use App\Entity\Entreprise;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 
+/**
+ * codeCoverageIgnore 
+ */
 class EntrepriseTest extends ApiTestCase
 {
     private string $jwtToken;

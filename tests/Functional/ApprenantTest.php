@@ -7,6 +7,10 @@ use App\Entity\Apprenant;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 
+
+/**
+ * codeCoverageIgnore 
+ */
 class ApprenantTest extends ApiTestCase
 {
     private string $jwtToken;

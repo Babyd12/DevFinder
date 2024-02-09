@@ -7,6 +7,10 @@ use App\Entity\Association;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 
+
+/**
+ * codeCoverageIgnore 
+ */
 class AssociationTest extends ApiTestCase
 {
     private string $jwtToken;
