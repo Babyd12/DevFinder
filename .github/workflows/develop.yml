@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches:
@@ -20,33 +19,43 @@ jobs:
           php-version: '8.1.2'
 
       - name: Install dependencies
+        run: composer install
+      
+      - name: Run Unit tests
+        run:  php bin/phpunit 
+        # --bootstrap test/bootstrap.php
+      
+      - name: Install dependencies
         run: |
           apt-get update && apt-get install -y git libzip-dev
           curl -sS https://getcomposer.org/installer | php -- --disable-tls
           mv composer.phar /usr/local/bin/composer
           composer install --no-scripts
+        
+     
 
       - name: Set up MySQL
         run: |
-          docker-php-ext-install mysqli pdo pdo_mysql zip
-
+          docker run --name mysql-container -d -p 3306:3306 \
+            -e MYSQL_ROOT_PASSWORD=pass_test \
+            -e MYSQL_DATABASE=myapptest \
+            -e MYSQL_USER=myapptest \
+            -e MYSQL_PASSWORD=pass_test \
+            mysql:5.7
       - name: Wait for MySQL to be ready
         run: sleep 30
-
+        
       - name: Prepare database
         run: |
           php bin/console doctrine:database:drop --force --env=test
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:fixtures:load --no-interaction
-
       - name: Install Composer dependencies
         run: composer install
-
-
-      # - name: Start PHP server
-      #   run: php artisan serve &
-
-      # - name: Run PHPUnit tests
-      #   run: php bin/phpunit
-
-    # allow_failure: false
+      
+      
+      # Ajoutez une action pour envoyer une notification en cas d'échec des tests
+      - name: Notify on test failure
+        if: failure()
+        run: echo "Les tests ont échoué. Veuillez vérifier les résultats."
+        
