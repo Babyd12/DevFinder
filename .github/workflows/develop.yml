@@ -54,10 +54,6 @@ jobs:
       - name: Execute Doctrine migrations for test environment
         run: php bin/console doctrine:migrations:migrate --env=test --no-interaction
   
-      - name: Show tables structures
-        run: php bin/console doctrine:schema:dump --env=test
-
-
       # - name: Load fixtures for test environment
       #   run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
