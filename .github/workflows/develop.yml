@@ -41,13 +41,12 @@ jobs:
           cp .env.test .env.local
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
-          php bin/console doctrine:schema:update --env=test --no-interaction
           php bin/console doctrine:fixtures:load --env=test --no-interaction
 
       - name: Start Apache
         run: sudo service apache2 start
       
-      - name: Generate jwt token
+      - name: Generate jwt token  
         run: |
           ./jwt-instal.sh  
 
