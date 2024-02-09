@@ -26,8 +26,7 @@ jobs:
           mv composer.phar /usr/local/bin/composer
           composer install --no-scripts
         
-      - name: Wait for MySQL to be ready
-        run: sleep 30
+     
 
       - name: Set up MySQL
         run: |
@@ -38,6 +37,9 @@ jobs:
             -e MYSQL_PASSWORD=pass_test \
             mysql:5.7
 
+      - name: Wait for MySQL to be ready
+        run: sleep 30
+        
       - name: Prepare database
         run: |
           php bin/console doctrine:database:drop --force --env=test
