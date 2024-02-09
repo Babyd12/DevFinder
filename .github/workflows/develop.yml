@@ -1,14 +1,16 @@
 name: CI
+
 on:
   push:
     branches:
       - develop
       - feature/f6-testUnitaire
 
-env: DATABASE_URL="mysql://root:@127.0.0.1:3306/devfinder?serverVersion=10.11.2-MariaDB&charset=utf8mb4"
+env:
+  DATABASE_URL: "mysql://myapptest:pass_test@127.0.0.1:3306/myapptest?serverVersion=5.7&charset=utf8mb4"
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -22,17 +24,6 @@ jobs:
 
       - name: Install dependencies
         run: composer install
-      
-      # - name: Run Unit tests
-      #   run:  php bin/phpunit 
-        # --bootstrap test/bootstrap.php
-      
-      - name: Install dependencies
-        run: |
-          apt-get update && apt-get install -y git libzip-dev
-          curl -sS https://getcomposer.org/installer | php -- --disable-tls
-          mv composer.phar /usr/local/bin/composer
-          composer install --no-scripts
 
       - name: Set up MySQL
         run: |
@@ -45,19 +36,12 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: sleep 30
-        
+
       - name: Prepare database
         run: |
           php bin/console doctrine:database:drop --force --env=test
           php bin/console doctrine:database:create --env=test
           php bin/console doctrine:fixtures:load --no-interaction
-      - name: Install Composer dependencies
-        run: composer install
-      
 
-      
-      # Ajoutez une action pour envoyer une notification en cas d'échec des tests
-      - name: Notify on test failure
-        if: failure()
-        run: echo "Les tests ont échoué. Veuillez vérifier les résultats."
-        
+      - name: Run Unit tests
+        run: php bin/phpunit
