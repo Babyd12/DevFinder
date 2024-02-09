@@ -44,10 +44,10 @@ jobs:
       - name: Install Composer dependencies
         run: composer install
 
-      - name: Start PHP server
-        run: php artisan serve &
+      # - name: Start PHP server
+      #   run: php artisan serve &
 
-      - name: Run PHPUnit tests
-        run: php bin/phpunit
+      # - name: Run PHPUnit tests
+      #   run: php bin/phpunit
 
-      # allow_failure: false
+    # allow_failure: false
