@@ -51,8 +51,8 @@ jobs:
       - name: Load fixtures for test environment
         run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
-      - name: Start Apache
-        run: sudo service apache2 start
+      # - name: Start Apache
+      #   run: sudo service apache2 start
       
       - name: Generate jwt token  
         run: |
