@@ -42,20 +42,23 @@ jobs:
       - name: Copy test environment configuration
         run: cp .env.test .env.local
   
-      - name: DROP test database
-        run: php bin/console doctrine:database:drop --force --env=test
+      # - name: DROP test database
+      #   run: php bin/console doctrine:database:drop --force --env=test
 
       - name: Create test database
         run: php bin/console doctrine:database:create --env=test
 
-      - name: test make migration
-        run: php bin/console make:migration --env=test --no-interaction
+      # - name: test make migration
+      #   run: php bin/console make:migration --env=test --no-interaction
   
       - name: Execute Doctrine migrations for test environment
         run: php bin/console doctrine:migrations:migrate --env=test --no-interaction
   
-      - name: Load fixtures for test environment
-        run: php bin/console doctrine:fixtures:load --env=test --no-interaction
+      - name: Show tables structures
+        run: php bin/console doctrine:schema:show --env=test
+
+      # - name: Load fixtures for test environment
+      #   run: php bin/console doctrine:fixtures:load --env=test --no-interaction
 
       # - name: Start Apache
       #   run: sudo service apache2 start
