@@ -30,13 +30,13 @@ jobs:
     - name : See docker staus
       run: docker ps
     
-    
+    - name : start mysql in docker
+      run: |
+        docker start mysql-container
+        docker logs mysql-container
+
     - name: Grant privileges to MySQL user
       run: |
-          docker start mysql-container
-          docker logs mysql-container
-
-          docker start mysql-container
           docker exec mysql-container mysql -uroot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.17.0.1' IDENTIFIED BY '' WITH GRANT OPTION;"
           docker exec mysql-container mysql -uroot -e "FLUSH PRIVILEGES;"
       
