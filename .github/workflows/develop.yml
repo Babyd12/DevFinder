@@ -6,8 +6,6 @@ on:
       - develop
       - feature/f6-testUnitaire
 
-env:
-  DATABASE_URL: "mysql://root:@127.0.0.1:3306/devfinder_test?serverVersion=5.7&charset=utf8mb4"
 
 jobs:
   test:
@@ -24,7 +22,12 @@ jobs:
 
       - name: Install dependencies
         run: composer install
-
+        
+      - name: Drop test database
+        run: php bin/console doctrine:database:drop --force --env=test --connection=default
+        env:
+          DATABASE_URL: mysql://root:pass_test@127.0.0.1:3306/devfinder?serverVersion=10.11.2-MariaDB&charset=utf8mb4
+            
       - name: Set up MySQL
         run: |
           docker run --name mysql-container -d -p 3306:3306 \
