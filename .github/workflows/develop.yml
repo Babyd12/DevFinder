@@ -27,7 +27,7 @@ jobs:
           composer install --no-scripts
         
       - name: Wait for MySQL to be ready
-        run: sleep 10
+        run: sleep 30
 
       - name: Set up MySQL
         run: |
