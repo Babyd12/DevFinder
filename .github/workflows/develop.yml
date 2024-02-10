@@ -7,7 +7,7 @@ on:
       - feature/f6-testUnitaire
 
 jobs:
-  test:
+  TesDIntegrationContinue:
     runs-on: ubuntu-latest
 
     steps:
