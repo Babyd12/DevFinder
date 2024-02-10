@@ -22,7 +22,7 @@
   RewriteCond %{HTTPS} !=on
   RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-  # redirect all requests to app's public directoryrm
+  # redirect all requests to app's public directory
   RewriteCond %{REQUEST_URI} !public/
   RewriteRule (.*) /public/$1 [L]
 </IfModule>
