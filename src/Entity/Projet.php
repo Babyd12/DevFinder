@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Apprenant;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -12,103 +13,166 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProjetRepository;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\Controller\CustomApprenantController;
 use App\Controller\CustomProjetController;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use phpDocumentor\Reflection\DocBlock\Tag;
+use App\State\ShowCollectionsStateProvider;
+use Doctrine\Common\Collections\Collection;
+use App\Controller\CustomApprenantController;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
+
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
-    security: "is_granted('ROLE_APPRENANT')",
     operations: [
         new Get(
-            uriTemplate:'/apprenant/participer/projet/{projectId}',
-            // routeName: 'participateToProject',
+            uriTemplate: '/apprenant/participer/projet/{id}',
+            security: "is_granted('ROLE_APPRENANT')",
+            routeName: 'participerProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantPojet:show' ],
+            normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
         ),
         new Get(
-            uriTemplate: '/apprenant/quitter/projet/{projetId}',
-            // uriTemplate:'/apprenant/projet/quitter/projet/{projetId}',
-            // routeName: 'quitterProjet',
+            uriTemplate: '/apprenant/quitter/projet/{id}',
+            security: "is_granted('ROLE_APPRENANT')",
+            routeName: 'quitterProjet',
             controller: CustomProjetController::class,
-            normalizationContext: [ 'groups' => 'apprenantQuitterPojet:show' ],
+            normalizationContext: ['groups' => 'apprenantQuitterPojet:show'],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
-            
         ),
     ]
 )]
 
 #[GetCollection(
-    security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/liste',
+    hydraContext: ['groups' => 'apprenantQuitterProjet'],
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate: '/projet/liste',
+
     description: 'Affiche tout les projet',
-    name:'un nom simple a comprndre',
-    normalizationContext: [ 'groups' => ['projet:index'] ]
+    name: 'un nom simple a comprndre',
+    normalizationContext: ['groups' => ['projet:index']],
+    denormalizationContext: ['groups' => ['projet:index']],
+
 )]
 
 #[Get(
-    security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/voirplus/{id}',
     forceEager: true,
-    normalizationContext: [ 'groups' => ['projet:show'] ]
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate: '/projet/{id}',
+    normalizationContext: ['groups' => ['projet:show']]
 )]
 
 #[Post(
     security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/ajouter',
-    denormalizationContext: [ 'groups' => ['projet:create'] ]
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate: '/projet/ajouter',
+    denormalizationContext: ['groups' => ['projet:create']]
 )]
 
 #[Put(
-    security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/mise_a_jour',
-    denormalizationContext: [ 'groups' => ['projet:update'] ]
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate: '/projet/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+    // securityMessage: 'Sorry, but you are not this projet owner.',
+    denormalizationContext: ['groups' => ['projet:update']]
 )]
 
 #[Delete(
-    security: "is_granted('ROLE_ASSOCIATION')",
-    shortName: 'Module Gestion de Publication Projet -Association',
-    uriTemplate:'/projet/supprimer',
+    uriTemplate: '/projet/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+    shortName: 'Module Gestion de Publication de Projet - Association',
 )]
 
+#[UniqueEntity(
+    fields: ['titre', 'association'],
+    errorPath: 'association',
+    message: 'Cette association a déjà un projet portant ce titre',
+)]
 
 class Projet
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    // #[Groups(['apprenant:participate', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'apprenant:participate', 'projet:create', 'projet:update',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+        ]
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+
+
+        ]
+    )]
     private ?string $description = null;
 
     #[ORM\Column]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Assert\Type(type: 'integer', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?int $nombre_de_participant = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?\DateTimeInterface $date_limite = null;
 
-    #[ORM\ManyToOne(inversedBy: 'projets')]
-    #[Groups([ 'projet:create', 'projet:show'])]
+    #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'projets')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(
+        [
+            'projet:show',
+            /**
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?Association $association = null;
 
     #[ORM\ManyToMany(targetEntity: LangageDeProgrammation::class, inversedBy: 'projets')]
@@ -118,11 +182,9 @@ class Projet
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
     private Collection $apprenants;
 
-    // #[ORM\Column(length: 255)]
     #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
     #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
     private ?ProjetStatu $statu = null;
-
 
     public function __construct()
     {
@@ -257,6 +319,4 @@ class Projet
 
         return $this;
     }
-
-   
 }

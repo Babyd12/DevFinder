@@ -5,9 +5,14 @@ controllers:
     type: attribute
 
 auth:
-    path: /api/auth
+    path: /connexion
     methods: ['POST']
     
 app_logout:
-    path: /api/logout
+    path: 
+        /deconnexion
     methods: ['POST']
+
+app_refresh:
+    path: /api/token/refresh
+    

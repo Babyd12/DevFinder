@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    photo_dir: '%kernel.project_dir%/public/uploads/images'
 
 services:
     # default configuration for services in *this* file
@@ -22,3 +23,25 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\EventListener\ExceptionListener:
+        tags: [kernel.event_listener]
+
+    App\State\AddUserToRelationProcessor:
+        bind:
+            $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
+    App\State\RemoveUserToRelationProcessor:
+        bind: 
+            $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'
+
+    # App\State\GetUserLoggedProcessor:
+    #     bind: 
+    #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
+    # App\State\GetApprenantProjetProcessor:
+    #     bind: 
+    #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
+    # App\State\GetApprenantProvider:
+    #     bind: 
+    #         $providerInterface: '@api_platform.doctrine.orm.state.item_provider'

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Projet;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
@@ -25,24 +26,29 @@ use App\Repository\LangageDeProgrammationRepository;
 )]
 
 #[Get(
-    uriTemplate: '/langage/show/{id}',
+    uriTemplate: '/langage/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['langageDeProgrammation:show']]
 )]
 
 #[Post(
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION')",
     uriTemplate: '/langage/ajouter',
     // security: "is_granted('ROLE_ASSOCIATION')",
     denormalizationContext: ['groups' => ['langageDeProgrammation:create']]
 )]
 
 #[Put(
-    uriTemplate: '/langage/update',
+    uriTemplate: '/langage/{id}',
+    requirements: ['id' => '\d+'], 
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and object.isUsedInProjects() == false",
     denormalizationContext: ['groups' => ['langageDeProgrammation:update']]
 )]
 
 #[Delete(
-    uriTemplate: '/langage/supprimer',
+    uriTemplate: '/langage/{id}',
+    securityPostDenormalize: " ( is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMIN') ) and object.isUsedInProjects() == false",
+
 )]
 
 
@@ -53,7 +59,7 @@ class LangageDeProgrammation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255,  unique: true, type: 'string')]
     #[Groups(['langageDeProgrammation:show', 'langageDeProgrammation:index', 'langageDeProgrammation:create', 'langageDeProgrammation:update'])]
     private ?string $nom = null;
 
@@ -114,11 +120,20 @@ class LangageDeProgrammation
     }
 
     /**
-     * Vérifier si le langage est utilisé dans un projet
+     * Vérifier si le langage est utilisé dans au moins un projet
      */
     public function isUsedInProjects(): bool
-    {
-        return !$this->projets->isEmpty();
+    {   
+        $projets = $this->getProjets();
+        
+        foreach ($projets as $projet) 
+        {
+            if( $projet->getLangageDeProgrammation()->contains($this) && $projet->getStatu() !== 'En attente' )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function preRemove()

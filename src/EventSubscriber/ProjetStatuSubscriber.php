@@ -4,7 +4,9 @@ namespace App\EventSubscriber;
 
 use ApiPlatform\Symfony\EventListener\EventPriorities;
 use App\Entity\Projet;
+use App\Entity\ProjetStatu;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -12,6 +14,12 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class ProjetStatuSubscriber implements EventSubscriberInterface
 {
+    private $security;
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     public function addProjetStatu(ViewEvent $event): void
     {
         
@@ -21,7 +29,8 @@ class ProjetStatuSubscriber implements EventSubscriberInterface
         if ($entity instanceof Projet  && $entity->getStatu() === 'En attente') {
             return;
         } elseif ($entity instanceof Projet && $method === Request::METHOD_POST) {
-            // $entity->setStatu('En attente');
+            $entity->setStatu(ProjetStatu::en_attente);
+            $entity->setAssociation($this->security->getUser());
         } else {
             return;
         }

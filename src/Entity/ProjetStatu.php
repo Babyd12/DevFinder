@@ -4,7 +4,7 @@ namespace App\Entity;
 
 enum ProjetStatu: string
 {
-    case Draft = "Terminé";
-    case PendingModerated = "En cours";
-    case Published = "En attente";
+    case en_attente = "En attente";
+    case en_cours = "En cours";
+    case terminé = "Terminé";
 }

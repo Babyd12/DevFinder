@@ -11,11 +11,17 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class LogoutController extends AbstractController
 {
-    #[Route('/api/logout', name: 'app_logout', methods:['POST'])]
+    #[Route('/deconexion', name: 'app_logout', methods:['POST'])]
     public function logout(AuthenticationUtils $authenticationUtils): never
     {
         // $authenticationUtils->get('security.token_storage')->setAuthenticated(false);
         throw new \Exception('Don\'t forget to activate logout in security.yaml');
         // return new Response('', Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/connexion', name: 'auth', methods:['POST'])]
+    public function login(AuthenticationUtils $authenticationUtils): never
+    {
+        
     }
 }

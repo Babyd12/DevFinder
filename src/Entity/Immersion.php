@@ -13,37 +13,47 @@ use App\Repository\ImmersionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ORM\Entity(repositoryClass: ImmersionRepository::class)]
+
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
 )]
 
 #[GetCollection(
+    uriTemplate: 'immersion/liste',
     forceEager: false,
-    uriTemplate:'/immersion/liste',
-    normalizationContext: [ 'groups' => ['immersion:index'] ]
+    normalizationContext: ['groups' => ['immersion:index']],
+    // denormalizationContext: ['groups' => ['immersion:index']],
 )]
 
 #[Get(
+    uriTemplate: 'immersion/{id}',
     forceEager: true,
-    uriTemplate:'/immersion/show',
-    normalizationContext: [ 'groups' => ['immersion:show'] ]
+    normalizationContext: ['groups' => ['immersion:show']],
+    // denormalizationContext: ['groups' => ['immersion:show']],
 )]
 
 #[Post(
-    uriTemplate:'/immersion/ajouter',
-    denormalizationContext: [ 'groups' => ['immersion:create'] ]
+    uriTemplate: 'immersion/publier',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+    // normalizationContext: ['groups' => ['immersion:create']],
+    denormalizationContext: ['groups' => ['immersion:create']],
 )]
 
 #[Put(
-    uriTemplate:'/immersion/update',
-    denormalizationContext: [ 'groups' => ['immersion:update'] ]
+    uriTemplate: 'immersion/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+    // normalizationContext: ['groups' => ['immersion:update']],
+    denormalizationContext: ['groups' => ['immersion:update']]
+
 )]
 
 #[Delete(
-    uriTemplate:'/immersion/supprimer',
+    uriTemplate: 'immersion/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
 )]
 
 class Immersion
@@ -57,29 +67,26 @@ class Immersion
     #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $titre = null;
 
-    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
     #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Url(
+        message: 'L\'url {{ value }} n\'est pas une url valide',
+    )]
     #[Groups(['immersion:show', 'immersion:create', 'immersion:update'])]
     private ?string $lien_support = null;
 
-    #[ORM\Column(length: 255)]
-    #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
-    private ?string $niveau_de_competence = null;
-
-    #[ORM\Column(length: 255)]
-    #[Groups(['immersion:show', 'immersion:create', 'immersion:update'])]
-    private ?string $lien_du_livrable = null;
-
-    #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Apprenant::class)]
-    #[Groups(['immersion:show'])]
-    private Collection $apprenants;
+    #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
+    private Collection $livrables;
+    
 
     public function __construct()
     {
-        $this->apprenants = new ArrayCollection();
+        $this->livrables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,57 +130,35 @@ class Immersion
         return $this;
     }
 
-    public function getNiveauDeCompetence(): ?string
-    {
-        return $this->niveau_de_competence;
-    }
-
-    public function setNiveauDeCompetence(string $niveau_de_competence): static
-    {
-        $this->niveau_de_competence = $niveau_de_competence;
-
-        return $this;
-    }
-
-    public function getLienDuLivrable(): ?string
-    {
-        return $this->lien_du_livrable;
-    }
-
-    public function setLienDuLivrable(string $lien_du_livrable): static
-    {
-        $this->lien_du_livrable = $lien_du_livrable;
-
-        return $this;
-    }
 
     /**
-     * @return Collection<int, Apprenant>
+     * @return Collection<int, Livrable>
      */
-    public function getApprenants(): Collection
+    public function getLivrables(): Collection
     {
-        return $this->apprenants;
+        return $this->livrables;
     }
 
-    public function addApprenant(Apprenant $apprenant): static
+    public function addLivrable(Livrable $livrable): static
     {
-        if (!$this->apprenants->contains($apprenant)) {
-            $this->apprenants->add($apprenant);
-            $apprenant->setImmersion($this);
+        if (!$this->livrables->contains($livrable)) {
+            $this->livrables->add($livrable);
+            $livrable->setImmersion($this);
         }
 
         return $this;
     }
 
-    public function removeApprenant(Apprenant $apprenant): static
+    public function removeLivrable(Livrable $livrable): static
     {
-        if ($this->apprenants->removeElement($apprenant)) {
+        if ($this->livrables->removeElement($livrable)) {
             // set the owning side to null (unless already changed)
-            if ($apprenant->getImmersion() === $this) {
-                $apprenant->setImmersion(null);
+            if ($livrable->getImmersion() === $this) {
+                $livrable->setImmersion(null);
             }
         }
 
         return $this;
     }
+
 }
