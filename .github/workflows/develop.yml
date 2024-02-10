@@ -59,10 +59,12 @@ jobs:
 
       - name: Start Apache
         run: sudo service apache2 start
-      
+
+      - name: Give execution right to sh file
+        run:  chmod +x jwt-instal.sh
+
       - name: Generate jwt token  
-        run: |
-          ./jwt-instal.sh  
+        run: ./jwt-instal.sh  
 
       - name: Run functional tests
         run: php bin/phpunit
