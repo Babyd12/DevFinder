@@ -120,14 +120,14 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private $image = null;
 
     #[ORM\Column(length: 255, unique: true, type: 'string')]
-    #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Assert\Regex('/^(70|78|77|76|75)\d{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
     #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255, nullable:true)]
     #[Assert\NotBlank(message: 'Ce champ ne peut pas être vide')]
-    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\'\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères')]
+    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(['apprenant:create', 'apprenant:update'])]
     private ?string $description = null;
  

@@ -73,7 +73,7 @@ class Brief
     #[Assert\NotBlank]
     #[Assert\Length(min: 50, minMessage: 'veuillez saisir au moins 50 lettres')]
     #[Assert\Type(type:'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
-    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.  ')]
+    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?string $description = null;
 
