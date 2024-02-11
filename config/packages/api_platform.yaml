@@ -5,10 +5,10 @@ api_platform:
         fetch_partial: true
     
     formats:
-        # json: ['application/json; charset=utf-8']
+        # outputFormats and inputs formats configuration:
+        json: ['application/json']
         jsonld: ['application/json+ld']
         # jsonl: [' application/merge-patch+json']
-        # outputFormats: ['application/json; charset=utf-8']
         # multipart: ['application/x-www-form-urlencoded', 'application/merge-patch+json']
 
     docs_formats:
