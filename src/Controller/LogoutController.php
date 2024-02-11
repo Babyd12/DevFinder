@@ -19,9 +19,4 @@ class LogoutController extends AbstractController
         // return new Response('', Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/connexion', name: 'auth', methods:['POST'])]
-    public function login(AuthenticationUtils $authenticationUtils): never
-    {
-        
-    }
 }
