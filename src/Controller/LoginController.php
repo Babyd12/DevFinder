@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LoginController extends AbstractController
 {
-    #[Route('/connexion', name: 'auth')]
+    #[Route('/api/connexion', name: 'auth')]
     public function login()
     {
         
