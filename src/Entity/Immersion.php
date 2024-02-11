@@ -60,6 +60,7 @@ class Immersion
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['immersion:show', 'immersion:index', 'immersion:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -74,7 +75,7 @@ class Immersion
     )]
     #[Groups(['immersion:show','immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $lien_support = null;
-
+        
     #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
     #[Groups(['immersion:show'])]
     private Collection $livrables;
