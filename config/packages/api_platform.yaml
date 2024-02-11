@@ -6,7 +6,7 @@ api_platform:
     
     formats:
         # outputFormats and inputs formats configuration:
-        json: ['application/json']
+        # json: ['application/json']
         jsonld: ['application/json+ld']
         # jsonl: [' application/merge-patch+json']
         # multipart: ['application/x-www-form-urlencoded', 'application/merge-patch+json']
