@@ -3,16 +3,17 @@ api_platform:
     version: 1.0.0
     eager_loading:
         fetch_partial: true
+    
     formats:
-        json: ['application/json']
+        # json: ['application/json; charset=utf-8']
         jsonld: ['application/json+ld']
         # jsonl: [' application/merge-patch+json']
-        # outputFormats: ['application/json']
-        multipart: ['application/x-www-form-urlencoded', 'application/merge-patch+json']
-    
+        # outputFormats: ['application/json; charset=utf-8']
+        # multipart: ['application/x-www-form-urlencoded', 'application/merge-patch+json']
+
     docs_formats:
         jsonld: ['application/json+ld']
-        json: ['application/json']
+        # json: ['application/json; charset=utf-8']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     defaults:
