@@ -26,28 +26,28 @@ use Symfony\Component\Validator\Constraints\Hostname;
     uriTemplate: 'brief/liste',
     forceEager: false,
     normalizationContext: [ 'groups' => ['brief:index'] ],
-    denormalizationContext:[ 'groups' => ['brief:index'] ],
-    outputFormats: [ 'json' => 'application/json']
+    // denormalizationContext:[ 'groups' => ['brief:index'] ],
+    // outputFormats: [ 'json' => 'application/json']  
 )]
 
 #[Get(
     uriTemplate: 'brief/{id}',
     forceEager: true,
     normalizationContext: [ 'groups' => ['brief:show'] ],
-    denormalizationContext: [ 'groups' => ['brief:show']],
+    // denormalizationContext: [ 'groups' => ['brief:show']],
 )]
 
 #[Post(
     uriTemplate: 'brief/publier',
     security: "is_granted('ROLE_ADMIN') ",
-    normalizationContext: [ 'groups' => ['brief:create']],
+    // normalizationContext: [ 'groups' => ['brief:create']],
     denormalizationContext: [ 'groups' => ['brief:create'] ],
 )]
 
 #[Put(
     uriTemplate: 'brief/{id}',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-    normalizationContext: [ 'groups' => ['brief:update']],
+    // normalizationContext: [ 'groups' => ['brief:update']],
     denormalizationContext: [ 'groups' => ['brief:update'] ]
 
 )]
@@ -66,6 +66,7 @@ class Brief
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?string $titre = null;
 
@@ -78,10 +79,12 @@ class Brief
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups(['brief:show', 'brief:create', 'brief:update'])]
     private ?string $lient_support = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.')]
     private ?string $niveau_de_competence = null;

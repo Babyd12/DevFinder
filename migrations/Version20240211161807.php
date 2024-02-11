@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240210003711 extends AbstractMigration
+final class Version20240211161807 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -28,7 +28,7 @@ final class Version20240210003711 extends AbstractMigration
         $this->addSql('CREATE TABLE competence (id INT AUTO_INCREMENT NOT NULL, apprenant_id INT NOT NULL, nom VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, INDEX IDX_94D4687FC5697D6D (apprenant_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE entreprise (id INT AUTO_INCREMENT NOT NULL, nom_complet VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, roles JSON NOT NULL COMMENT \'(DC2Type:json)\', mot_de_passe VARCHAR(255) NOT NULL, telephone VARCHAR(255) NOT NULL, description VARCHAR(255) DEFAULT NULL, numero_identification_naitonal VARCHAR(255) NOT NULL, etat TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_D19FA60E7927C74 (email), UNIQUE INDEX UNIQ_D19FA60450FF010 (telephone), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE entreprise_apprenant (entreprise_id INT NOT NULL, apprenant_id INT NOT NULL, INDEX IDX_596BE187A4AEAFEA (entreprise_id), INDEX IDX_596BE187C5697D6D (apprenant_id), PRIMARY KEY(entreprise_id, apprenant_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE immersion (id INT AUTO_INCREMENT NOT NULL, titre VARCHAR(255) NOT NULL, lien_support VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE immersion (id INT AUTO_INCREMENT NOT NULL, titre VARCHAR(255) NOT NULL, lien_support VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE langage_de_programmation (id INT AUTO_INCREMENT NOT NULL, association_id INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_87F98F226C6E55B5 (nom), INDEX IDX_87F98F22EFB9C8A5 (association_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE livrable (id INT AUTO_INCREMENT NOT NULL, apprenant_id INT NOT NULL, brief_id INT DEFAULT NULL, immersion_id INT DEFAULT NULL, lien_du_livrable VARCHAR(255) NOT NULL, INDEX IDX_9E78008CC5697D6D (apprenant_id), INDEX IDX_9E78008C757FABFF (brief_id), INDEX IDX_9E78008C22167EA5 (immersion_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE projet (id INT AUTO_INCREMENT NOT NULL, association_id INT NOT NULL, titre VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, nombre_de_participant INT NOT NULL, date_limite DATE NOT NULL, statu VARCHAR(255) NOT NULL, INDEX IDX_50159CA9EFB9C8A5 (association_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');

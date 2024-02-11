@@ -22,11 +22,10 @@ use Symfony\Component\Validator\Constraints\Hostname;
     shortName: 'Module gestion de publication immersion -Administrateur',
 )]
 
+
 #[GetCollection(
     uriTemplate: 'immersion/liste',
-    forceEager: false,
     normalizationContext: ['groups' => ['immersion:index']],
-    // denormalizationContext: ['groups' => ['immersion:index']],
 )]
 
 #[Get(
@@ -64,24 +63,28 @@ class Immersion
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $titre = null;
-
+   
+    #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Url(
+        message: 'L\'url {{ value }} n\'est pas une url valide',
+    )]
+    #[Groups(['immersion:show','immersion:index', 'immersion:create', 'immersion:update'])]
+    private ?string $lien_support = null;
+
+    #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
+    #[Groups(['immersion:show'])]
+    private Collection $livrables;
+
+    #[ORM\Column(length: 255)]
+     #[Assert\NotBlank]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $description = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\Url(
-        message: 'L\'url {{ value }} n\'est pas une url valide',
-    )]
-    #[Groups(['immersion:show', 'immersion:create', 'immersion:update'])]
-    private ?string $lien_support = null;
-
-    #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
-    private Collection $livrables;
     
 
     public function __construct()
@@ -106,18 +109,7 @@ class Immersion
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
+   
     public function getLienSupport(): ?string
     {
         return $this->lien_support;
@@ -157,6 +149,18 @@ class Immersion
                 $livrable->setImmersion(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
