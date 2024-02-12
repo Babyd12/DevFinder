@@ -27,7 +27,7 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
             if ($user instanceof Administrateur || $user instanceof Apprenant || $user instanceof Association || $user instanceof Entreprise) {
                 $user->getEmail();
                 $event->setResponse(new JsonResponse([
-                    'Nom complet' => $user->getNomComplet(),
+                    'nom_complet' => $user->getNomComplet(),
                     'email' => $user->getUserIdentifier(),
                     'role' => $user->getRoles(),
                     'token' => $token,
