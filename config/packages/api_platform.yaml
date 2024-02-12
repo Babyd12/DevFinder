@@ -6,14 +6,14 @@ api_platform:
     
     formats:
         # outputFormats and inputs formats configuration:
-        # json: ['application/json']
         jsonld: ['application/json+ld']
+        json: ['application/json']
         # jsonl: [' application/merge-patch+json']
         # multipart: ['application/x-www-form-urlencoded', 'application/merge-patch+json']
 
     docs_formats:
         jsonld: ['application/json+ld']
-        # json: ['application/json; charset=utf-8']
+        # json: ['application/json']
         jsonopenapi: ['application/vnd.openapi+json']
         html: ['text/html']
     defaults:
