@@ -1,13 +1,22 @@
-nelmio_cors:
-    defaults:
-        origin_regex: true
-        allow_origin: ['%env(CORS_ALLOW_ORIGIN)%','http://localhost:4200']
-        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
-        allow_headers: ['Content-Type', 'Authorization']
-        expose_headers: ['Link']
-        max_age: 3600
-    paths:
-        '^/api/immersion/{id}': # Remplacez par le chemin de votre route PATCH
-            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%', 'http://localhost:4200']
-            allow_methods: ['PUT', 'DELETE', 'OPTIONS']
+    nelmio_cors:
+        defaults:
+            origin_regex: true
+            allow_origin: ['%env(CORS_ALLOW_ORIGIN)%','http://localhost:4200']
+            allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
             allow_headers: ['Content-Type', 'Authorization']
+            expose_headers: ['Link']
+            max_age: 3600
+        # paths:
+        #     '^/api/': # Remplacez par le chemin de votre route PATCH
+        #     allow_origin: ['http://localhost:4200']
+        #     allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        #     allow_headers: ['Content-Type', 'Authorization']
+       
+        paths:
+            '^/api/':
+                origin_regex: true
+                allow_origin: ['http://localhost:4200'] 
+                allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+                allow_headers: ['Content-Type', 'Authorization']
+                expose_headers: ['Link']
+                max_age: 3600
