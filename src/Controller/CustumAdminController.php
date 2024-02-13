@@ -6,6 +6,7 @@ use App\Entity\Apprenant;
 use App\Entity\Entreprise;
 use App\Entity\Association;
 use App\Entity\Administrateur;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,9 +16,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class CustumAdminController extends AbstractController
 {
     private $security;
-    public function __construct(Security $security)
+    private $entityManager;
+    public function __construct(Security $security, EntityManagerInterface $entityManager)
     {
         $this->security = $security;
+        $this->entityManager = $entityManager;
     }
 
     #[Route('/api/utilisateur/connecte', name: 'app_admin_recuperer_utilisateur_connecter')]
@@ -34,5 +37,18 @@ class CustumAdminController extends AbstractController
             ];
             return new JsonResponse($userData, 200);
         }
+    }
+
+    #[Route('/api/administrateur/liste/utilisateurs', name: 'app_custum_admin_listeUtilisateur')]
+    public function listeEntreprises(): JsonResponse
+    { 
+        $enptreprises = $this->entityManager->getRepository(Entreprise::class)->findAll();
+        $association = $this->entityManager->getRepository(Association::class)->findAll();
+        $apprenant = $this->entityManager->getRepository(Apprenant::class)->findAll();
+
+        $liste = array_merge($enptreprises, $apprenant, $association);
+        return $this->json([
+            'utilisateurs' =>$liste
+        ]);
     }
 }

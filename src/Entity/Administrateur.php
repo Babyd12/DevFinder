@@ -35,7 +35,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             security: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_ENTREPRISE') ",
             normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
-            securityMessage: 'Only authenticated users can access this resource.',
+            securityMessage: 'Vous devez être connecté.',
         ),
 
         new Post(
@@ -45,6 +45,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             uriTemplate:'/utilisateur/connecte',
             denormalizationContext: ['groups' => 'apprenant:connecte'],
             // outputFormats: ['json' => 'application/json'],
+        ),
+        new GetCollection(
+            shortName: 'Module gestion de compte -Administrateur',
+            uriTemplate:'/administrateur/liste/utilisateurs',
+            provider:CustumAdminController::class,
+            name: 'app_custum_admin_listeUtilisateur',
+            security:  "is_granted('ROLE_ADMIN')",
+            denormalizationContext: ['groups' => 'administrateur:connecte'],
+
         ),
     ]
 )]
