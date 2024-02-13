@@ -35,6 +35,8 @@ use Symfony\Component\Validator\Constraints\Hostname;
     uriTemplate: 'brief/{id}',
     forceEager: true,
     normalizationContext: [ 'groups' => ['brief:show'] ],
+    outputFormats: ['json' => 'application/json']
+
     // denormalizationContext: [ 'groups' => ['brief:show']],
 )]
 
