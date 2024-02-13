@@ -20,14 +20,14 @@ use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
+    outputFormats: [ 'json' => 'application/merge-patch+json', ]
+
 )]
 
 
 #[GetCollection(
     uriTemplate: 'immersion/liste',
     normalizationContext: ['groups' => ['immersion:index']],
-
-
 )]
 
 #[Get(
