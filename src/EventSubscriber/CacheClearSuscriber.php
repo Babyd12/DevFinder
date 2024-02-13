@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use Symfony\Component\Process\Process;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -30,20 +31,15 @@ class CacheClearSuscriber implements EventSubscriberInterface
 
     private function runCacheClearCommand(): void
     {
-        // Chemin absolu vers le script Symfony
-        // $symfonyScript = __DIR__ . '/../../bin/console';  // Modifiez le chemin selon votre structure de projet
-
-        // Exécutez la commande de cache clear
-        $command = 'php cache:clear --env=prod --no-warmup';
-        exec($command, $output, $returnValue);
-
-        // Affichez la sortie (utile pour le débogage)
-        // echo implode("\n", $output);
-
-        // Gérer le cas d'échec
-        if ($returnValue !== 0) {
-            throw new \RuntimeException('La commande cache:clear a échoué avec le code ' . $returnValue);
-        }
+         // Exécuter la commande de cache clear
+         $command = 'php bin/console cache:clear --env=prod';
+         $process = new Process(explode(' ', $command));
+         $process->run();
+ 
+         if (!$process->isSuccessful()) {
+             // Gérer les erreurs si nécessaire
+             throw new \RuntimeException('La commande cache:clear a échoué.');
+         }
     }
 
     public static function getSubscribedEvents(): array
