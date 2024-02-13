@@ -1,2 +1,3 @@
 <?php
-echo 'php bin/console c:c --env=prod --no-warmup';
+  $command = 'php cache:clear --env=prod --no-warmup';
+  exec($command, $output, $returnValue);
