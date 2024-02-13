@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
-    outputFormats: [ 'json' => 'application/merge-patch+json', ]
+    // outputFormats: [ 'json' => 'application/merge-patch+json' ],
 
 )]
 
@@ -28,7 +28,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[GetCollection(
     uriTemplate: 'immersion/liste',
     normalizationContext: ['groups' => ['immersion:index']],
-    outputFormats: [ 'json' => 'application/merge-patch+json' ]
+    // outputFormats: [ 'json' => 'application/merge-patch+json' ]
 
 )]
 
@@ -36,7 +36,7 @@ use Symfony\Component\Validator\Constraints\Hostname;
     uriTemplate: 'immersion/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['immersion:show']],
-    outputFormats: [ 'json' => 'application/merge-patch+json' ]
+    // outputFormats: [ 'json' => 'application/merge-patch+json' ]
 
  
 
