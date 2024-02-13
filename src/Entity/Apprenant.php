@@ -91,6 +91,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]

@@ -57,6 +57,7 @@ class LangageDeProgrammation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['langageDeProgrammation:show', 'langageDeProgrammation:index', 'langageDeProgrammation:update'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
