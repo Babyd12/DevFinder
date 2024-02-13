@@ -16,6 +16,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DeleteSubscriber implements EventSubscriberInterface
 {
+
     public function showDeleteMessage(ViewEvent $event): void
     {
 
@@ -42,7 +43,7 @@ class DeleteSubscriber implements EventSubscriberInterface
         $symfonyScript = __DIR__ . '/../../bin/console';  // Modifiez le chemin selon votre structure de projet
 
         // Exécutez la commande de cache clear
-        $command = 'php ' . $symfonyScript . ' cache:clear --env=prod';
+        $command = 'php ' . $symfonyScript . ' cache:clear --env=prod --no-warmup';
         exec($command, $output, $returnValue);
 
         // Affichez la sortie (utile pour le débogage)
@@ -58,8 +59,6 @@ class DeleteSubscriber implements EventSubscriberInterface
     {
         return [
             KernelEvents::VIEW => ['showDeleteMessage', EventPriorities::POST_WRITE],
-
-
         ];
     }
 }
