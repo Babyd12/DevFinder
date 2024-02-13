@@ -1,5 +1,5 @@
 api_platform:
-    title: Hello API Platform of Mciré
+    title: Bienvenu sur l'API de devfinder
     version: 1.0.0
     eager_loading:
         fetch_partial: true
