@@ -27,7 +27,7 @@ class CacheClearSuscriber implements EventSubscriberInterface
             return;
         }
     }
-
+    
     private function runCacheClearCommand(): void
     {
         // Chemin absolu vers le script Symfony

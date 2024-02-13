@@ -24,6 +24,9 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
+/var/
+/var/cache/*
+/var/log/*
 #Migrations
 migrations/Version20240201170611.php 
 migrations/Version20240202034757.php 

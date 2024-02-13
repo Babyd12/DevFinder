@@ -26,12 +26,16 @@ use Symfony\Component\Validator\Constraints\Hostname;
 #[GetCollection(
     uriTemplate: 'immersion/liste',
     normalizationContext: ['groups' => ['immersion:index']],
+ outputFormats: [ 'json' => 'application/json+ld'],
+
 )]
 
 #[Get(
     uriTemplate: 'immersion/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['immersion:show']],
+    outputFormats: [ 'json' => 'application/json+ld'],
+
     // denormalizationContext: ['groups' => ['immersion:show']],
 )]
 

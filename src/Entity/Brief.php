@@ -27,7 +27,8 @@ use Symfony\Component\Validator\Constraints\Hostname;
     forceEager: false,
     normalizationContext: [ 'groups' => ['brief:index'] ],
     // denormalizationContext:[ 'groups' => ['brief:index'] ],
-    // outputFormats: [ 'json' => 'application/json']  
+    // outputFormats: [ 'json' => 'application/json+ld'],
+    // inputFormats: [ 'json' => 'application/json+ld; charset=utf-8']  
 )]
 
 #[Get(
@@ -80,6 +81,9 @@ class Brief
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Url(
+        message: 'L\'url {{ value }} n\'est pas une url valide',
+    )]
     #[Groups(['brief:show', 'brief:create', 'brief:update'])]
     private ?string $lient_support = null;
 
@@ -91,8 +95,6 @@ class Brief
 
     #[ORM\OneToMany(mappedBy: 'brief', targetEntity: Livrable::class)]
     private Collection $livrables;
-
-    
 
  
 

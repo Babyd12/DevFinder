@@ -9,8 +9,8 @@ auth:
     methods: ['POST']
     
 app_logout:
-    path: 
-        /deconnexion
+    path:
+        /api/deconexion
     methods: ['POST']
 
 app_refresh:

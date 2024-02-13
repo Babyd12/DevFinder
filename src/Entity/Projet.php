@@ -131,8 +131,6 @@ class Projet
              * @see src/Entity/Apprenant
              */
             'apprenant:show'
-
-
         ]
     )]
     private ?string $description = null;
