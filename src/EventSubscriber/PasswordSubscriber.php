@@ -31,7 +31,7 @@ class PasswordSubscriber implements EventSubscriberInterface
             in_array($method, [Request::METHOD_POST, Request::METHOD_PATCH]) &&
             method_exists($entity, 'getPassword') && $entity->getPassword() !== null
         ) {
-            // dd($entity->getEmail(), $entity->getPassword() ; 
+            // dd($entity->getEmail(), $entity->getPassword()) ; 
             $hashedPassword = $this->userPasswordHasherInterface->hashPassword($entity, $entity->getPassword());
             $entity->setMotDePasse($hashedPassword);
             $entity->setEtat(false);

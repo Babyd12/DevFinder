@@ -24,7 +24,7 @@ class LogoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            LogoutEvent::class => ['onLogoutEvent', EventPriorities::POST_RESPOND ]
+            LogoutEvent::class => ['onLogoutEvent', EventPriorities::POST_WRITE]
         ];
     }
 }
