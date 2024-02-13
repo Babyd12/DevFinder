@@ -16,18 +16,18 @@ class CacheClearSuscriber implements EventSubscriberInterface
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
         if ($entity && in_array($method, [Request::METHOD_POST, Request::METHOD_GET, Request::METHOD_PATCH, Request::METHOD_PUT])) {
-            
+            return;
             // $this->runCacheClearCommand();
 
         } else if (!$entity && in_array($method, [Request::METHOD_DELETE])) {
-           
+           return;
             // $this->runCacheClearCommand();
 
         } else {
             return;
         }
     }
-    
+
     private function runCacheClearCommand(): void
     {
         // Chemin absolu vers le script Symfony
