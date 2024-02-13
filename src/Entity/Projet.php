@@ -115,6 +115,7 @@ class Projet
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'apprenant:show'
         ]
     )]
     private ?string $titre = null;
