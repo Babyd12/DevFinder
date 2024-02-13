@@ -31,10 +31,10 @@ class CacheClearSuscriber implements EventSubscriberInterface
     private function runCacheClearCommand(): void
     {
         // Chemin absolu vers le script Symfony
-        $symfonyScript = __DIR__ . '/../../bin/console';  // Modifiez le chemin selon votre structure de projet
+        // $symfonyScript = __DIR__ . '/../../bin/console';  // Modifiez le chemin selon votre structure de projet
 
         // Exécutez la commande de cache clear
-        $command = 'php ' . $symfonyScript . ' cache:clear --env=prod --no-warmup';
+        $command = 'php cache:clear --env=prod --no-warmup';
         exec($command, $output, $returnValue);
 
         // Affichez la sortie (utile pour le débogage)
