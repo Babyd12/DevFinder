@@ -17,11 +17,11 @@ class CacheClearSuscriber implements EventSubscriberInterface
         $method = $event->getRequest()->getMethod();
         if ($entity && in_array($method, [Request::METHOD_POST, Request::METHOD_GET, Request::METHOD_PATCH, Request::METHOD_PUT])) {
             
-            // $this->runCacheClearCommand();
+            $this->runCacheClearCommand();
 
         } else if (!$entity && in_array($method, [Request::METHOD_DELETE])) {
            
-            // $this->runCacheClearCommand();
+            $this->runCacheClearCommand();
 
         } else {
             return;
