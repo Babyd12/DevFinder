@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidArgumentException;
 
 class ExceptionListener
@@ -19,6 +20,12 @@ class ExceptionListener
 
         if ($exception instanceof HttpExceptionInterface) {
             switch (true) {
+
+                case ($exception instanceof AuthenticationException && strpos($exception->getMessage(), 'Expired JWT Token') !== false):
+                    $statusCode = JsonResponse::HTTP_UNAUTHORIZED;
+                    $errorMessage = sprintf('Token JWT expiré. Veuillez vous reconnecter. %d', $statusCode);
+                    break;                
+
                 case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
                     $statusCode = JsonResponse::HTTP_FORBIDDEN;
                     $errorMessage = sprintf('Action non autorisée: code %s', $statusCode);
@@ -35,7 +42,6 @@ class ExceptionListener
                     $errorMessage = sprintf('%s: code %s', $errorMessage, $exception->getCode());
                     break;
 
-
                 case  $exception instanceof InvalidArgumentException:
                     $statusCode = JsonResponse::HTTP_BAD_REQUEST;
                     $errorMessage = 'Token invalide ou utilisateur innexistant.';
@@ -45,15 +51,25 @@ class ExceptionListener
                 case $exception->getCode() == 401:
                     $errorMessage = 'Information de connexion invalide';
                     $response = sprintf('Erreur : %s', $errorMessage);
+                    
+                    break;
 
                 case $exception->getCode() == 417:
                     $statusCode = $exception->getCode();
                     $errorMessage = 'Erreur de verbe, vous aviez utilisé Put à ';
                     $response = sprintf('Erreur : %s', $errorMessage);
+                    break;
+
+                case $exception->getStatusCode() === 400:
+                    $statusCode = JsonResponse::HTTP_BAD_REQUEST;
+                    $errorMessage = sprintf('Erreur de décodage JSON. Vérifiez la validité de la chaîne JSON.: %s', $statusCode, $exception->getMessage());
+                    // $response = sprintf('Erreur : %s', $errorMessage);
+                    break;
 
                 default:
                     $statusCode = JsonResponse::HTTP_EXPECTATION_FAILED;
                     $errorMessage = sprintf('Erreur HTTP: %s, Detail: %s', $statusCode, $exception->getMessage());
+                    // $response = sprintf('Erreur : %s', $errorMessage);
                     break;
             }
 

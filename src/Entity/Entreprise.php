@@ -31,10 +31,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     normalizationContext: ['entreprise:recruter'],
     denormalizationContext: ['entreprise:recruter'],
     outputFormats: ['json' => 'application/json'],
-    
+
     operations: [
         new Post(
-            requirements: ['id' => '\d+' ],
+            requirements: ['id' => '\d+'],
             uriTemplate: 'entreprise/recruter/apprenant/{id}',
             processor: AddUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
@@ -45,6 +45,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             processor: RemoveUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
         ),
+        new Patch(
+            shortName: 'Module gestion de compte -Entreprise',
+            uriTemplate: 'entreprise/monitorerAccess/{id}',
+            securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+            denormalizationContext: ['groups' => ['administrateur:monitorer']],
+            // normalizationContext: [ 'groups' => ['administrateur:monitorer'] ],
+        )
     ]
 )]
 
@@ -54,7 +61,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     description: 'Modifie toi',
     name: 'nom temporaire',
     normalizationContext: ['groups' => ['entreprise:index']],
-    
+
 )]
 
 #[Get(
@@ -74,18 +81,23 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[Put(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/{id}',
-    denormalizationContext: ['groups' => ['entreprise:update']]
+    denormalizationContext: ['groups' => ['entreprise:update']],
+    securityPostDenormalize: "is_granted('ROLE_ENTREPRISE') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
 )]
 
 #[Patch(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/change_mot_de_passe/{id}',
-    denormalizationContext: ['groups' => ['entreprise:updateOne']]
+    denormalizationContext: ['groups' => ['entreprise:updateOne']],
+    securityPostDenormalize: "is_granted('ROLE_ENTREPRISE') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
+
 )]
 
 #[Delete(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/{id}',
+    securityPostDenormalize: "is_granted('ROLE_ENTREPRISE') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
+
 )]
 
 class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
@@ -127,10 +139,10 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
-    #[Assert\NotBlank] 
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
+    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $description = null;
 
@@ -140,6 +152,7 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $numero_identification_naitonal = null;
 
     #[ORM\Column]
+    #[Groups(['administrateur:monitorer', 'entreprise:show', 'entreprise:index', 'entreprise:create'])]
     private ?bool $etat = null;
 
     public function __construct()

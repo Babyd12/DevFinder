@@ -38,7 +38,7 @@ class CacheClearSuscriber implements EventSubscriberInterface
         exec($command, $output, $returnValue);
 
         // Affichez la sortie (utile pour le débogage)
-        echo implode("\n", $output);
+        // echo implode("\n", $output);
 
         // Gérer le cas d'échec
         if ($returnValue !== 0) {

@@ -2,14 +2,16 @@
 
 namespace App\EventSubscriber;
 
-use ApiPlatform\Symfony\EventListener\EventPriorities;
 use App\Entity\Apprenant;
-use App\Entity\Association;
 use App\Entity\Entreprise;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\ViewEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
+use App\Entity\Association;
 use Psr\Log\LoggerInterface;
+use App\Entity\Administrateur;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\Event\ViewEvent;
+use ApiPlatform\Symfony\EventListener\EventPriorities;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 
 class UserStatuSubscriber implements EventSubscriberInterface
@@ -40,7 +42,10 @@ class UserStatuSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            KernelEvents::VIEW => ['setUserRole', EventPriorities::PRE_WRITE],
+            KernelEvents::VIEW => [
+                'setUserRole', EventPriorities::PRE_WRITE,
+            
+            ],
 
         ];
     }

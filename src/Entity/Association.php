@@ -24,7 +24,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ApiResource(
     shortName: 'Module gestion de compte -Association',
-    // outputFormats: [ 'json' => 'application/json' ],
+    operations:[
+        new Patch(
+            uriTemplate: 'association/monitorerAccess/{id}',  
+            securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+            denormalizationContext: [ 'groups' => ['administrateur:monitorer'] ], 
+            // normalizationContext: [ 'groups' => ['administrateur:monitorer'] ],
+        )
+    ],
 )]
 
 #[GetCollection(
@@ -117,6 +124,7 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $numero_identification_naitonal = null;
 
     #[ORM\Column]
+    #[Groups(['administrateur:monitorer', 'association:show', 'association:index', 'association:create'])]
     private ?bool $etat = null;
 
     public function __construct()

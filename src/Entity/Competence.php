@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CompetenceRepository::class)]
 
 #[ApiResource(
-    shortName: 'Module gestion de compte -Apprenant'
+    shortName: 'Module gestion de compte -Apprenant',
 )]
 
 #[GetCollection(
