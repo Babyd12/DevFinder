@@ -34,7 +34,7 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
                 )
                 && !$user->isEtat()
             ) {
-
+                
                 $event->setResponse(new JsonResponse([
                     'nom_complet' => $user->getNomComplet(),
                     'email' => $user->getUserIdentifier(),

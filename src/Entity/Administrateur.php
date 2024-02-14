@@ -26,11 +26,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
 
 #[ApiResource(
-   
+
     operations: [
         new Post(
             shortName: 'Deconnexion',
-            uriTemplate:'/deconnexion',
+            uriTemplate: '/deconnexion',
             routeName: 'app_logout',
             security: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_ENTREPRISE') ",
             normalizationContext: ['groups' => 'apprenantPojet:show'],
@@ -40,18 +40,18 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
         new Post(
             shortName: 'Récuperer l\'utilisateur connecté V2',
-            controller:CustumAdminController::class,
+            controller: CustumAdminController::class,
             name: 'app_admin_recuperer_utilisateur_connecter',
-            uriTemplate:'/utilisateur/connecte',
+            uriTemplate: '/utilisateur/connecte',
             denormalizationContext: ['groups' => 'apprenant:connecte'],
             // outputFormats: ['json' => 'application/json'],
         ),
         new GetCollection(
             shortName: 'Module gestion de compte -Administrateur',
-            uriTemplate:'/administrateur/liste/utilisateurs',
-            provider:CustumAdminController::class,
+            uriTemplate: '/administrateur/liste/utilisateurs',
+            provider: CustumAdminController::class,
             name: 'app_custum_admin_listeUtilisateur',
-            security:  "is_granted('ROLE_ADMIN')",
+            security: "is_granted('ROLE_ADMIN')",
             denormalizationContext: ['groups' => 'administrateur:connecte'],
 
         ),
@@ -166,6 +166,8 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
 
         return $this;
     }
+    #[ORM\Column]
+    private ?bool $etat = null;
 
 
     /**
@@ -217,7 +219,19 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
             'Nom complet' => $this->getNomComplet(),
             'email' => $this->getUserIdentifier(),
             'role' => $this->getRole()
-    ]);
+        ]);
     }
 
+    public function isEtat(): ?bool
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(bool $etat): static
+    {
+        $this->etat = $etat;
+
+        return $this;
+    }
 }
+
