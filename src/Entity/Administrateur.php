@@ -55,6 +55,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             denormalizationContext: ['groups' => 'administrateur:connecte'],
 
         ),
+        new Get(
+            shortName: 'Module gestion de compte -Administrateur',
+            uriTemplate: '/administrateur/liste/utilisateursBloque',
+            provider: CustumAdminController::class,
+            name: 'app_custum_admin_listeUtilisateurBloquer',
+            security: "is_granted('ROLE_ADMIN')",
+            denormalizationContext: ['groups' => 'administrateur:utilisateurBloquer'],
+        ),
     ]
 )]
 

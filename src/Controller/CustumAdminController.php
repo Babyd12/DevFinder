@@ -51,4 +51,17 @@ class CustumAdminController extends AbstractController
             'utilisateurs' =>$liste
         ]);
     }
+
+    #[Route('/api/administrateur/liste/utilisateursBloque', name: 'app_custum_admin_listeUtilisateurBloquer')]
+    public function listeUtilisateursBloque(): JsonResponse
+    { 
+        $enptreprises = $this->entityManager->getRepository(Entreprise::class)->findBy(['etat' => true]);
+        $association = $this->entityManager->getRepository(Association::class)->findBy(['etat' => true]);
+        $apprenant = $this->entityManager->getRepository(Apprenant::class)->findBy(['etat' => true]);
+
+        $liste = array_merge($enptreprises, $apprenant, $association);
+        return $this->json([
+            'utilisateursBloque' =>$liste
+        ]);
+    }
 }
