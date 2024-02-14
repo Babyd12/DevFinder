@@ -62,7 +62,7 @@ class ExceptionListener
 
                 case $exception->getStatusCode() === 400:
                     $statusCode = JsonResponse::HTTP_BAD_REQUEST;
-                    $errorMessage = sprintf('Erreur de décodage JSON. Vérifiez la validité de la chaîne JSON.: %s', $statusCode, $exception->getMessage());
+                    $errorMessage = sprintf('Erreur de décodage JSON. Vérifiez la validité de la chaîne JSON.: %d original message: %s', $statusCode, $exception->getMessage());
                     // $response = sprintf('Erreur : %s', $errorMessage);
                     break;
 

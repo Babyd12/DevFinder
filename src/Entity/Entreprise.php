@@ -38,12 +38,15 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             uriTemplate: 'entreprise/recruter/apprenant/{id}',
             processor: AddUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
+            denormalizationContext: ['groups' => ['entreprise:recruter'] ]
         ),
         new Post(
             requirements: ['id' => '\d+'],
             uriTemplate: 'entreprise/congedier/apprenant/{id}',
             processor: RemoveUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE') or  'ROLE_ENTREPRISE' in user.getRoles()",
+            denormalizationContext: ['groups' => ['entreprise:recruter'] ]
+
         ),
         new Patch(
             shortName: 'Module gestion de compte -Entreprise',
