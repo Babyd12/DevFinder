@@ -115,6 +115,10 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
     #[ORM\Column]
     private array $roles = [];
 
+    #[ORM\Column]
+    private ?bool $etat = null;
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -174,9 +178,8 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
 
         return $this;
     }
-    #[ORM\Column]
-    private ?bool $etat = null;
 
+  
 
     /**
      * @see UserInterface

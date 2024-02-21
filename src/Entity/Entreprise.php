@@ -119,7 +119,10 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Email(message: 'Veuillez entrer un format d\'email correcte.')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9]{1,}([.]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
+        message: 'Veuillez entrer un format d\'email correcte.'
+     )]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $email = null;
 

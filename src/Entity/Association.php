@@ -24,11 +24,11 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ApiResource(
     shortName: 'Module gestion de compte -Association',
-    operations:[
+    operations: [
         new Patch(
-            uriTemplate: 'association/monitorerAccess/{id}',  
+            uriTemplate: 'association/monitorerAccess/{id}',
             securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-            denormalizationContext: [ 'groups' => ['administrateur:monitorer'] ], 
+            denormalizationContext: ['groups' => ['administrateur:monitorer']],
             // normalizationContext: [ 'groups' => ['administrateur:monitorer'] ],
         )
     ],
@@ -83,38 +83,80 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Le champ {value} ne doit pas être vide')]
     #[Assert\Length(min: 2, max: 20, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    #[Groups(
+        [
+            'association:show', 'association:index', 'association:create', 'association:update',
+            /**
+             * @see App\Entity/Projet
+             */
+            'projet:show',
+
+            /**
+             * @see App\Entity/Apprenant
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations de lassociation au lieu de l'uri
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Email(message: 'Veuillez entrer un format d\'email correcte.')]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9]{1,}([.]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
+        message: 'Veuillez entrer un format d\'email correcte.'
+    )]
+    #[Groups(
+        [
+            'association:show', 'association:index', 'association:create', 'association:update',
+            /**
+             * @see App\Entity/Apprenant
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations de lassociation au lieu de l'uri
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\PasswordStrength([
         'minScore' => PasswordStrength::STRENGTH_WEAK,
     ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
-    #[Groups(['association:create', 'association:updateOne'])]
+    #[Groups(
+        [
+            'association:create', 'association:updateOne',
+        ]
+    )]
     private ?string $mot_de_passe = null;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]
-    #[Groups(['association:show'])]
+    #[Groups(
+        [
+            'association:show',
+          
+        ]
+    )]
     private Collection $projets;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: LangageDeProgrammation::class)]
-    #[Groups(['association:show'])]
+    #[Groups(
+        [
+            'association:show',
+
+        ]
+    )]
     private Collection $langageDeProgrammations;
-    
+
     #[ORM\Column(length: 255, unique: true, type: 'string')]
     #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank(message: 'Le champ  ne doit pas être vide')]
     #[Assert\Length(min: 35, max: 200, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
+    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
     private ?string $description = null;
 

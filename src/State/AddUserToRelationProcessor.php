@@ -8,6 +8,7 @@ use App\Entity\Entreprise;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\DescriptionCompetence;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,8 +26,13 @@ class AddUserToRelationProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         $entity = $this->security->getUser();
+
         if ($entity instanceof Apprenant) {
-            $entity->addCompetence($data);
+        
+            if($data instanceof DescriptionCompetence){
+                $data->setApprenant($entity);
+            }
+
             return $this->processorInterface->process($data, $operation, $uriVariables, $context);
             
         } else if ($entity instanceof Entreprise) {
@@ -42,7 +48,11 @@ class AddUserToRelationProcessor implements ProcessorInterface
             $entity->addApprenant($apprenant);
             $this->entityManager->flush();
             return new JsonResponse(["message" => "Vous avez recruter ce developpeur. "], Response::HTTP_OK);
+        } else if ($entity instanceof DescriptionCompetence){
+            $userLogged = $this->security->getUser();
+            dd($data, $operation, $context );
         }
+        dd($entity);
        
         return $this->processorInterface->process($data, $operation, $uriVariables, $context);
     }

@@ -8,14 +8,14 @@ class JwtDecoder
 {
     // private $tokenStorage;
 
-    // public function __construct(TokenStorageInterface $tokenStorage)
+    // public function __construct(TokenStorageInterface $tokenStorage, private JWTTokenManagerInterface $tokenManager)
     // {
     //     $this->tokenStorage = $tokenStorage;
     // }
 
     // public function decodeToken(string $token): array
     // {
-    //     return $this->jwtManager->decode($token);
+    //     return $this->tokenManager->decode($token);
     // }
 }
 

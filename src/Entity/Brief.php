@@ -9,15 +9,19 @@ use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\BriefRepository;
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Trait\CommonDateTrait;
 use ApiPlatform\Metadata\GetCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints\Hostname;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BriefRepository::class)]
-
+#[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 #[ApiResource(
     shortName:'Module gestion de publication brief -Administrateur',
 )]
@@ -62,24 +66,47 @@ use Symfony\Component\Validator\Constraints\Hostname;
 
 class Brief
 {
+    use CommonDateTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?int $id = null;
 
+
+    #[Vich\UploadableField(mapping: 'briefs', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Assert\File(
+        mimeTypes: 
+        [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ],
+        mimeTypesMessage:'Veuillez inserer un fichier de type pdf ou docx.'
+    )]
+    // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
+    #[Assert\NotBlank]
+    #[Groups(
+        [
+            'brief:create', 'brief:index', 'brief:create', 'brief:update',
+        ]
+    )]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $imageSize = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?string $titre = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 50, minMessage: 'veuillez saisir au moins 50 lettres')]
-    #[Assert\Type(type:'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
-    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
-    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
-    private ?string $description = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -122,17 +149,6 @@ class Brief
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
 
     public function getLientSupport(): ?string
     {
@@ -188,6 +204,45 @@ class Brief
         return $this;
     }
 
+    /**
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            // $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageSize(?int $imageSize): void
+    {
+        $this->imageSize = $imageSize;
+    }
+
+    public function getImageSize(): ?int
+    {
+        return $this->imageSize;
+    }
  
 
     

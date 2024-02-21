@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
@@ -12,19 +13,19 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\SetUserToRelationClass;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\Repository\ApprenantRepository;
+use App\State\AddUserToRelationProcessor;
+use App\State\GetApprenantProjetProcessor;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Bundle\SecurityBundle\Security;
 use App\Controller\CustomApprenantController;
-use App\State\GetApprenantProjetProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: ApprenantRepository::class)]
 
@@ -32,15 +33,29 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     shortName: 'Module gestion de compte -Apprenant',
     description: "Cette API permet la gestion des comptes des apprenants. Elle offre des fonctionnalités telles que la création, la lecture, la mise à jour et la suppression de comptes apprenants. Les utilisateurs peuvent s'inscrire, se connecter, mettre à jour leurs informations de compte, etc.",
 
-    operations:[
+    operations: [
         new Patch(
-            uriTemplate: 'apprenant/monitorerAccess/{id}',  
+            uriTemplate: 'apprenant/monitorerAccess/{id}',
             securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-            denormalizationContext: [ 'groups' => ['apprenant:monitorer'] ],
-            normalizationContext: [ 'groups' => ['apprenant:monitorer']],
-            inputFormats: [ 'json' => 'application/json' ],
+            denormalizationContext: ['groups' => ['apprenant:monitorer']],
+            normalizationContext: ['groups' => ['apprenant:monitorer']],
+            inputFormats: ['json' => 'application/json'],
         ),
-    
+        new Patch(
+
+            uriTemplate: '/apprenant/competence/ajouter',
+            // processor: AddUserToRelationProcessor::class,
+            security: "is_granted('ROLE_ADMIN')",
+            denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
+        ),
+        new Delete(
+
+            uriTemplate: '/apprenant/competence/supprimer/{id}',
+            // processor: AddUserToRelationProcessor::class,
+            security: "is_granted('ROLE_ADMIN')",
+            denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
+        )
+
     ],
 )]
 
@@ -48,13 +63,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[GetCollection(
     uriTemplate: 'apprenant/liste',
     description: 'Modifie toi',
-    normalizationContext: ['groups' => ['apprenant:index', ]]
+    normalizationContext: ['groups' => ['apprenant:index',]]
 )]
 
 #[Get(
     uriTemplate: 'apprenant/{id}',
     forceEager: true,
-    normalizationContext: ['groups' => ['apprenant:show' ]],
+    normalizationContext: ['groups' => ['apprenant:show']],
     outputFormats: ['json' => 'application/json']
 
 )]
@@ -102,19 +117,52 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:update', 'apprenant:monitorer'])]
+    #[Groups(
+        [
+            'apprenant:show', 'apprenant:index', 'apprenant:update', 'apprenant:monitorer',
+            /**
+             * ici lorsque jaffiche un projet qui a enregistré des apprenants, 
+             * je charge les informations de l'apprenant au lieu de l'uri
+             * @see App\Entity\Projet
+             */
+            'projet:show',
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le champ ne doit pas être vide')]
     #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
-    #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update'])]
+    #[Groups(
+        [
+            'apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update',
+            /**
+             * ici lorsque jaffiche un projet qui a enregistré des apprenants, 
+             * je charge les informations de l'apprenant au lieu de l'uri
+             * @see App\Entity\Projet
+             */
+            'projet:show',
+        ]
+    )]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Email(message: 'Veuillez entrer un format d\'email correcte.')]
-    #[Groups(['apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update'])]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9]{1,}([.]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
+        message: 'Veuillez entrer un format d\'email correcte.'
+    )]
+    #[Groups(
+        [
+            'apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update',
+             /**
+             * ici lorsque jaffiche un projet qui a enregistré des apprenants, 
+             * je charge les informations de l'apprenant au lieu de l'uri
+             * @see App\Entity\Projet
+             */
+            'projet:show',
+        ]
+    )]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -133,23 +181,29 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, unique: true, type: 'string')]
     #[Assert\Regex('/^(70|78|77|76|75)\d{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
-    #[Groups(['apprenant:create', 'apprenant:update'])]
+    #[Groups(
+        [
+            'apprenant:create', 'apprenant:update',
+
+        ]
+    )]
     private ?string $telephone = null;
 
-    #[ORM\Column(length: 255, nullable:true)]
+    #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank(message: 'Ce champ ne peut pas être vide')]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères')]
-    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
-    #[Groups(['apprenant:create', 'apprenant:update'])]
+    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
+    #[Groups(
+        [
+            'apprenant:create', 'apprenant:update',
+
+        ]
+    )]
     private ?string $description = null;
- 
+
     #[ORM\ManyToMany(targetEntity: Projet::class, inversedBy: 'apprenants')]
     #[Groups(['apprenant:show'])]
     private Collection $projet;
-
-    #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Competence::class)]
-    #[Groups(['apprenant:show'])]
-    private Collection $competences;
 
     #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
     private Collection $entreprises;
@@ -158,16 +212,29 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $livrables;
 
     #[ORM\Column]
-    #[Groups(['apprenant:monitorer', 'apprenant:show', 'apprenant:index' ])]
+    #[Groups(
+        [
+            'apprenant:monitorer', 'apprenant:show', 'apprenant:index',
+            /**
+             * ici lorsque jaffiche un projet qui a enregistré des apprenants comme participants, 
+             * je charge les informations de l'apprenant au lieu de l'uri
+             * @see App\Entity\Projet
+             */
+            'projet:show',
+        ]
+    )]
     private ?bool $etat = null;
+
+    #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: DescriptionCompetence::class, orphanRemoval: true)]
+    private Collection $descriptionCompetences;
 
     public function __construct()
     {
 
         $this->projet = new ArrayCollection();
-        $this->competences = new ArrayCollection();
         $this->entreprises = new ArrayCollection();
         $this->livrables = new ArrayCollection();
+        $this->descriptionCompetences = new ArrayCollection();
     }
 
     /**
@@ -296,35 +363,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Competence>
-     */
-    public function getCompetences(): Collection
-    {
-        return $this->competences;
-    }
-   
-    public function addCompetence(Competence $competence): static
-    {
-        if (!$this->competences->contains($competence)) {
-            $this->competences->add($competence);
-            $competence->setApprenant($this);
-        }
 
-        return $this;
-    }
-
-    public function removeCompetence(Competence $competence): static
-    {
-        if ($this->competences->removeElement($competence)) {
-            // set the owning side to null (unless already changed)
-            if ($competence->getApprenant() === $this) {
-                $competence->setApprenant(null);
-            }
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Entreprise>
@@ -427,6 +466,36 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEtat(bool $etat): static
     {
         $this->etat = $etat;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DescriptionCompetence>
+     */
+    public function getDescriptionCompetences(): Collection
+    {
+        return $this->descriptionCompetences;
+    }
+
+    public function addDescriptionCompetence(DescriptionCompetence $descriptionCompetence): static
+    {
+        if (!$this->descriptionCompetences->contains($descriptionCompetence)) {
+            $this->descriptionCompetences->add($descriptionCompetence);
+            $descriptionCompetence->setApprenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDescriptionCompetence(DescriptionCompetence $descriptionCompetence): static
+    {
+        if ($this->descriptionCompetences->removeElement($descriptionCompetence)) {
+            // set the owning side to null (unless already changed)
+            if ($descriptionCompetence->getApprenant() === $this) {
+                $descriptionCompetence->setApprenant(null);
+            }
+        }
 
         return $this;
     }

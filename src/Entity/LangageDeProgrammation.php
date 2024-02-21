@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\LangageDeProgrammationRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: LangageDeProgrammationRepository::class)]
 #[ApiResource(
@@ -32,25 +33,30 @@ use App\Repository\LangageDeProgrammationRepository;
 )]
 
 #[Post(
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION')",
     uriTemplate: '/langage/ajouter',
-    // security: "is_granted('ROLE_ASSOCIATION')",
+    security: "is_granted('ROLE_ADMIN')",
     denormalizationContext: ['groups' => ['langageDeProgrammation:create']]
 )]
 
 #[Put(
     uriTemplate: '/langage/{id}',
-    requirements: ['id' => '\d+'], 
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and object.isUsedInProjects() == false",
+    requirements: ['id' => '\d+'],
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and object.isUsedInProjects() == false",
+    securityMessage: "Vous n'avez pas les droit requis pour effecuter cette action",
     denormalizationContext: ['groups' => ['langageDeProgrammation:update']]
 )]
 
 #[Delete(
     uriTemplate: '/langage/{id}',
-    securityPostDenormalize: " ( is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMIN') ) and object.isUsedInProjects() == false",
-
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and object.isUsedInProjects() == false",
+    securityMessage: "Vous n'avez pas les droit requis pour effecuter cette action",
 )]
 
+#[UniqueEntity(
+    fields: ['nom'],
+    errorPath: 'Lanage de programmation',
+    message: 'Cette langage de programmation existe déjà',
+)]
 
 class LangageDeProgrammation
 {
@@ -61,7 +67,20 @@ class LangageDeProgrammation
     private ?int $id = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Groups(['langageDeProgrammation:show', 'langageDeProgrammation:index', 'langageDeProgrammation:create', 'langageDeProgrammation:update'])]
+    #[Groups(
+        [
+            'langageDeProgrammation:show', 'langageDeProgrammation:index',
+            'langageDeProgrammation:create', 'langageDeProgrammation:update',
+
+            /**
+             * @see App\Entity/Apprenant
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du lanage de programmation au lieu de l'uri
+             */
+            'apprenant:show'
+
+        ]
+    )]
     private ?string $nom = null;
 
     #[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'langage_de_programmation')]
@@ -124,13 +143,11 @@ class LangageDeProgrammation
      * Vérifier si le langage est utilisé dans au moins un projet
      */
     public function isUsedInProjects(): bool
-    {   
+    {
         $projets = $this->getProjets();
-        
-        foreach ($projets as $projet) 
-        {
-            if( $projet->getLangageDeProgrammation()->contains($this) && $projet->getStatu() !== 'En attente' )
-            {
+
+        foreach ($projets as $projet) {
+            if ($projet->getLangageDeProgrammation()->contains($this) && $projet->getStatu() !== 'En attente') {
                 return true;
             }
         }
