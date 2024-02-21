@@ -9,7 +9,7 @@ api_platform:
         jsonld: ['application/json+ld']
         json: ['application/json']
         # jsonl: [' application/merge-patch+json']
-        # multipart: ['application/x-www-form-urlencoded', 'application/merge-patch+json']
+        multipart: ['multipart/form-data']
 
     docs_formats:
         jsonld: ['application/json+ld']

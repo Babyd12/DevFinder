@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
@@ -21,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CompetenceRepository::class)]
 
 #[ApiResource(
-    shortName: 'Module gestion de compte -Apprenant',
+    shortName: 'Module gestion de compétence -Administrateur',
 )]
 
 #[GetCollection(
@@ -35,20 +37,18 @@ use Symfony\Component\Serializer\Annotation\Groups;
     forceEager: true,
     uriTemplate: '/competence/{id}',
     normalizationContext: ['groups' => ['competence:show']],
-
-
 )]
 
 #[Post(
     uriTemplate: '/competence/ajouter',
-    processor: AddUserToRelationProcessor::class,
-    security: "is_granted('ROLE_APPRENANT')",
+    // processor: AddUserToRelationProcessor::class,
+    security: "is_granted('ROLE_ADMIN')",
     denormalizationContext: ['groups' => ['competence:create']]
 )]
 
 #[Put(
     uriTemplate: '/competence/{id}',
-    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant(user) == user ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getApprenant(user) == user ",
     securityMessage: 'Sorry, but you are not this competence owner.',
     denormalizationContext: ['groups' => ['competence:update']]
 )]
@@ -56,13 +56,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Delete(
     uriTemplate: '/competence/{id}',
     processor: RemoveUserToRelationProcessor::class,
-    securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant(user) == user ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getApprenant(user) == user ",
 )]
 
 #[UniqueEntity(
-    fields: ['nom', 'apprenant'],
-    errorPath: 'apprenant',
-    message: 'Cette compétence existe déjà pour cet apprenant.',
+    fields: ['nom',],
+    errorPath: 'Nom competence',
+    message: 'Cette compétence existe déjà.',
 )]
 
 class Competence
@@ -72,7 +72,7 @@ class Competence
     #[ORM\Column]
     #[Groups(
         [
-            'competence:show',
+            'competence:show', 'competence:index',
             'apprenant:show'
         ]
     )]
@@ -87,21 +87,15 @@ class Competence
     )]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Ce champ ne peut pas être vide')]
-    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Groups(
-        [
-            'competence:show', 'competence:index', 'competence:create', 'competence:update',
-            'apprenant:show'
-        ]
-    )]
-    private ?string $description = null;
 
-    #[ORM\ManyToOne(targetEntity: Apprenant::class, inversedBy: 'competences')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['competence:show'])]
-    private ?Apprenant $apprenant = null;
+
+    #[ORM\OneToMany(mappedBy: 'competence', targetEntity: DescriptionCompetence::class)]
+    private Collection $descriptionCompetences;
+
+    public function __construct()
+    {
+        $this->descriptionCompetences = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -112,7 +106,7 @@ class Competence
     {
         return $this->nom;
     }
-
+    
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
@@ -120,27 +114,37 @@ class Competence
         return $this;
     }
 
-    public function getDescription(): ?string
+ 
+
+    /**
+     * @return Collection<int, DescriptionCompetence>
+     */
+    public function getDescriptionCompetences(): Collection
     {
-        return $this->description;
+        return $this->descriptionCompetences;
     }
 
-    public function setDescription(string $description): static
+    public function addDescriptionCompetence(DescriptionCompetence $descriptionCompetence): static
     {
-        $this->description = $description;
+        if (!$this->descriptionCompetences->contains($descriptionCompetence)) {
+            $this->descriptionCompetences->add($descriptionCompetence);
+            $descriptionCompetence->setCompetence($this);
+        }
 
         return $this;
     }
 
-    public function getApprenant(): ?Apprenant
+    public function removeDescriptionCompetence(DescriptionCompetence $descriptionCompetence): static
     {
-        return $this->apprenant;
-    }
-
-    public function setApprenant(?Apprenant $apprenant): static
-    {
-        $this->apprenant = $apprenant;
+        if ($this->descriptionCompetences->removeElement($descriptionCompetence)) {
+            // set the owning side to null (unless already changed)
+            if ($descriptionCompetence->getCompetence() === $this) {
+                $descriptionCompetence->setCompetence(null);
+            }
+        }
 
         return $this;
     }
+
+
 }

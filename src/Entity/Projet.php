@@ -18,14 +18,18 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
+use App\Entity\Trait\CommonDateTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints\Hostname;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
-
+#[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 #[ApiResource(
     shortName: 'Module Gestion de Participation -Projet',
     operations: [
@@ -46,6 +50,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             normalizationContext: ['groups' => 'apprenantQuitterPojet:show'],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
+        new Post(
+            uriTemplate: 'projet/ajouter/v2',
+        )
     ]
 )]
 
@@ -97,24 +104,63 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 class Projet
 {
+    use CommonDateTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(
         [
-            'apprenant:participate', 'projet:create', 'projet:update',
+            'projet:show', 'projet:create', 'projet:update',
             /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
              * @see src/Entity/Apprenant
+             * 
              */
             'apprenant:show'
         ]
     )]
     private ?int $id = null;
 
+    #[Vich\UploadableField(mapping: 'projets', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Assert\File(
+        mimeTypes: [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ],
+        mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
+    )]
+    // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
+    #[Assert\NotBlank]
+    #[Groups(
+        [
+            'projet:create', 'projet:index', 'projet:create', 'projet:update',
+        ]
+    )]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $imageSize = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            /**
+             * 
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
+             * 
+             * @see src/Entity/Apprenant
+             */
             'apprenant:show'
         ]
     )]
@@ -123,11 +169,13 @@ class Projet
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
+    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
             /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
              * @see src/Entity/Apprenant
              */
             'apprenant:show'
@@ -135,13 +183,15 @@ class Projet
     )]
     private ?string $description = null;
 
-    #[ORM\Column]
-    #[Assert\Type(type: 'integer', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[ORM\Column(type: "string")]
+    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
 
             /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
              * @see src/Entity/Apprenant
              */
             'apprenant:show'
@@ -150,10 +200,14 @@ class Projet
     private ?int $nombre_de_participant = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\GreaterThan('today')]
+    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
             /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
              * @see src/Entity/Apprenant
              */
             'apprenant:show'
@@ -167,22 +221,42 @@ class Projet
         [
             'projet:show',
             /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
              * @see src/Entity/Apprenant
              */
-            'apprenant:show'
+            'apprenant:show',
         ]
     )]
     private ?Association $association = null;
 
+    // #[ORM\Column(['string'])]
     #[ORM\ManyToMany(targetEntity: LangageDeProgrammation::class, inversedBy: 'projets')]
     #[Groups(['projet:create', 'projet:show'])]
     private Collection $langage_de_programmation;
 
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
+    #[Groups(
+        [
+            'projet:show',
+        ]
+    )]
     private Collection $apprenants;
 
     #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
-    #[Groups(['projet:show', 'projet:index', 'projet:create', 'projet:update'])]
+    #[Groups(
+        [
+            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+             /**
+             * 
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
+             * 
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
     private ?ProjetStatu $statu = null;
 
     public function __construct()
@@ -317,5 +391,45 @@ class Projet
         $this->statu = $statu;
 
         return $this;
+    }
+
+    /**
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            // $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageSize(?int $imageSize): void
+    {
+        $this->imageSize = $imageSize;
+    }
+
+    public function getImageSize(): ?int
+    {
+        return $this->imageSize;
     }
 }

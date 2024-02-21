@@ -9,15 +9,20 @@ use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use App\Entity\Trait\CommonDateTrait;
 use App\Repository\ImmersionRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Hostname;
+use Symfony\Component\Validator\Constraints as Assert;
+
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ImmersionRepository::class)]
-
+#[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
     // outputFormats: [ 'json' => 'application/merge-patch+json' ],
@@ -65,11 +70,39 @@ use Symfony\Component\Validator\Constraints\Hostname;
 
 class Immersion
 {
+    use CommonDateTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     #[Groups(['immersion:show', 'immersion:index', 'immersion:update'])]
     private ?int $id = null;
+
+    #[Vich\UploadableField(mapping: 'immersions', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Assert\File(
+        mimeTypes: 
+        [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ],
+        mimeTypesMessage:'Veuillez inserer un fichier de type pdf ou docx.'
+    )]
+    #[Assert\NotBlank]
+    #[Groups(
+        [
+            'immersion:create', 'immersion:index', 'immersion:create', 'immersion:update',
+        ]
+    )]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $imageSize = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
@@ -88,12 +121,7 @@ class Immersion
     #[Groups(['immersion:show'])]
     private Collection $livrables;
 
-    #[ORM\Column(length: 255)]
-     #[Assert\NotBlank]
-    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex( pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
-    #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
-    private ?string $description = null;
+   
     
 
     public function __construct()
@@ -162,16 +190,45 @@ class Immersion
         return $this;
     }
 
-    public function getDescription(): ?string
+
+ /**
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): void
     {
-        return $this->description;
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            // $this->updatedAt = new \DateTimeImmutable();
+        }
     }
 
-    public function setDescription(string $description): static
+    public function getImageFile(): ?File
     {
-        $this->description = $description;
+        return $this->imageFile;
+    }
 
-        return $this;
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageSize(?int $imageSize): void
+    {
+        $this->imageSize = $imageSize;
+    }
+
+    public function getImageSize(): ?int
+    {
+        return $this->imageSize;
     }
 
 }

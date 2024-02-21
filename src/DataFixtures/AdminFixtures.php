@@ -27,6 +27,7 @@ class AdminFixtures extends Fixture
         $password = $this->hasher->hashPassword($admin, 'Animaleman24@');
         $admin->setPassword($password);
         $admin->setRoles($admin->getRoles());
+        $admin->setEtat(false);
         $exist  = $manager->getRepository(Administrateur::class)->findOneBy(['email' => $email]);
         if(!$exist){
             $manager->persist($admin);     
