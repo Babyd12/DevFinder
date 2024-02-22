@@ -35,16 +35,20 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
                 && !$user->isEtat()
             ) {
                 
+                if($user->getRoles() !== 'ROLE_ADMIN'){
+
+                }
                 $event->setResponse(new JsonResponse([
                     'nom_complet' => $user->getNomComplet(),
                     'email' => $user->getUserIdentifier(),
                     'role' => $user->getRoles(),
                     'id' => $user->getId(),
                     'role' => $user->getRoles(),
-                    'telephone' => $user->getTelephone(),
-                    'description' => $user->getDescription(),
+                    'telephone' => $user->getRoles() == 'ROLE_ADMIN' ? $user->getTelephone() : 'Admin',
+                    'description' => $user->getRoles() == 'ROLE_ADMIN' ? $user->getDescription() : 'Admin',
                     'token' => $token,
                 ], JsonResponse::HTTP_OK));
+                
             } else {
                 $event->setResponse(new JsonResponse([
                     'message' => 'Votre compte est temporairement suspendu. Veuillez conctacter le support technique'
