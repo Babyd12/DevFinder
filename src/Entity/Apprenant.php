@@ -228,6 +228,13 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: DescriptionCompetence::class, orphanRemoval: true)]
     private Collection $descriptionCompetences;
 
+    #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Message::class)]
+    private Collection $messages;
+
+   
+
+ 
+
     public function __construct()
     {
 
@@ -235,6 +242,8 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->entreprises = new ArrayCollection();
         $this->livrables = new ArrayCollection();
         $this->descriptionCompetences = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+    
     }
 
     /**
@@ -499,4 +508,39 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setApprenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getApprenant() === $this) {
+                $message->setApprenant(null);
+            }
+        }
+
+        return $this;
+    }
+
+ 
+   
+
+   
 }
