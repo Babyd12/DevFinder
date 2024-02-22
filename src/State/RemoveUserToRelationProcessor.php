@@ -24,7 +24,7 @@ class RemoveUserToRelationProcessor implements ProcessorInterface
     {
         $entity = $this->security->getUser();
         if ($entity instanceof Apprenant) {
-            $entity->removeCompetence($data);
+
             return $this->processorInterface->process($data, $operation, $uriVariables, $context);
         } 
         else if ($entity instanceof Entreprise) {

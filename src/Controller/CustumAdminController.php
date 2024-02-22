@@ -31,9 +31,11 @@ class CustumAdminController extends AbstractController
 
             $userData = [
                 'id' => $entity->getId(),
-                'email' => $entity->getUserIdentifier(),
-                'nom_complet' => $entity->getNomComplet(),
                 'role' => $entity->getRoles(),
+                'nom_complet' => $entity->getNomComplet(),
+                'email' => $entity->getUserIdentifier(),
+                'telephone' => $entity->getTelephone(),
+                'description' => $entity->getDescription(),
             ];
             return new JsonResponse($userData, 200);
         }

@@ -3,7 +3,7 @@
     "info": {
         "title": "Bienvenu sur l'API de devfinder",
         "description": "README ~ Les end-point sont structur\u00e9 de la mani\u00e8re suivante: [  Nom du module - Nom de lacteur qui intervient dans ce module ]",
-        "version": "1   .0.0"
+        "version": "1.0.0"
     },
     "servers": [
         {

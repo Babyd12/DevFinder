@@ -41,20 +41,20 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             normalizationContext: ['groups' => ['apprenant:monitorer']],
             inputFormats: ['json' => 'application/json'],
         ),
-        new Patch(
+        // new Patch(
 
-            uriTemplate: '/apprenant/competence/ajouter',
-            // processor: AddUserToRelationProcessor::class,
-            security: "is_granted('ROLE_ADMIN')",
-            denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
-        ),
-        new Delete(
+        //     uriTemplate: '/apprenant/competence/ajouter',
+        //     // processor: AddUserToRelationProcessor::class,
+        //     security: "is_granted('ROLE_ADMIN')",
+        //     denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
+        // ),
+        // new Delete(
 
-            uriTemplate: '/apprenant/competence/supprimer/{id}',
-            // processor: AddUserToRelationProcessor::class,
-            security: "is_granted('ROLE_ADMIN')",
-            denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
-        )
+        //     uriTemplate: '/apprenant/competence/supprimer/{id}',
+        //     // processor: AddUserToRelationProcessor::class,
+        //     security: "is_granted('ROLE_ADMIN')",
+        //     denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
+        // )
 
     ],
 )]

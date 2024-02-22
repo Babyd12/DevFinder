@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Message;
 use App\Entity\Apprenant;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
@@ -12,20 +13,20 @@ use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ProjetRepository;
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Trait\CommonDateTrait;
 use ApiPlatform\Metadata\GetCollection;
 use App\Controller\CustomProjetController;
 use phpDocumentor\Reflection\DocBlock\Tag;
 use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
-use App\Entity\Trait\CommonDateTrait;
+use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints\Hostname;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -80,6 +81,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/ajouter',
     denormalizationContext: ['groups' => ['projet:create']]
+
 )]
 
 #[Put(
@@ -132,13 +134,13 @@ class Projet
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:create', 'projet:index', 'projet:create', 'projet:update',
         ]
     )]
-    private ?File $imageFile = null;
+    private ?File $cahierDeCharge = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $imageName = null;
@@ -150,7 +152,7 @@ class Projet
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
@@ -167,7 +169,7 @@ class Projet
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(
@@ -183,8 +185,7 @@ class Projet
     )]
     private ?string $description = null;
 
-    #[ORM\Column(type: "string")]
-    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
+    // #[ORM\Column(type: "integer")]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
@@ -402,13 +403,13 @@ class Projet
 
     /**
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $cahierDeCharge
      */
-    public function setImageFile(?File $imageFile = null): void
+    public function setImageFile(?File $cahierDeCharge = null): void
     {
-        $this->imageFile = $imageFile;
+        $this->cahierDeCharge = $cahierDeCharge;
 
-        if (null !== $imageFile) {
+        if (null !== $cahierDeCharge) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             // $this->updatedAt = new \DateTimeImmutable();
@@ -417,7 +418,7 @@ class Projet
 
     public function getImageFile(): ?File
     {
-        return $this->imageFile;
+        return $this->cahierDeCharge;
     }
 
     public function setImageName(?string $imageName): void

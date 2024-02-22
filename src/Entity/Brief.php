@@ -91,7 +91,7 @@ class Brief
             'brief:create', 'brief:index', 'brief:create', 'brief:update',
         ]
     )]
-    private ?File $imageFile = null;
+    private ?File $cahierDeCharge = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $imageName = null;
@@ -206,13 +206,13 @@ class Brief
 
     /**
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $cahierDeCharge
      */
-    public function setImageFile(?File $imageFile = null): void
+    public function setImageFile(?File $cahierDeCharge = null): void
     {
-        $this->imageFile = $imageFile;
+        $this->cahierDeCharge = $cahierDeCharge;
 
-        if (null !== $imageFile) {
+        if (null !== $cahierDeCharge) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             // $this->updatedAt = new \DateTimeImmutable();
@@ -221,7 +221,7 @@ class Brief
 
     public function getImageFile(): ?File
     {
-        return $this->imageFile;
+        return $this->cahierDeCharge;
     }
 
     public function setImageName(?string $imageName): void

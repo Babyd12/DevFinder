@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: CompetenceRepository::class)]
 
 #[ApiResource(
-    shortName: 'Module gestion de compétence -Administrateur',
+    shortName: 'Module gestion de competence -Administrateur',
 )]
 
 #[GetCollection(
@@ -43,20 +43,22 @@ use Symfony\Component\Serializer\Annotation\Groups;
     uriTemplate: '/competence/ajouter',
     // processor: AddUserToRelationProcessor::class,
     security: "is_granted('ROLE_ADMIN')",
+    securityMessage: 'Vous navez pas les droit requis pour effectuer cette action.',
     denormalizationContext: ['groups' => ['competence:create']]
 )]
 
 #[Put(
     uriTemplate: '/competence/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getApprenant(user) == user ",
-    securityMessage: 'Sorry, but you are not this competence owner.',
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    securityMessage: 'Vous navez pas les droit requis pour effectuer cette action.',
     denormalizationContext: ['groups' => ['competence:update']]
 )]
 
 #[Delete(
     uriTemplate: '/competence/{id}',
     processor: RemoveUserToRelationProcessor::class,
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getApprenant(user) == user ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    securityMessage: 'Vous navez pas les droit requis pour effectuer cette action.',
 )]
 
 #[UniqueEntity(

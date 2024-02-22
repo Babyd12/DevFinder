@@ -26,6 +26,9 @@ services:
     App\EventListener\ExceptionListener:
         tags: [kernel.event_listener]
 
+    App\EventSubscriber\BeforeValidationSubscriber:
+        tags: [kernel.event_subscriber]
+
     App\State\AddUserToRelationProcessor:
         bind:
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
@@ -34,10 +37,10 @@ services:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'
 
-    # App\State\GetUserLoggedProcessor:
+    # App\State\ProjetStateProcessor:
     #     bind: 
     #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
-
+    
     # App\State\GetApprenantProjetProcessor:
     #     bind: 
     #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'

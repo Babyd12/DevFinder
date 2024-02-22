@@ -21,8 +21,7 @@ class ProjetStatuSubscriber implements EventSubscriberInterface
     }
 
     public function addProjetStatu(ViewEvent $event): void
-    {
-        
+    {   
         $entity = $event->getControllerResult();
         $method = $event->getRequest()->getMethod();
 
