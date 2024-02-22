@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240221012713 extends AbstractMigration
+final class Version20240222101658 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -32,6 +32,7 @@ final class Version20240221012713 extends AbstractMigration
         $this->addSql('CREATE TABLE immersion (id INT AUTO_INCREMENT NOT NULL, image_name VARCHAR(255) DEFAULT NULL, image_size INT DEFAULT NULL, updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', titre VARCHAR(255) NOT NULL, lien_support VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE langage_de_programmation (id INT AUTO_INCREMENT NOT NULL, association_id INT DEFAULT NULL, nom VARCHAR(255) NOT NULL, UNIQUE INDEX UNIQ_87F98F226C6E55B5 (nom), INDEX IDX_87F98F22EFB9C8A5 (association_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE livrable (id INT AUTO_INCREMENT NOT NULL, apprenant_id INT NOT NULL, brief_id INT DEFAULT NULL, immersion_id INT DEFAULT NULL, lien_du_livrable VARCHAR(255) NOT NULL, INDEX IDX_9E78008CC5697D6D (apprenant_id), INDEX IDX_9E78008C757FABFF (brief_id), INDEX IDX_9E78008C22167EA5 (immersion_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE message (id INT AUTO_INCREMENT NOT NULL, association_id INT NOT NULL, apprenant_id INT NOT NULL, projet_id INT NOT NULL, nom VARCHAR(255) NOT NULL, message VARCHAR(255) NOT NULL, updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_B6BD307FEFB9C8A5 (association_id), INDEX IDX_B6BD307FC5697D6D (apprenant_id), INDEX IDX_B6BD307FC18272 (projet_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE projet (id INT AUTO_INCREMENT NOT NULL, association_id INT NOT NULL, image_name VARCHAR(255) DEFAULT NULL, image_size INT DEFAULT NULL, updated_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', titre VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, nombre_de_participant VARCHAR(255) NOT NULL, date_limite DATE NOT NULL, statu VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_50159CA9EFB9C8A5 (association_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE projet_langage_de_programmation (projet_id INT NOT NULL, langage_de_programmation_id INT NOT NULL, INDEX IDX_282F68E8C18272 (projet_id), INDEX IDX_282F68E825F29905 (langage_de_programmation_id), PRIMARY KEY(projet_id, langage_de_programmation_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE refresh_tokens (id INT AUTO_INCREMENT NOT NULL, refresh_token VARCHAR(128) NOT NULL, username VARCHAR(255) NOT NULL, valid DATETIME NOT NULL, UNIQUE INDEX UNIQ_9BACE7E1C74F2195 (refresh_token), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -45,6 +46,9 @@ final class Version20240221012713 extends AbstractMigration
         $this->addSql('ALTER TABLE livrable ADD CONSTRAINT FK_9E78008CC5697D6D FOREIGN KEY (apprenant_id) REFERENCES apprenant (id)');
         $this->addSql('ALTER TABLE livrable ADD CONSTRAINT FK_9E78008C757FABFF FOREIGN KEY (brief_id) REFERENCES brief (id)');
         $this->addSql('ALTER TABLE livrable ADD CONSTRAINT FK_9E78008C22167EA5 FOREIGN KEY (immersion_id) REFERENCES immersion (id)');
+        $this->addSql('ALTER TABLE message ADD CONSTRAINT FK_B6BD307FEFB9C8A5 FOREIGN KEY (association_id) REFERENCES association (id)');
+        $this->addSql('ALTER TABLE message ADD CONSTRAINT FK_B6BD307FC5697D6D FOREIGN KEY (apprenant_id) REFERENCES apprenant (id)');
+        $this->addSql('ALTER TABLE message ADD CONSTRAINT FK_B6BD307FC18272 FOREIGN KEY (projet_id) REFERENCES projet (id)');
         $this->addSql('ALTER TABLE projet ADD CONSTRAINT FK_50159CA9EFB9C8A5 FOREIGN KEY (association_id) REFERENCES association (id)');
         $this->addSql('ALTER TABLE projet_langage_de_programmation ADD CONSTRAINT FK_282F68E8C18272 FOREIGN KEY (projet_id) REFERENCES projet (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE projet_langage_de_programmation ADD CONSTRAINT FK_282F68E825F29905 FOREIGN KEY (langage_de_programmation_id) REFERENCES langage_de_programmation (id) ON DELETE CASCADE');
@@ -63,6 +67,9 @@ final class Version20240221012713 extends AbstractMigration
         $this->addSql('ALTER TABLE livrable DROP FOREIGN KEY FK_9E78008CC5697D6D');
         $this->addSql('ALTER TABLE livrable DROP FOREIGN KEY FK_9E78008C757FABFF');
         $this->addSql('ALTER TABLE livrable DROP FOREIGN KEY FK_9E78008C22167EA5');
+        $this->addSql('ALTER TABLE message DROP FOREIGN KEY FK_B6BD307FEFB9C8A5');
+        $this->addSql('ALTER TABLE message DROP FOREIGN KEY FK_B6BD307FC5697D6D');
+        $this->addSql('ALTER TABLE message DROP FOREIGN KEY FK_B6BD307FC18272');
         $this->addSql('ALTER TABLE projet DROP FOREIGN KEY FK_50159CA9EFB9C8A5');
         $this->addSql('ALTER TABLE projet_langage_de_programmation DROP FOREIGN KEY FK_282F68E8C18272');
         $this->addSql('ALTER TABLE projet_langage_de_programmation DROP FOREIGN KEY FK_282F68E825F29905');
@@ -78,6 +85,7 @@ final class Version20240221012713 extends AbstractMigration
         $this->addSql('DROP TABLE immersion');
         $this->addSql('DROP TABLE langage_de_programmation');
         $this->addSql('DROP TABLE livrable');
+        $this->addSql('DROP TABLE message');
         $this->addSql('DROP TABLE projet');
         $this->addSql('DROP TABLE projet_langage_de_programmation');
         $this->addSql('DROP TABLE refresh_tokens');

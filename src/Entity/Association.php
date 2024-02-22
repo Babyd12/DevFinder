@@ -169,10 +169,14 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['administrateur:monitorer', 'association:show', 'association:index', 'association:create'])]
     private ?bool $etat = null;
 
+    #[ORM\OneToMany(mappedBy: 'association', targetEntity: Message::class)]
+    private Collection $messages;
+
     public function __construct()
     {
         $this->projets = new ArrayCollection();
         $this->langageDeProgrammations = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -362,6 +366,36 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     public function setEtat(bool $etat): static
     {
         $this->etat = $etat;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setAssociation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getAssociation() === $this) {
+                $message->setAssociation(null);
+            }
+        }
 
         return $this;
     }

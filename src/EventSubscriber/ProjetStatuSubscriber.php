@@ -29,7 +29,7 @@ class ProjetStatuSubscriber implements EventSubscriberInterface
         if ($entity instanceof Projet  && $entity->getStatu() === 'En attente') {
             return;
         } elseif ($entity instanceof Projet && $method === Request::METHOD_POST) {
-            $entity->setStatu(ProjetStatu::en_attente);
+            $entity->setStatu(ProjetStatu::en_cours);
             $entity->setAssociation($this->security->getUser());
         } else {
             return;
