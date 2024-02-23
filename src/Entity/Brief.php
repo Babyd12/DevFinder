@@ -208,7 +208,7 @@ class Brief
      *
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $cahierDeCharge
      */
-    public function setImageFile(?File $cahierDeCharge = null): void
+    public function setCahierDecharge(?File $cahierDeCharge = null): void
     {
         $this->cahierDeCharge = $cahierDeCharge;
 
@@ -219,7 +219,7 @@ class Brief
         }
     }
 
-    public function getImageFile(): ?File
+    public function getCahierDecharge(): ?File
     {
         return $this->cahierDeCharge;
     }

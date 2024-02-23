@@ -134,13 +134,13 @@ class Projet
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
+    // #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:create', 'projet:index', 'projet:create', 'projet:update',
         ]
     )]
-    private ?File $cahierDeCharge = null;
+    private ?File $CahierDecharge = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $imageName = null;
@@ -168,22 +168,7 @@ class Projet
     )]
     private ?string $titre = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
-    #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
-    #[Groups(
-        [
-            'projet:show', 'projet:index', 'projet:create', 'projet:update',
-            /**
-             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
-             * je charge les informations du projet au lieu de l'uri
-             * @see src/Entity/Apprenant
-             */
-            'apprenant:show'
-        ]
-    )]
-    private ?string $description = null;
+   
 
     // #[ORM\Column(type: "integer")]
     #[Groups(
@@ -290,17 +275,7 @@ class Projet
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
 
-    public function setDescription(string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
 
     public function getNombreDeParticipant(): ?int
     {
@@ -403,22 +378,22 @@ class Projet
 
     /**
      *
-     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $cahierDeCharge
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $CahierDecharge
      */
-    public function setImageFile(?File $cahierDeCharge = null): void
+    public function setCahierDecharge(?File $CahierDecharge = null): void
     {
-        $this->cahierDeCharge = $cahierDeCharge;
+        $this->CahierDecharge = $CahierDecharge;
 
-        if (null !== $cahierDeCharge) {
+        if (null !== $CahierDecharge) {
             // It is required that at least one field changes if you are using doctrine
             // otherwise the event listeners won't be called and the file is lost
             // $this->updatedAt = new \DateTimeImmutable();
         }
     }
 
-    public function getImageFile(): ?File
+    public function getCahierDecharge(): ?File
     {
-        return $this->cahierDeCharge;
+        return $this->CahierDecharge;
     }
 
     public function setImageName(?string $imageName): void
