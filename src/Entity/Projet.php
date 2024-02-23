@@ -134,7 +134,7 @@ class Projet
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    // #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
+    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:create', 'projet:index', 'projet:create', 'projet:update',
@@ -170,7 +170,7 @@ class Projet
 
    
 
-    // #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: "string")]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
@@ -274,8 +274,6 @@ class Projet
 
         return $this;
     }
-
-
 
     public function getNombreDeParticipant(): ?int
     {

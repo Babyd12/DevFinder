@@ -17,15 +17,26 @@ class BeforeValidationSubscriber implements EventSubscriberInterface
         // $request = $event->getRequest();
 
         // $openApiparam  = $request->attributes->get('_api_operation');
-        // $method = $openApiparam->getMethod();
-        // $entity = $request->attributes->get('data');
-        // $contentType =$request->headers->get('Content-Type');
-        
-       
-        // if($entity instanceof Projet && $method == "POST" && $contentType == "multipart/form-data"){
-        //    $this->ConvertToInteger($request, 'nombre_de_participant');
-        // }
+        // if ($openApiparam != null) {
 
+        //     $method = $openApiparam->getMethod();
+        //     $entity = $request->attributes->get('data');
+        //     $contentType = $request->headers->get('Content-Type');
+        //     $controllerClassName = $openApiparam->getClass();
+
+        //     // dd($openApiparam);
+        //     $searchMultipart = "multipart/form-data";
+
+        //     // dd($request->attributes, $openApiparam->getClass());
+
+        //     if ($controllerClassName == "App\Entity\Projet" && $method == "POST" &&  strpos($contentType, 'multipart/form-data') !== false) {
+        //         $this->ConvertToInteger($request, 'nombre_de_participant');
+        //         // dd(var_dump($request->getContentType()));
+        //     } else {
+        //         die('not implemented if');
+        //     }
+        // } else {
+        // }
     }
 
 
@@ -35,18 +46,17 @@ class BeforeValidationSubscriber implements EventSubscriberInterface
      */
     public function ConvertToInteger($request, $field)
     {
-        if ($request->isMethod('POST') && $request->getContentType() == 'multipart/form-data') {
-
-            //je recupere le contenu sous format tableau
-            $data = json_decode($request->getContent(), true);
-
-            // je vérifie si le champ "nombre_de_participant" est défini dans les données
-            if (isset($data[$field])) {
-                $data[$field] = (int)$data[$field];
-
-                // je met à jour le contenu de la requête
-                $request->setContent(json_encode($data));
-            }
+        //je recupere le contenu sous format tableau
+        $data = json_decode($request->getContentType(), true);
+        dd($data);
+        // je vérifie si le champ "nombre_de_participant" est défini dans les données
+        if (isset($data[$field])) {
+            $data[$field] = (int)$data[$field];
+            dd(var_dump($data[$field]));
+            // je met à jour le contenu de la requête
+            $request->setContent(json_encode($data));
+        } else {
+            dd('die');
         }
     }
 
@@ -54,7 +64,7 @@ class BeforeValidationSubscriber implements EventSubscriberInterface
     {
         return [
             KernelEvents::REQUEST => 'onKernelRequest',
-            
+
         ];
     }
 }
