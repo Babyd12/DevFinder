@@ -80,7 +80,7 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le champ {value} ne doit pas être vide')]
+    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide')]
     #[Assert\Length(min: 2, max: 20, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(
@@ -102,9 +102,10 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
+    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide')]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9]{1,}([.]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
-        message: 'Veuillez entrer un format d\'email correcte.'
+        pattern: '/^[a-zA-Z0-9]{1,}([._]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
+        message: 'Veuillez entrer un format d\'email correcte. {{ value }}'
     )]
     #[Groups(
         [
@@ -119,7 +120,27 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $email = null;
 
+    #[ORM\Column(length: 255, unique: true, type: 'string')]
+    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide')]
+    #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: '{{ value }}Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    private ?string $telephone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide')]
+    #[Assert\Length(min: 35, max: 200, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
+    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
+    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
+    private ?string $description = null;
+
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide')]
+    #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: sept chiffres puis le cofi 0001462 2G3')]
+    #[Groups(['association:show', 'association:index', 'association:create'])]
+    private ?string $numero_identification_naitonal = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Ce champ ne doit pas être vide")]
     #[Assert\PasswordStrength([
         'minScore' => PasswordStrength::STRENGTH_WEAK,
     ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
@@ -130,11 +151,14 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $mot_de_passe = null;
 
+    #[ORM\Column]
+    #[Groups(['administrateur:monitorer', 'association:show', 'association:index', 'association:create'])]
+    private ?bool $etat = null;
+
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]
     #[Groups(
         [
-            'association:show',
-          
+            'association:show',  
         ]
     )]
     private Collection $projets;
@@ -148,26 +172,9 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private Collection $langageDeProgrammations;
 
-    #[ORM\Column(length: 255, unique: true, type: 'string')]
-    #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
-    private ?string $telephone = null;
+   
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\NotBlank(message: 'Le champ  ne doit pas être vide')]
-    #[Assert\Length(min: 35, max: 200, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
-    #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
-    #[Groups(['association:show', 'association:index', 'association:create', 'association:update'])]
-    private ?string $description = null;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\Regex('/^\d{7} [0-9A-Z]{3}$/', message: 'Le format du NINEA est incorrecte. Exemple: sept chiffres puis le cofi 0001462 2G3')]
-    #[Groups(['association:show', 'association:index', 'association:create'])]
-    private ?string $numero_identification_naitonal = null;
-
-    #[ORM\Column]
-    #[Groups(['administrateur:monitorer', 'association:show', 'association:index', 'association:create'])]
-    private ?bool $etat = null;
+  
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Message::class)]
     private Collection $messages;
