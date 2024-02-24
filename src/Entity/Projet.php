@@ -20,6 +20,7 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
+use App\State\ProjetStateProcessor;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -80,8 +81,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     security: "is_granted('ROLE_ASSOCIATION')",
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/ajouter',
-    denormalizationContext: ['groups' => ['projet:create']]
-
+    denormalizationContext: ['groups' => ['projet:create']],
+    // processor: ProjetStateProcessor::class,
 )]
 
 #[Put(
@@ -137,12 +138,17 @@ class Projet
     #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
-            'projet:create', 'projet:index', 'projet:create', 'projet:update',
+            'projet:create', 'projet:update',
         ]
     )]
     private ?File $CahierDecharge = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(
+        [
+            'projet:index', 'projet:show',
+        ]
+    )]
     private ?string $imageName = null;
 
     #[ORM\Column(nullable: true)]
@@ -152,6 +158,10 @@ class Projet
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Type(
+        type: 'string',
+        message: 'La valeur {{ value }} nest pas un type {{ type }} valide.',
+    )]
     #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
@@ -166,25 +176,31 @@ class Projet
             'apprenant:show'
         ]
     )]
-    private ?string $titre = null;
+    private ?string $titre = null; 
 
-   
-
-    #[ORM\Column(type: "string")]
+    #[ORM\Column(length: 10, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^[1-9]$/',
+        match: true,
+        message: "La valeur de '{{ value }}' doit être un entier et compris entre 1 et 9.",
+    )]
+    // #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
-
             /**
+             * 
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
+             * 
              * @see src/Entity/Apprenant
              */
             'apprenant:show'
         ]
     )]
-    private ?int $nombre_de_participant = null;
-
+    private ?string $nombre_de_participant = null;
+    
+   
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\GreaterThan('today')]
     #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
@@ -248,8 +264,6 @@ class Projet
     #[ORM\OneToMany(mappedBy: 'projet', targetEntity: Message::class)]
     private Collection $messages;
 
-
-
     
     public function __construct()
     {
@@ -275,17 +289,7 @@ class Projet
         return $this;
     }
 
-    public function getNombreDeParticipant(): ?int
-    {
-        return $this->nombre_de_participant;
-    }
-
-    public function setNombreDeParticipant(int $nombre_de_participant): static
-    {
-        $this->nombre_de_participant = $nombre_de_participant;
-
-        return $this;
-    }
+ 
 
     public function getDateLimite(): ?\DateTimeInterface
     {
@@ -440,6 +444,18 @@ class Projet
                 $message->setProjet(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNombreDeParticipant(): ?string
+    {
+        return $this->nombre_de_participant;
+    }
+
+    public function setNombreDeParticipant(?string $nombre_de_participant): static
+    {
+        $this->nombre_de_participant = $nombre_de_participant;
 
         return $this;
     }

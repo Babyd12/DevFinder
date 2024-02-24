@@ -26,8 +26,8 @@ services:
     App\EventListener\ExceptionListener:
         tags: [kernel.event_listener]
 
-    App\EventSubscriber\BeforeValidationSubscriber:
-        tags: [kernel.event_subscriber]
+    # App\EventSubscriber\BeforeValidationSubscriber:
+    #     tags: [kernel.event_subscriber]
 
     App\State\AddUserToRelationProcessor:
         bind:

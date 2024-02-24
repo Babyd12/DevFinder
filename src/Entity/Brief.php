@@ -88,12 +88,17 @@ class Brief
     #[Assert\NotBlank]
     #[Groups(
         [
-            'brief:create', 'brief:index', 'brief:create', 'brief:update',
+            'brief:create', 'brief:update',
         ]
     )]
     private ?File $cahierDeCharge = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(
+        [
+            'brief:index', 'brief:show', 
+        ]
+    )]
     private ?string $imageName = null;
 
     #[ORM\Column(nullable: true)]

@@ -43,7 +43,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
     normalizationContext: ['groups' => ['immersion:show']],
     // outputFormats: [ 'json' => 'application/merge-patch+json' ]
 
- 
+
 
     // denormalizationContext: ['groups' => ['immersion:show']],
 )]
@@ -80,22 +80,33 @@ class Immersion
 
     #[Vich\UploadableField(mapping: 'immersions', fileNameProperty: 'imageName', size: 'imageSize')]
     #[Assert\File(
-        mimeTypes: 
-        [
+        mimeTypes: [
             'application/pdf',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         ],
-        mimeTypesMessage:'Veuillez inserer un fichier de type pdf ou docx.'
+        mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     #[Assert\NotBlank]
     #[Groups(
         [
-            'immersion:create', 'immersion:index', 'immersion:create', 'immersion:update',
+            'immersion:create', 'immersion:update',
+            /**
+             * 
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
+             * 
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
         ]
     )]
     private ?File $cahierDeCharge = null;
-
     #[ORM\Column(nullable: true)]
+    #[Groups(
+        [
+            'immersion:index', 'immersion:show',
+        ]
+    )]
     private ?string $imageName = null;
 
     #[ORM\Column(nullable: true)]
@@ -108,21 +119,21 @@ class Immersion
     #[Assert\NotBlank]
     #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $titre = null;
-   
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Url(
         message: 'L\'url {{ value }} n\'est pas une url valide',
     )]
-    #[Groups(['immersion:show','immersion:index', 'immersion:create', 'immersion:update'])]
+    #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
     private ?string $lien_support = null;
-        
+
     #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
     #[Groups(['immersion:show'])]
     private Collection $livrables;
 
-   
-    
+
+
 
     public function __construct()
     {
@@ -146,7 +157,7 @@ class Immersion
         return $this;
     }
 
-   
+
     public function getLienSupport(): ?string
     {
         return $this->lien_support;
@@ -191,7 +202,7 @@ class Immersion
     }
 
 
- /**
+    /**
      *
      * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $cahierDeCharge
      */
@@ -230,5 +241,4 @@ class Immersion
     {
         return $this->imageSize;
     }
-
 }
