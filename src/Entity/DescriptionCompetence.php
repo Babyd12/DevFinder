@@ -77,6 +77,7 @@ class DescriptionCompetence
             'descriptionCompetence:create',
             'descriptionCompetence:update',
             'descriptionCompetence:delete',
+
         ]
     )]
     private ?string $description = null;
@@ -115,6 +116,8 @@ class DescriptionCompetence
             'descriptionCompetence:create',
             'descriptionCompetence:update',
             'descriptionCompetence:delete',
+
+            // 'competence:show'
         ]
     )]
     private ?Competence $competence = null;

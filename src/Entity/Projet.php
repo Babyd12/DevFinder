@@ -9,8 +9,10 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
+use App\State\ProjetUpdateFile;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use App\State\ProjetStateProcessor;
 use App\Repository\ProjetRepository;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Trait\CommonDateTrait;
@@ -20,7 +22,6 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
-use App\State\ProjetStateProcessor;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -52,9 +53,18 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             normalizationContext: ['groups' => 'apprenantQuitterPojet:show'],
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
+
         new Post(
-            uriTemplate: 'projet/ajouter/v2',
+            shortName: 'Module Gestion de Publication de Projet - Association',
+            uriTemplate: '/projet/editer/cachier_charge/{id}',
+            securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
+            securityMessage: "Vous n'avez pas l'autrorisaton requise",
+            denormalizationContext: ['groups' => ['projet:updateOne']], 
+            inputFormats: ['multipart' => 'multipart/form-data',],
+            controller: CustomProjetController::class,
+            name: 'app_projet_editer',
         )
+
     ]
 )]
 
@@ -82,7 +92,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/ajouter',
     denormalizationContext: ['groups' => ['projet:create']],
-    // processor: ProjetStateProcessor::class,
+    processor: ProjetStateProcessor::class,
 )]
 
 #[Put(
@@ -90,8 +100,26 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     uriTemplate: '/projet/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     // securityMessage: 'Sorry, but you are not this projet owner.',
-    denormalizationContext: ['groups' => ['projet:update']]
+    denormalizationContext: ['groups' => ['projet:update']],
+    processor: ProjetStateProcessor::class,
+    inputFormats: ['json' => 'application/json'],
+
+
+
 )]
+
+// #[Patch(
+//     shortName: 'Module Gestion de Publication de Projet - Association',
+//     uriTemplate: '/projet/{id}',
+    
+//     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+//     securityMessage:"Vous n'avez pas l'autrorisaton requise",
+//     denormalizationContext: ['groups' => ['projet:updateOne']],
+//     inputFormats: ['multipart'=>'multipart/form-data',],
+//     controller: CustomProjetController::class,
+//     name: 'app_projet_editer',
+
+// )]
 
 #[Delete(
     uriTemplate: '/projet/{id}',
@@ -132,13 +160,13 @@ class Projet
             'application/pdf',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         ],
-        mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
+        mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.',
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
+    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide lors de la création')]
     #[Groups(
         [
-            'projet:create', 'projet:update',
+            'projet:create', 'projet:updateOne',
         ]
     )]
     private ?File $CahierDecharge = null;
@@ -155,6 +183,11 @@ class Projet
     private ?int $imageSize = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(
+        [
+            'projet:index', 'projet:show',
+        ]
+    )]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
@@ -162,7 +195,7 @@ class Projet
         type: 'string',
         message: 'La valeur {{ value }} nest pas un type {{ type }} valide.',
     )]
-    #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
+    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
@@ -176,7 +209,7 @@ class Projet
             'apprenant:show'
         ]
     )]
-    private ?string $titre = null; 
+    private ?string $titre = null;
 
     #[ORM\Column(length: 10, nullable: true)]
     #[Assert\Regex(
@@ -184,10 +217,10 @@ class Projet
         match: true,
         message: "La valeur de '{{ value }}' doit être un entier et compris entre 1 et 9.",
     )]
-    // #[Assert\NotBlank(message:'Ce champs ne dois pas être vide')]
+    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'projet:show', 'projet:index', 'projet:create',
             /**
              * 
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
@@ -199,14 +232,14 @@ class Projet
         ]
     )]
     private ?string $nombre_de_participant = null;
-    
-   
+
+
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\GreaterThan('today')]
     #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'projet:show', 'projet:index', 'projet:create',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -221,7 +254,7 @@ class Projet
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(
         [
-            'projet:show',
+            'projet:show', 'projet:update',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -249,7 +282,7 @@ class Projet
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create', 'projet:update',
-             /**
+            /**
              * 
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -264,7 +297,7 @@ class Projet
     #[ORM\OneToMany(mappedBy: 'projet', targetEntity: Message::class)]
     private Collection $messages;
 
-    
+
     public function __construct()
     {
         $this->langage_de_programmation = new ArrayCollection();
@@ -289,7 +322,6 @@ class Projet
         return $this;
     }
 
- 
 
     public function getDateLimite(): ?\DateTimeInterface
     {
@@ -459,8 +491,4 @@ class Projet
 
         return $this;
     }
-
-   
-
-   
 }

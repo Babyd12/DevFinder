@@ -30,7 +30,13 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
             denormalizationContext: ['groups' => ['administrateur:monitorer']],
             // normalizationContext: [ 'groups' => ['administrateur:monitorer'] ],
-        )
+        ),
+        // new Patch(
+        //     uriTemplate:'association/{id}'
+        // )
+        // new Patch(
+        //     uriTemplate:'association/test',
+        // )
     ],
 )]
 
@@ -57,10 +63,17 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     denormalizationContext: ['groups' => ['association:update']],
 )]
 
+// #[Patch(
+//     uriTemplate: 'association/change_password/{id}',
+//     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
+//     // denormalizationContext: ['groups' => ['association:updateOne']],
+//     inputFormats: ['json' => ['application/json']],
+// )]
 #[Patch(
-    uriTemplate: 'association/change_password/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
-    denormalizationContext: ['groups' => ['association:updateOne']]
+    uriTemplate: 'association/updateOne/{id}',
+    securityPostDenormalize: "is_grandted('ROLE_ASSOCIATION')",
+    denormalizationContext: ['groups'=>['association:update_one']],
+    inputFormats: ['json' => ['application/json']],
 )]
 
 #[Delete(
@@ -141,24 +154,27 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Ce champ ne doit pas être vide")]
-    #[Assert\PasswordStrength([
-        'minScore' => PasswordStrength::STRENGTH_WEAK,
-    ],  message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort')]
+    #[Assert\PasswordStrength(
+        [
+            'minScore' => PasswordStrength::STRENGTH_WEAK,
+        ],
+        message: 'La force du mot de passe est trop faible. Veuillez utiliser un mot de passe plus fort'
+    )]
     #[Groups(
         [
-            'association:create', 'association:updateOne',
+            'association:create', 
         ]
     )]
     private ?string $mot_de_passe = null;
 
     #[ORM\Column]
-    #[Groups(['administrateur:monitorer', 'association:show', 'association:index', 'association:create'])]
+    #[Groups(['administrateur:monitorer', 'association:show', 'association:index'])]
     private ?bool $etat = null;
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Projet::class)]
     #[Groups(
         [
-            'association:show',  
+            'association:show',
         ]
     )]
     private Collection $projets;
@@ -167,14 +183,10 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(
         [
             'association:show',
-
         ]
     )]
     private Collection $langageDeProgrammations;
 
-   
-
-  
 
     #[ORM\OneToMany(mappedBy: 'association', targetEntity: Message::class)]
     private Collection $messages;

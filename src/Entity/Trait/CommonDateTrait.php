@@ -2,10 +2,18 @@
 namespace App\Entity\Trait;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait CommonDateTrait
 {
     #[ORM\Column(type:"datetime_immutable")]
+    #[Groups(
+        [
+            'brief:index', 'brief:show',
+            'immersion:index', 'immersion:show',
+            'projet:index', 'projet:show',
+        ]
+    )]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(type:"datetime_immutable")]

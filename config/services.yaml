@@ -20,11 +20,18 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+           
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     App\EventListener\ExceptionListener:
         tags: [kernel.event_listener]
+
+
+        
+    # App\State\ProjetUpdateFile:
+    #     arguments:
+    #         $entityManager: '@doctrine.orm.entity_manager'
 
     # App\EventSubscriber\BeforeValidationSubscriber:
     #     tags: [kernel.event_subscriber]
@@ -37,14 +44,19 @@ services:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.remove_processor'
 
-    # App\State\ProjetStateProcessor:
-    #     bind: 
-    #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
-    
+    App\State\ProjetStateProcessor:
+        bind: 
+            $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+
+    App\State\ProjetUpdateFile:
+        bind: 
+            $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+            $entityManager: '@doctrine.orm.entity_manager'
+        
     # App\State\GetApprenantProjetProcessor:
     #     bind: 
     #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
-
+    
     # App\State\GetApprenantProvider:
     #     bind: 
     #         $providerInterface: '@api_platform.doctrine.orm.state.item_provider'

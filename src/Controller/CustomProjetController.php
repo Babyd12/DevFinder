@@ -2,12 +2,13 @@
 
 namespace App\Controller;
 
+use Ramsey\Uuid\Uuid;
 use App\Entity\Projet;
 use App\Entity\Apprenant;
-use Doctrine\ORM\EntityManagerInterface;
 use phpDocumentor\Reflection\Project;
-use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -37,7 +38,7 @@ class CustomProjetController extends AbstractController
         // Récupérer le projet et l'apprenant depuis la base de données
         $projet = $entityManager->getRepository(Projet::class)->find($id);
         $apprenant = $entityManager->getRepository(Apprenant::class)->findOneByEmail($apprenantLogged);
-        
+
         // Vérifier si le projet et l'apprenant existent
         if (!$projet || !$apprenant) {
             return new JsonResponse(["message" => "Le projet ou l'apprenant n'existe pas ou n'est pas connecté"], Response::HTTP_NOT_FOUND);
@@ -116,5 +117,47 @@ class CustomProjetController extends AbstractController
             'Date_limite' => $projet->getDateLimite(),
         ];
         return new JsonResponse(['message' => 'Vous avez été retiré du projet avec succès', 'données' => $showData], Response::HTTP_OK);
+    }
+
+    #[Route('/api/projet/{id}', name: 'app_projet_editer',  methods: ['PATCH', 'POST'])]
+    public function editerCahierDeCharge(Request $request, $id, EntityManagerInterface $entityManager)
+    {
+        $projet = $entityManager->getRepository(Projet::class)->find($id);
+        // $file = $request->files->get('CahierDecharge');
+   
+
+        if (!$projet) {
+            throw $this->createNotFoundException('Projet non trouvé');
+        }
+        
+        $nouveauFichier = $request->files->get('CahierDecharge');
+        if ($nouveauFichier) {
+            // Supprimer l'ancien fichier s'il existe
+            $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getImageName();
+            if (file_exists($ancienFichier)) {
+                unlink($ancienFichier);
+            } else {
+                return new JsonResponse(["message" => "Lefichier n'existe pas ou à été temporairement déplacé"], 404);
+ 
+            }
+        }
+      
+        $uuid = Uuid::uuid4();
+        $nomUniqueDeFichier = $uuid->toString() . '.' . $nouveauFichier->getClientOriginalExtension();
+        
+        $destination = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/';
+        $nouveauFichier->move($destination, $nomUniqueDeFichier);
+
+        // Mettre à jour le nom du fichier dans l'entité Projet
+        $projet->setImageName($nomUniqueDeFichier);
+        //   upload_tmp_dir = "C:\xampp\tmp"
+
+        // Mettre à jour la taille du fichier si nécessaire
+        //   $projet->setImageSize($nouveauFichier->getSize());
+
+
+        $entityManager->flush();
+        return new JsonResponse(["message"=>"Vous avez éditer le cahier de charge avec succès"],200);
+        // dd($nouveauFichier);
     }
 }

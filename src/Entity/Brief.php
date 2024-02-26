@@ -105,6 +105,11 @@ class Brief
     private ?int $imageSize = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(
+        [
+            'brief:index', 'brief:show', 
+        ]
+    )]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]

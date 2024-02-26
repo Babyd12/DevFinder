@@ -75,7 +75,7 @@ class Competence
     #[Groups(
         [
             'competence:show', 'competence:index',
-            'apprenant:show'
+            'apprenant:show',
         ]
     )]
     private ?int $id = null;
@@ -84,7 +84,8 @@ class Competence
     #[Groups(
         [
             'competence:show', 'competence:index', 'competence:create', 'competence:update',
-            'apprenant:show'
+            'apprenant:show',
+            'descriptionCompetence:show', 
         ]
     )]
     private ?string $nom = null;

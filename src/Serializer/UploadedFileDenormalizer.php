@@ -32,6 +32,7 @@ final class UploadedFileDenormalizer implements DenormalizerInterface
         return [
             // Exemple avec un type spécifique
             'App\Entity\Apprenant' => true,
+            // 'App\Entity\Projet' => true,
 
             // // Exemple avec une interface
             // 'MonInterface' => true,
