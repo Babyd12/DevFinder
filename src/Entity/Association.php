@@ -71,7 +71,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 // )]
 #[Patch(
     uriTemplate: 'association/updateOne/{id}',
-    securityPostDenormalize: "is_grandted('ROLE_ASSOCIATION')",
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()",
     denormalizationContext: ['groups'=>['association:update_one']],
     inputFormats: ['json' => ['application/json']],
 )]
@@ -162,7 +162,7 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Groups(
         [
-            'association:create', 
+            'association:create', 'association:update_one',
         ]
     )]
     private ?string $mot_de_passe = null;

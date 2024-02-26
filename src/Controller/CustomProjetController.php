@@ -83,10 +83,9 @@ class CustomProjetController extends AbstractController
         $entityManager->flush();
         $showData = [
             'Titre' => $data->getTitre(),
-            'Description' => $data->getDescription(),
+            'cachier_de_charge' => $data->getImageName(),
             'Nombre de participant' => $data->getNombreDeParticipant(),
             'Date_limite' => $data->getDateLimite(),
-
         ];
         return new JsonResponse(['message' => 'Vous avez été ajouté au projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
@@ -112,24 +111,24 @@ class CustomProjetController extends AbstractController
         $entityManager->flush();
         $showData = [
             'Titre' => $projet->getTitre(),
-            'Description' => $projet->getDescription(),
+            'cachier_de_charge' => $projet->getImageName(),
             'Nombre de participant' => $projet->getNombreDeParticipant(),
             'Date_limite' => $projet->getDateLimite(),
         ];
         return new JsonResponse(['message' => 'Vous avez été retiré du projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
-
+    
     #[Route('/api/projet/{id}', name: 'app_projet_editer',  methods: ['PATCH', 'POST'])]
     public function editerCahierDeCharge(Request $request, $id, EntityManagerInterface $entityManager)
     {
         $projet = $entityManager->getRepository(Projet::class)->find($id);
         // $file = $request->files->get('CahierDecharge');
-   
+
 
         if (!$projet) {
             throw $this->createNotFoundException('Projet non trouvé');
         }
-        
+
         $nouveauFichier = $request->files->get('CahierDecharge');
         if ($nouveauFichier) {
             // Supprimer l'ancien fichier s'il existe
@@ -138,13 +137,12 @@ class CustomProjetController extends AbstractController
                 unlink($ancienFichier);
             } else {
                 return new JsonResponse(["message" => "Lefichier n'existe pas ou à été temporairement déplacé"], 404);
- 
             }
         }
-      
+
         $uuid = Uuid::uuid4();
         $nomUniqueDeFichier = $uuid->toString() . '.' . $nouveauFichier->getClientOriginalExtension();
-        
+
         $destination = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/';
         $nouveauFichier->move($destination, $nomUniqueDeFichier);
 
@@ -157,7 +155,7 @@ class CustomProjetController extends AbstractController
 
 
         $entityManager->flush();
-        return new JsonResponse(["message"=>"Vous avez éditer le cahier de charge avec succès"],200);
+        return new JsonResponse(["message" => "Vous avez éditer le cahier de charge avec succès"], 200);
         // dd($nouveauFichier);
     }
 }

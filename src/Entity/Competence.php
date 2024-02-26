@@ -49,7 +49,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[Put(
     uriTemplate: '/competence/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
     securityMessage: 'Vous navez pas les droit requis pour effectuer cette action.',
     denormalizationContext: ['groups' => ['competence:update']]
 )]
@@ -57,7 +57,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Delete(
     uriTemplate: '/competence/{id}',
     processor: RemoveUserToRelationProcessor::class,
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN')",
     securityMessage: 'Vous navez pas les droit requis pour effectuer cette action.',
 )]
 
@@ -81,6 +81,7 @@ class Competence
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     #[Groups(
         [
             'competence:show', 'competence:index', 'competence:create', 'competence:update',
