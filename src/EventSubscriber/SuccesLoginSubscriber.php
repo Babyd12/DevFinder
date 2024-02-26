@@ -44,8 +44,8 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
                     'role' => $user->getRoles(),
                     'id' => $user->getId(),
                     'role' => $user->getRoles(),
-                    'telephone' => $user->getRoles() == 'ROLE_ADMIN' ? $user->getTelephone() : '',
-                    'description' => $user->getRoles() == 'ROLE_ADMIN' ? $user->getDescription() : '',
+                    'telephone' => in_array('ROLE_ADMIN', $user->getRoles() ) ? false: $user->getTelephone() ,
+                    'description' => in_array('ROLE_ADMIN', $user->getRoles() ) ? false : $user->getDescription() ,
                     'token' => $token,
                 ], JsonResponse::HTTP_OK));
                 

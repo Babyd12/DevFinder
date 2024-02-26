@@ -60,13 +60,12 @@ class PasswordSubscriber implements EventSubscriberInterface
         $existingApprenant = $this->entityManager->getRepository(Apprenant::class)->findOneBy(['email' => $entity->getEmail()]);
         $existingAssociation = $this->entityManager->getRepository(Association::class)->findOneBy(['email' => $entity->getEmail()]);
         $existingEntreprise = $this->entityManager->getRepository(Entreprise::class)->findOneBy(['email' => $entity->getEmail()]);
-        dd($existingApprenant, $existingEntreprise, $existingEntreprise);
-        if ($existingApprenant !== null || $existingAssociation !== null || $existingEntreprise !== null) {
-            dd('true');
-            return true;
-        } else {
-            dd('false');
+
+        if ($existingApprenant == null  && $existingAssociation == null && $existingEntreprise == null) {
             return false;
+        
+        } else {
+            return true;
         }
     }
 

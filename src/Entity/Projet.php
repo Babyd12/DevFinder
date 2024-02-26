@@ -142,7 +142,7 @@ class Projet
     #[ORM\Column]
     #[Groups(
         [
-            'projet:show', 'projet:create', 'projet:update',
+            'projet:index', 'projet:show', 'projet:create', 'projet:update', 
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -167,6 +167,7 @@ class Projet
     #[Groups(
         [
             'projet:create', 'projet:updateOne',
+            
         ]
     )]
     private ?File $CahierDecharge = null;
@@ -175,6 +176,13 @@ class Projet
     #[Groups(
         [
             'projet:index', 'projet:show',
+             /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
+             * @see src/Entity/Apprenant
+             * 
+             */
+            'apprenant:show'
         ]
     )]
     private ?string $imageName = null;
