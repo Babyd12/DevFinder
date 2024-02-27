@@ -52,11 +52,11 @@ services:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
             $entityManager: '@doctrine.orm.entity_manager'
-        
-    # App\State\GetApprenantProjetProcessor:
+
+    # App\State\GetUserAndHerRelations:
     #     bind: 
     #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
     
-    # App\State\GetApprenantProvider:
-    #     bind: 
-    #         $providerInterface: '@api_platform.doctrine.orm.state.item_provider'
+    App\State\GetUserAndHerRelationsProvider:
+        bind: 
+            $providerInterface: '@api_platform.doctrine.orm.state.item_provider'

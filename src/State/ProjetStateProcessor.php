@@ -27,7 +27,8 @@ class ProjetStateProcessor implements ProcessorInterface
                 }
                 return $this->processorInterface->process($data, $operation, $uriVariables, $context);
 
-            } else if ($operation instanceof Patch && $data->getCahierDecharge() == null) {
+            } 
+            else if ($data instanceof Patch && $data->getCahierDecharge() == null) {
                 dd($data);
                 return $this->processorInterface->process($data, $operation, $uriVariables, $context);
             }
@@ -40,9 +41,15 @@ class ProjetStateProcessor implements ProcessorInterface
     public function Validator($data, $operation, $uriVariables, $context)
     {
         if($data instanceof Projet && $operation->getMethod() == 'PUT'){
+
             if(empty($data->getLienDuRepertoireDistant())){
                 return new JsonResponse(['error'=> 'Le champ lien_du_repertoire_distant ne peut pas être vide.'], 403);
             }
         }
+    }
+    
+    public function validatorPatchEditerCahierDeCharge()
+    {
+        
     }
 }

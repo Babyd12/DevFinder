@@ -82,6 +82,7 @@ class Competence
              * 
              */
             'apprenant:show',
+            'descriptionCompetence:show', 
         ]
     )]
     private ?int $id = null;
@@ -98,7 +99,6 @@ class Competence
              * 
              */
             'apprenant:show',
-            
             'descriptionCompetence:show', 
         ]
     )]

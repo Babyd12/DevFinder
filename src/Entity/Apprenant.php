@@ -70,7 +70,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     uriTemplate: 'apprenant/{id}',
     forceEager: true,
     normalizationContext: ['groups' => ['apprenant:show']],
-    outputFormats: ['json' => 'application/json']
+    // outputFormats: ['json' => 'application/json']
 
 )]
 
@@ -130,6 +130,8 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?int $id = null;
 
+    private ?int $id_getAble = null;
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le champ ne doit pas être vide')]
     #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
@@ -155,7 +157,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(
         [
             'apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update',
-             /**
+            /**
              * ici lorsque jaffiche un projet qui a enregistré des apprenants, 
              * je charge les informations de l'apprenant au lieu de l'uri
              * @see App\Entity\Projet
@@ -231,7 +233,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(
         [
             'apprenant:show', 'apprenant:index',
-
         ]
     )]
     private Collection $descriptionCompetences;
@@ -239,9 +240,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Message::class)]
     private Collection $messages;
 
-   
-
- 
 
     public function __construct()
     {
@@ -251,7 +249,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         $this->livrables = new ArrayCollection();
         $this->descriptionCompetences = new ArrayCollection();
         $this->messages = new ArrayCollection();
-    
     }
 
     /**
@@ -272,6 +269,16 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getIdGetable(): ?int
+    {
+        return $this->id_getAble;
+    }
+    public function setIdGetable(int $id_getAble): ?int
+    {
+        return $this->$id_getAble = $this->getId();
+        return $this;
     }
 
     public function getNomComplet(): ?string
@@ -546,9 +553,4 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
- 
-   
-
-   
 }

@@ -117,7 +117,6 @@ class Brief
     #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
     private ?string $titre = null;
 
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Url(

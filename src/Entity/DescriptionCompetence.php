@@ -6,13 +6,15 @@ use App\Entity\Apprenant;
 use App\Entity\Competence;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
-use App\Repository\DescriptionCompetenceRepository;
 use App\State\AddUserToRelationProcessor;
+use App\State\GetUserAndHerRelationsProvider;
+use App\Repository\DescriptionCompetenceRepository;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 
@@ -20,6 +22,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiResource(
     shortName: 'Module gestion de competence -Apprenant',
     routePrefix: 'apprenant',
+    operations: [
+        new Get(
+            uriTemplate:'/mesCompetences/{id}',
+        
+        ),
+    ]
 
 )]
 
@@ -32,7 +40,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[Get(
     uriTemplate: '/descriptionCompetence/{id}',
     normalizationContext: ['groups' => ['descriptionCompetence:show']],
-
+    
 )]
 
 #[Post(
@@ -71,7 +79,8 @@ class DescriptionCompetence
              * @see src/Entity/Apprenant
              * 
              */
-            'apprenant:show'
+            'apprenant:show',
+          
         ]
     )]
     private ?int $id = null;
@@ -126,7 +135,6 @@ class DescriptionCompetence
         ]
     )]
     private ?Apprenant $apprenant = null;
-
     #[ORM\ManyToOne(inversedBy: 'descriptionCompetences')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(

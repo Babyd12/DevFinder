@@ -48,6 +48,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant().getUserIdentifier() == user.getUserIdentifier() ",
 
 )]
+/**
+ * @Reste à denormaliser toute les relations de livrables pour
+ */
 
 class Livrable
 {

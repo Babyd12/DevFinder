@@ -22,6 +22,7 @@ use phpDocumentor\Reflection\DocBlock\Tag;
 use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
+use App\State\GetUserAndHerRelationsProvider;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -94,7 +95,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     forceEager: true,
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/{id}',
-    normalizationContext: ['groups' => ['projet:show']]
+    normalizationContext: ['groups' => ['projet:show']],
+   
 )]
 
 #[Post(
