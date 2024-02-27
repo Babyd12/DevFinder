@@ -11,7 +11,8 @@ class GetUserAndHerRelationsProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): object|array|null
     {
-        // dd($operation, $uriVariables, $context);
+        $descriptionCompetence = $this->providerInterface->provide($operation, $uriVariables, $context);
+        // dd($descriptionCompetence);
         return null;
     }
 }

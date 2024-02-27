@@ -19,6 +19,9 @@ class ProjetStateProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
+
+        // dd('hey');
+
         if ($data instanceof Projet) {
             if ($operation instanceof Post) {
                 if ($data->getCahierDecharge() == null) {
@@ -26,11 +29,13 @@ class ProjetStateProcessor implements ProcessorInterface
                     return new JsonResponse(['error' => 'Veuilelz fournir un cahier de charge '], 403);
                 }
                 return $this->processorInterface->process($data, $operation, $uriVariables, $context);
-
             } 
+
             else if ($data instanceof Patch && $data->getCahierDecharge() == null) {
-                dd($data);
-                return $this->processorInterface->process($data, $operation, $uriVariables, $context);
+
+                return new JsonResponse(['error' => 'Veuillez fournir un cachier de charge'], 403);
+
+                // return $this->processorInterface->process($data, $operation, $uriVariables, $context);
             }
         } else {
             return $this->processorInterface->process($data, $operation, $uriVariables, $context);
@@ -40,16 +45,22 @@ class ProjetStateProcessor implements ProcessorInterface
 
     public function Validator($data, $operation, $uriVariables, $context)
     {
-        if($data instanceof Projet && $operation->getMethod() == 'PUT'){
+        if ($data instanceof Projet && $operation->getMethod() == 'PUT') {
 
-            if(empty($data->getLienDuRepertoireDistant())){
-                return new JsonResponse(['error'=> 'Le champ lien_du_repertoire_distant ne peut pas être vide.'], 403);
+            if (empty($data->getLienDuRepertoireDistant())) {
+                return new JsonResponse(['error' => 'Le champ lien_du_repertoire_distant ne peut pas être vide.'], 403);
             }
         }
+        die('good');
     }
-    
-    public function validatorPatchEditerCahierDeCharge()
+
+    public function validatorPatchSoumttreLivrableProjet($data, $operation, $uriVariables, $context)
     {
-        
+        if ($data instanceof Projet && $operation->getMethod() == 'PUT') {
+
+            if (empty($data->getLienDuRepertoireDistant())) {
+                return new JsonResponse(['error' => 'Le champ lien_du_repertoire_distant ne peut pas être vide.'], 403);
+            }
+        }
     }
 }

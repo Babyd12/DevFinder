@@ -70,9 +70,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             shortName: 'Module Gestion de participation Projet - Apprenant',
             uriTemplate: '/apprenant/soumettre/livrableProjet/{id}',
             security: "is_granted('ROLE_APPRENANT') and object.apprenantIsInProjet(user) == true ",
-            securityMessage: "Vous n'êtes pas apprenant ou ne faite pas partir de ce proejt",
-            denormalizationContext: ['groups' => ['projet:livrable']],  
+            securityMessage: "Vous n'êtes pas apprenant ou ne faite pas partir de ce projet",
+            denormalizationContext: ['groups' => ['projet:livrable']],
             inputFormats: ['json' => 'application/json'],
+            processor: ProjetStateProcessor::class,
            
             
         )
@@ -283,7 +284,7 @@ class Projet
     )]
     #[Groups(
         [
-            'projet:show', 'projet:index',
+            'projet:show', 'projet:index', 'projet:livrable',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use App\Entity\Apprenant;
 use App\Entity\Competence;
 use ApiPlatform\Metadata\Get;
@@ -62,6 +64,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => ['descriptionCompetence:delete']],
 )]
 
+#[ApiFilter(SearchFilter::class, properties:['apprenant.id'=> 'ipartial'])]
 class DescriptionCompetence
 {
     #[ORM\Id]
@@ -79,7 +82,7 @@ class DescriptionCompetence
              * @see src/Entity/Apprenant
              * 
              */
-            'apprenant:show',
+            'apprenant:show', 
           
         ]
     )]
@@ -134,6 +137,8 @@ class DescriptionCompetence
             'descriptionCompetence:delete',
         ]
     )]
+    
+    // #[ApiFilter(SearchFilter::class, properties:['apprenant.id'=> 'ipartial'])]
     private ?Apprenant $apprenant = null;
     #[ORM\ManyToOne(inversedBy: 'descriptionCompetences')]
     #[ORM\JoinColumn(nullable: false)]
@@ -206,4 +211,9 @@ class DescriptionCompetence
 
         return $this;
     }
+
+    // public function getAllDescriptionCompetencesForOneApprenant($id)
+    // {
+    //     $apprenant = 
+    // }
 }

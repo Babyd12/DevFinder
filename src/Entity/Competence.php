@@ -30,7 +30,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
     uriTemplate: '/competence/liste',
     description: 'Affiche toutes les compétences',
     normalizationContext: ['groups' => ['competence:index']],
-
 )]
 
 #[Get(
@@ -93,17 +92,16 @@ class Competence
         [
             'competence:show', 'competence:index', 'competence:create', 'competence:update',
              /**
-             * ici lorsque jaffiche un apprenant ayant enregistré une compétence, 
+             * ici lorsque jaffiche un descriptionCompétence contenant une compétence, 
              * je charge les informations de la dite compétence au lieu de l'uri
              * @see src/Entity/Apprenant
              * 
              */
-            'apprenant:show',
-            'descriptionCompetence:show', 
+            'descriptionCompetence:show', 'descriptionCompetence:index',
         ]
     )]
     private ?string $nom = null;
-
+    
 
 
     #[ORM\OneToMany(mappedBy: 'competence', targetEntity: DescriptionCompetence::class)]
