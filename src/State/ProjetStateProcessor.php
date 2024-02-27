@@ -35,4 +35,14 @@ class ProjetStateProcessor implements ProcessorInterface
             return $this->processorInterface->process($data, $operation, $uriVariables, $context);
         }
     }
+
+
+    public function Validator($data, $operation, $uriVariables, $context)
+    {
+        if($data instanceof Projet && $operation->getMethod() == 'PUT'){
+            if(empty($data->getLienDuRepertoireDistant())){
+                return new JsonResponse(['error'=> 'Le champ lien_du_repertoire_distant ne peut pas être vide.'], 403);
+            }
+        }
+    }
 }

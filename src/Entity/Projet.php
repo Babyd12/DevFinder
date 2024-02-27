@@ -59,12 +59,22 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             uriTemplate: '/projet/editer/cachier_charge/{id}',
             securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
             securityMessage: "Vous n'avez pas l'autrorisaton requise",
-            denormalizationContext: ['groups' => ['projet:updateOne']], 
+            denormalizationContext: ['groups' => ['projet:updateOne']],
             inputFormats: ['multipart' => 'multipart/form-data',],
             controller: CustomProjetController::class,
             name: 'app_projet_editer',
-        )
+        ),
 
+        new Patch(
+            shortName: 'Module Gestion de participation Projet - Apprenant',
+            uriTemplate: '/apprenant/soumettre/livrableProjet/{id}',
+            security: "is_granted('ROLE_APPRENANT') and object.apprenantIsInProjet(user) == true ",
+            securityMessage: "Vous n'êtes pas apprenant ou ne faite pas partir de ce proejt",
+            denormalizationContext: ['groups' => ['projet:livrable']],  
+            inputFormats: ['json' => 'application/json'],
+           
+            
+        )
     ]
 )]
 
@@ -76,7 +86,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     description: 'Affiche tout les projet',
     name: 'un nom simple a comprndre',
     normalizationContext: ['groups' => ['projet:index']],
-    denormalizationContext: ['groups' => ['projet:index']],
+    // denormalizationContext: ['groups' => ['projet:index']],
 
 )]
 
@@ -104,26 +114,24 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     processor: ProjetStateProcessor::class,
     inputFormats: ['json' => 'application/json'],
 
+)]
 
+#[Patch(
+    shortName: 'Module Gestion de Publication de Projet - Association',
+    uriTemplate: '/projet/{id}',
+
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+    securityMessage: "Vous n'avez pas l'autrorisaton requise",
+    denormalizationContext: ['groups' => ['projet:updateOne']],
+    inputFormats: ['multipart' => 'multipart/form-data',],
+    controller: CustomProjetController::class,
+    name: 'app_projet_editer',
 
 )]
 
-// #[Patch(
-//     shortName: 'Module Gestion de Publication de Projet - Association',
-//     uriTemplate: '/projet/{id}',
-    
-//     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-//     securityMessage:"Vous n'avez pas l'autrorisaton requise",
-//     denormalizationContext: ['groups' => ['projet:updateOne']],
-//     inputFormats: ['multipart'=>'multipart/form-data',],
-//     controller: CustomProjetController::class,
-//     name: 'app_projet_editer',
-
-// )]
-
 #[Delete(
     uriTemplate: '/projet/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION')  ",
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
 
@@ -142,7 +150,7 @@ class Projet
     #[ORM\Column]
     #[Groups(
         [
-            'projet:index', 'projet:show', 'projet:create', 'projet:update', 
+            'projet:index', 'projet:show', 'projet:create', 'projet:update',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -163,11 +171,16 @@ class Projet
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.',
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide lors de la création')]
+    #[Assert\NotBlank(
+        message: 'Ce champ ne doit pas être vide lors de la création',
+        /**
+         * @info il s'agit de préciser les attribues qui peuvent être vide lors qu'un projet est instancié
+         */
+        groups: ['projet:updateOne']
+    )]
     #[Groups(
         [
-            'projet:create', 'projet:updateOne',
-            
+            'projet:create', 
         ]
     )]
     private ?File $CahierDecharge = null;
@@ -176,7 +189,7 @@ class Projet
     #[Groups(
         [
             'projet:index', 'projet:show',
-             /**
+            /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
              * @see src/Entity/Apprenant
@@ -225,7 +238,6 @@ class Projet
         match: true,
         message: "La valeur de '{{ value }}' doit être un entier et compris entre 1 et 9.",
     )]
-    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
     #[Groups(
         [
             'projet:show', 'projet:index', 'projet:create',
@@ -257,6 +269,28 @@ class Projet
         ]
     )]
     private ?\DateTimeInterface $date_limite = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url( message: 'L\'url {{ value }} n\'est pas une url valide')]
+    #[Assert\NotBlank( 
+        message: 'Ce champ ne doit pas être vide',
+        /**
+        * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
+        */
+        groups: ['projet:livrable']
+    )]
+    #[Groups(
+        [
+            'projet:show', 'projet:index',
+            /**
+             * ici lorsque jaffiche un apprenant ayant participé à un projet, 
+             * je charge les informations du projet au lieu de l'uri
+             * @see src/Entity/Apprenant
+             */
+            'apprenant:show'
+        ]
+    )]
+    private ?string $lien_du_repertoire_distant = null;
 
     #[ORM\ManyToOne(targetEntity: Association::class, inversedBy: 'projets')]
     #[ORM\JoinColumn(nullable: false)]
@@ -304,6 +338,8 @@ class Projet
 
     #[ORM\OneToMany(mappedBy: 'projet', targetEntity: Message::class)]
     private Collection $messages;
+
+
 
 
     public function __construct()
@@ -406,6 +442,16 @@ class Projet
         return $this;
     }
 
+    /**
+     * @param string $apprenant
+     * @return bool
+     * @info this method checks if the apprenant is in 
+     */
+    public function apprenantIsInProjet(Apprenant $apprenantRecherche): bool
+    {
+        return $this->getApprenants()->contains($apprenantRecherche);
+    }
+
     public function getStatu(): ?ProjetStatu
     {
         return $this->statu;
@@ -496,6 +542,18 @@ class Projet
     public function setNombreDeParticipant(?string $nombre_de_participant): static
     {
         $this->nombre_de_participant = $nombre_de_participant;
+
+        return $this;
+    }
+
+    public function getLienDuRepertoireDistant(): ?string
+    {
+        return $this->lien_du_repertoire_distant;
+    }
+
+    public function setLienDuRepertoireDistant(?string $lien_du_repertoire_distant): static
+    {
+        $this->lien_du_repertoire_distant = $lien_du_repertoire_distant;
 
         return $this;
     }

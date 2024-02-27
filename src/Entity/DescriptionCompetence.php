@@ -19,14 +19,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: DescriptionCompetenceRepository::class)]
 #[ApiResource(
     shortName: 'Module gestion de competence -Apprenant',
-    routePrefix:'apprenant',
+    routePrefix: 'apprenant',
 
 )]
 
 #[GetCollection(
     uriTemplate: '/descriptionCompetence/liste',
     normalizationContext: ['groups' => ['descriptionCompetence:index']],
-    
+
 )]
 
 #[Get(
@@ -65,6 +65,13 @@ class DescriptionCompetence
             'descriptionCompetence:show',
             'descriptionCompetence:update',
             'descriptionCompetence:delete',
+            /**
+             * ici lorsque jaffiche un apprenant ayant enregistré une compétence, 
+             * je charge les informations de la dite compétence au lieu de l'uri
+             * @see src/Entity/Apprenant
+             * 
+             */
+            'apprenant:show'
         ]
     )]
     private ?int $id = null;
@@ -77,7 +84,13 @@ class DescriptionCompetence
             'descriptionCompetence:create',
             'descriptionCompetence:update',
             'descriptionCompetence:delete',
-
+            /**
+             * ici lorsque jaffiche un apprenant ayant enregistré une compétence, 
+             * je charge les informations de la dite compétence au lieu de l'uri
+             * @see src/Entity/Apprenant
+             * 
+             */
+            'apprenant:show'
         ]
     )]
     private ?string $description = null;
@@ -90,6 +103,13 @@ class DescriptionCompetence
             'descriptionCompetence:create',
             'descriptionCompetence:update',
             'descriptionCompetence:delete',
+             /**
+             * ici lorsque jaffiche un apprenant ayant enregistré une compétence, 
+             * je charge les informations de la dite compétence au lieu de l'uri
+             * @see src/Entity/Apprenant
+             * 
+             */
+            'apprenant:show'
         ]
     )]
     private ?string $lien_de_realisation = null;
@@ -117,7 +137,7 @@ class DescriptionCompetence
             'descriptionCompetence:update',
             'descriptionCompetence:delete',
 
-            // 'competence:show'
+          
         ]
     )]
     private ?Competence $competence = null;

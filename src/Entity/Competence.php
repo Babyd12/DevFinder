@@ -75,6 +75,12 @@ class Competence
     #[Groups(
         [
             'competence:show', 'competence:index',
+             /**
+             * ici lorsque jaffiche un apprenant ayant enregistré une compétence, 
+             * je charge les informations de la dite compétence au lieu de l'uri
+             * @see src/Entity/Apprenant
+             * 
+             */
             'apprenant:show',
         ]
     )]
@@ -85,7 +91,14 @@ class Competence
     #[Groups(
         [
             'competence:show', 'competence:index', 'competence:create', 'competence:update',
+             /**
+             * ici lorsque jaffiche un apprenant ayant enregistré une compétence, 
+             * je charge les informations de la dite compétence au lieu de l'uri
+             * @see src/Entity/Apprenant
+             * 
+             */
             'apprenant:show',
+            
             'descriptionCompetence:show', 
         ]
     )]

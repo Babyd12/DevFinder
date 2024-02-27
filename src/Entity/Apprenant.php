@@ -183,7 +183,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex('/^(70|78|77|76|75)\d{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
     #[Groups(
         [
-            'apprenant:create', 'apprenant:update',
+            'apprenant:create', 'apprenant:update', 'apprenant:show', 'apprenant:index',
 
         ]
     )]
@@ -195,7 +195,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(
         [
-            'apprenant:create', 'apprenant:update',
+            'apprenant:create', 'apprenant:update', 'apprenant:show', 'apprenant:index',
 
         ]
     )]
@@ -206,9 +206,11 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $projet;
 
     #[ORM\ManyToMany(targetEntity: Entreprise::class, mappedBy: 'apprenants')]
+    #[Groups(['apprenant:show'])]
     private Collection $entreprises;
 
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Livrable::class)]
+    #[Groups(['apprenant:show'])]
     private Collection $livrables;
 
     #[ORM\Column]
@@ -226,6 +228,12 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $etat = null;
 
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: DescriptionCompetence::class, orphanRemoval: true)]
+    #[Groups(
+        [
+            'apprenant:show', 'apprenant:index',
+
+        ]
+    )]
     private Collection $descriptionCompetences;
 
     #[ORM\OneToMany(mappedBy: 'apprenant', targetEntity: Message::class)]

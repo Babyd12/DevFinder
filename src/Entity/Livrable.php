@@ -54,7 +54,7 @@ class Livrable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne')]
+    #[Groups(['livrable:index', 'livrable:show'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -62,20 +62,20 @@ class Livrable
         '/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/',
         message: "Le lien GitHub ou similaire '{{ value }}' n'est pas valide."
     )]
-    #[Groups('livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne')]
+    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?string $lien_du_livrable = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne')]
+    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?Apprenant $apprenant = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
-    #[Groups('livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne')]
+    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?Brief $brief = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
-    #[Groups('livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne')]
+    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?Immersion $immersion = null;
 
     public function getId(): ?int
