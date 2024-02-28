@@ -60,7 +60,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             uriTemplate: '/projet/editer/cachier_charge/{id}',
             securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
             securityMessage: "Vous n'avez pas l'autrorisaton requise",
-            denormalizationContext: ['groups' => ['projet:updateOne']],
+            denormalizationContext: ['groups' => ['projet:create']],
             inputFormats: ['multipart' => 'multipart/form-data',],
             controller: CustomProjetController::class,
             name: 'app_projet_editer',
@@ -73,9 +73,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             securityMessage: "Vous n'êtes pas apprenant ou ne faite pas partir de ce projet",
             denormalizationContext: ['groups' => ['projet:livrable']],
             inputFormats: ['json' => 'application/json'],
-            processor: ProjetStateProcessor::class,
-           
-            
+            // processor: ProjetStateProcessor::class,
+
+
         )
     ]
 )]
@@ -97,7 +97,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/{id}',
     normalizationContext: ['groups' => ['projet:show']],
-   
+
 )]
 
 #[Post(
@@ -122,7 +122,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[Patch(
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/{id}',
-
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
     securityMessage: "Vous n'avez pas l'autrorisaton requise",
     denormalizationContext: ['groups' => ['projet:updateOne']],
@@ -165,7 +164,7 @@ class Projet
     )]
     private ?int $id = null;
 
-    #[Vich\UploadableField(mapping: 'projets', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Vich\UploadableField(mapping: 'projets', fileNameProperty: 'nomImage', size: 'imageSize')]
     #[Assert\File(
         mimeTypes: [
             'application/pdf',
@@ -175,15 +174,15 @@ class Projet
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
     #[Assert\NotBlank(
-        message: 'Ce champ ne doit pas être vide lors de la création',
+        message: 'Ce champs ne dois pas être vide',
         /**
-         * @info il s'agit de préciser les attribues qui peuvent être vide lors qu'un projet est instancié
+         * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
          */
-        groups: ['projet:updateOne']
+        groups: ['projet:livrable']
     )]
     #[Groups(
         [
-            'projet:create', 
+            'projet:create',
         ]
     )]
     private ?File $CahierDecharge = null;
@@ -201,7 +200,7 @@ class Projet
             'apprenant:show'
         ]
     )]
-    private ?string $imageName = null;
+    private ?string $nomImage = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
@@ -274,13 +273,13 @@ class Projet
     private ?\DateTimeInterface $date_limite = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Url( message: 'L\'url {{ value }} n\'est pas une url valide')]
-    #[Assert\NotBlank( 
+    #[Assert\Url(message: 'L\'url {{ value }} n\'est pas une url valide')]
+    #[Assert\NotBlank(
         message: 'Ce champ ne doit pas être vide',
         /**
-        * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
-        */
-        groups: ['projet:livrable']
+     * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
+     */
+        groups: ['projet:create']
     )]
     #[Groups(
         [
@@ -487,14 +486,14 @@ class Projet
         return $this->CahierDecharge;
     }
 
-    public function setImageName(?string $imageName): void
+    public function setNomImage(?string $nomImage): void
     {
-        $this->imageName = $imageName;
+        $this->nomImage = $nomImage;
     }
 
-    public function getImageName(): ?string
+    public function getNomImage(): ?string
     {
-        return $this->imageName;
+        return $this->nomImage;
     }
 
     public function setImageSize(?int $imageSize): void

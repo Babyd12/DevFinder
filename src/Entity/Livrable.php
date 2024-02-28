@@ -65,20 +65,30 @@ class Livrable
         '/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/',
         message: "Le lien GitHub ou similaire '{{ value }}' n'est pas valide."
     )]
-    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(
+        [
+            'livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne',
+            /**
+             * @info Quand j'affiche une immersion qui a enregistré un livrable affiche le lien du livrable au lieu de l'uri
+             */
+            'immersion:show', 'immersion:index',
+            'livrable:show', 'livrable:index', 
+            
+        ]
+    )]
     private ?string $lien_du_livrable = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?Apprenant $apprenant = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
-    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?Brief $brief = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
-    #[Groups(['livrable:create','livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
     private ?Immersion $immersion = null;
 
     public function getId(): ?int
@@ -109,7 +119,7 @@ class Livrable
 
         return $this;
     }
-    
+
     public function getBrief(): ?Brief
     {
         return $this->brief;

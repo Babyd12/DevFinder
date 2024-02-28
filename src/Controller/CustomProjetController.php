@@ -83,7 +83,7 @@ class CustomProjetController extends AbstractController
         $entityManager->flush();
         $showData = [
             'Titre' => $data->getTitre(),
-            'cachier_de_charge' => $data->getImageName(),
+            'cachier_de_charge' => $data->getNomImage(),
             'Nombre de participant' => $data->getNombreDeParticipant(),
             'Date_limite' => $data->getDateLimite(),
         ];
@@ -111,7 +111,7 @@ class CustomProjetController extends AbstractController
         $entityManager->flush();
         $showData = [
             'Titre' => $projet->getTitre(),
-            'cachier_de_charge' => $projet->getImageName(),
+            'cachier_de_charge' => $projet->getNomImage(),
             'Nombre de participant' => $projet->getNombreDeParticipant(),
             'Date_limite' => $projet->getDateLimite(),
         ];
@@ -132,7 +132,7 @@ class CustomProjetController extends AbstractController
         $nouveauFichier = $request->files->get('CahierDecharge');
         if ($nouveauFichier) {
             // Supprimer l'ancien fichier s'il existe
-            $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getImageName();
+            $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getNomImage();
             if (file_exists($ancienFichier)) {
                 unlink($ancienFichier);
             } else {
@@ -147,7 +147,7 @@ class CustomProjetController extends AbstractController
         $nouveauFichier->move($destination, $nomUniqueDeFichier);
 
         // Mettre à jour le nom du fichier dans l'entité Projet
-        $projet->setImageName($nomUniqueDeFichier);
+        $projet->setNomImage($nomUniqueDeFichier);
         //   upload_tmp_dir = "C:\xampp\tmp"
 
         // Mettre à jour la taille du fichier si nécessaire

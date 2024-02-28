@@ -129,7 +129,7 @@ class Immersion
     private ?string $lien_support = null;
 
     #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]
-    #[Groups(['immersion:show'])]
+    #[Groups(['immersion:show', 'immersion:index'])]
     private Collection $livrables;
 
 
