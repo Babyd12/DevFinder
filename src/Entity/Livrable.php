@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
 use App\Repository\LivrableRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -21,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 
 #[Post(
-    uriTemplate: 'apprenant/livrer/immersion',
+    uriTemplate: 'apprenant/soumettre/livrable',
     security: "is_granted('ROLE_APPRENANT') ",
     denormalizationContext: ['groups' => 'livrable:create'],
 )]
@@ -51,7 +52,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @Reste à denormaliser toute les relations de livrables pour
  */
+// #[UniqueEntity(
+//     fields: ['lien_du_livrable', 'apprenant.email'],
+//     errorPath: 'port',
+//     message: 'This port is already in use on that host.',
 
+// )]
 class Livrable
 {
     #[ORM\Id]
