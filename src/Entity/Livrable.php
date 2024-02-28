@@ -72,7 +72,7 @@ class Livrable
              * @info Quand j'affiche une immersion qui a enregistré un livrable affiche le lien du livrable au lieu de l'uri
              */
             'immersion:show', 'immersion:index',
-            'livrable:show', 'livrable:index', 
+            'brief:show', 'brief:index', 
             
         ]
     )]

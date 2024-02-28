@@ -132,6 +132,7 @@ class Brief
     private ?string $niveau_de_competence = null;
 
     #[ORM\OneToMany(mappedBy: 'brief', targetEntity: Livrable::class)]
+    #[Groups(['brief:show', 'brief:index'])]
     private Collection $livrables;
 
  
