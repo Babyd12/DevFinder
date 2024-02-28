@@ -23,13 +23,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
 #[ApiResource(
-    shortName:'Module gestion de publication brief -Administrateur',
+    shortName: 'Module gestion de publication brief -Administrateur',
 )]
 
 #[GetCollection(
     uriTemplate: 'brief/liste',
     forceEager: false,
-    normalizationContext: [ 'groups' => ['brief:index'] ],
+    normalizationContext: ['groups' => ['brief:index']],
     // denormalizationContext:[ 'groups' => ['brief:index'] ],
     // outputFormats: [ 'json' => 'application/json+ld'],
     // inputFormats: [ 'json' => 'application/json+ld; charset=utf-8']  
@@ -38,7 +38,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Get(
     uriTemplate: 'brief/{id}',
     forceEager: true,
-    normalizationContext: [ 'groups' => ['brief:show'] ],
+    normalizationContext: ['groups' => ['brief:show']],
     outputFormats: ['json' => 'application/json']
 
     // denormalizationContext: [ 'groups' => ['brief:show']],
@@ -48,14 +48,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: 'brief/publier',
     security: "is_granted('ROLE_ADMIN') ",
     // normalizationContext: [ 'groups' => ['brief:create']],
-    denormalizationContext: [ 'groups' => ['brief:create'] ],
+    denormalizationContext: ['groups' => ['brief:create']],
 )]
 
 #[Put(
     uriTemplate: 'brief/{id}',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
     // normalizationContext: [ 'groups' => ['brief:update']],
-    denormalizationContext: [ 'groups' => ['brief:update'] ]
+    denormalizationContext: ['groups' => ['brief:update']]
 
 )]
 
@@ -77,12 +77,11 @@ class Brief
 
     #[Vich\UploadableField(mapping: 'briefs', fileNameProperty: 'imageName', size: 'imageSize')]
     #[Assert\File(
-        mimeTypes: 
-        [
+        mimeTypes: [
             'application/pdf',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         ],
-        mimeTypesMessage:'Veuillez inserer un fichier de type pdf ou docx.'
+        mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
     #[Assert\NotBlank]
@@ -96,7 +95,7 @@ class Brief
     #[ORM\Column(nullable: true)]
     #[Groups(
         [
-            'brief:index', 'brief:show', 
+            'brief:index', 'brief:show',
         ]
     )]
     private ?string $imageName = null;
@@ -107,14 +106,23 @@ class Brief
     #[ORM\Column(nullable: true)]
     #[Groups(
         [
-            'brief:index', 'brief:show', 
+            'brief:index', 'brief:show',
         ]
     )]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    #[Groups(
+        [
+            'brief:show', 'brief:index', 'brief:create', 'brief:update',
+            /**
+             * @info quand j'affiche un livrable qui a une relation avec une brief, j'affiche le titre au lieu de l'uri
+             * @return string
+             */
+            'livrable:show', 'livrable:index',
+        ]
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
@@ -127,7 +135,16 @@ class Brief
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    #[Groups(
+        [
+            'brief:show', 'brief:index', 'brief:create', 'brief:update',
+            /**
+             * @info quand j'affiche un livrable qui a une relation avec une brief, j'affiche le titre au lieu de l'uri
+             * @return string
+             */
+            'livrable:show', 'livrable:index',
+        ]
+    )]
     #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.')]
     private ?string $niveau_de_competence = null;
 
@@ -135,7 +152,6 @@ class Brief
     #[Groups(['brief:show', 'brief:index'])]
     private Collection $livrables;
 
- 
 
     public function __construct()
     {
@@ -253,7 +269,4 @@ class Brief
     {
         return $this->imageSize;
     }
- 
-
-    
 }

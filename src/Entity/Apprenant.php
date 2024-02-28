@@ -145,7 +145,20 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
              * @see App\Entity\Projet
              */
             'projet:show',
-        ]
+            /**
+             * @info Quand j'affiche un livrable dans le quel un apprenant a fait une soumission 
+             * j'affiche les informations de l'apprenant au lieu de l'uri
+             * @see App\Entity\Projet
+             * @return string
+             */
+            'livrable:index', 'livrable:show',
+              /**
+             * @see App\Entity\DescriptionCompetence
+             * @return string
+             */
+            'descriptionCompetence:show',
+            'descriptionCompetence:index',
+        ]   
     )]
     private ?string $nom_complet = null;
 
@@ -161,8 +174,22 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
              * ici lorsque jaffiche un projet qui a enregistré des apprenants, 
              * je charge les informations de l'apprenant au lieu de l'uri
              * @see App\Entity\Projet
+             * @return string
              */
             'projet:show',
+             /**
+             * @info Quand j'affiche un livrable dans le quel un apprenant a fait une soumission 
+             * j'affiche les informations de l'apprenant au lieu de l'uri
+             * @see App\Entity\Livrable
+             * @return string
+             */
+            'livrable:index', 'livrable:show',
+            /**
+             * @see App\Entity\DescriptionCompetence
+             * @return string
+             */
+            'descriptionCompetence:show',
+            'descriptionCompetence:index',
         ]
     )]
     private ?string $email = null;

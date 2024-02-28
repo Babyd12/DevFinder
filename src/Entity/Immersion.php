@@ -7,18 +7,20 @@ use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\GetCollection;
 use App\Entity\Trait\CommonDateTrait;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\ImmersionRepository;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
+
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints\Hostname;
 use Symfony\Component\Validator\Constraints as Assert;
-
-use Symfony\Component\HttpFoundation\File\File;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ImmersionRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -105,8 +107,13 @@ class Immersion
     #[Groups(
         [
             'immersion:index', 'immersion:show',
+            /**
+             * @info Quand j'affiche un livrable qui a une relation avec une immersion jaffiche le pdf au lieu de luri
+             */
+            'livrable:show', 'livrable:index',
         ]
     )]
+
     private ?string $imageName = null;
 
     #[ORM\Column(nullable: true)]
@@ -117,7 +124,15 @@ class Immersion
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
+    #[Groups(
+        [
+            'immersion:show', 'immersion:index', 'immersion:create', 'immersion:update',
+            /**
+             * @info Quand j'affiche un livrable qui a une relation avec une immersion jaffiche le pdf au lieu de luri
+             */
+            'livrable:show', 'livrable:index',
+        ]
+    )]
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]

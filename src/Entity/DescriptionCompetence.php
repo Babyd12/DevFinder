@@ -64,7 +64,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     denormalizationContext: ['groups' => ['descriptionCompetence:delete']],
 )]
 
-#[ApiFilter(SearchFilter::class, properties:['apprenant.id'=> 'ipartial'])]
+#[ApiFilter(SearchFilter::class, properties:['apprenant.id'=> 'ipartial', 'competence.nom'=>'ipartial'])]
 class DescriptionCompetence
 {
     #[ORM\Id]

@@ -2,18 +2,20 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
-use App\Repository\LivrableRepository;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\LivrableRepository;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: LivrableRepository::class)]
 #[ApiResource(
@@ -52,12 +54,26 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @Reste à denormaliser toute les relations de livrables pour
  */
-// #[UniqueEntity(
-//     fields: ['lien_du_livrable', 'apprenant.email'],
-//     errorPath: 'port',
-//     message: 'This port is already in use on that host.',
+#[UniqueEntity(
+    fields: ['lien_du_livrable', 'apprenant'],
+    errorPath: 'Lien du livrable',
+    message: "Vous tentez d'ajouter un lien déjà existant. Veuillez le modifier si c'est le votre",
+)]
 
-// )]
+#[UniqueEntity(
+    fields: ['brief', 'apprenant'],
+    errorPath: 'Doublon',
+    message: "Vous pouvez pas ajouter deux fois le même livrable pour une brief",
+)]
+
+#[UniqueEntity(
+    fields: ['immersion', 'apprenant'],
+    errorPath: 'Doublon',
+    message: "Vous pouvez pas ajouter deux fois le même livrable pour une immersion",
+)]
+
+// #[ApiFilter(SearchFilter::class, properties: ['tite' => 'brief.titre', 'price' => 'exact', 'description' => 'partial'])]
+#[ApiFilter(SearchFilter::class, properties: ['brief.titre' => 'ipartial', 'immersion.titre' => 'ipartial'])]
 class Livrable
 {
     #[ORM\Id]
