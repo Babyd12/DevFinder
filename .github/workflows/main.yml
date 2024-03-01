@@ -28,7 +28,7 @@ jobs:
 
       - name: Deploy
         run: |
-          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} 'git pull origin master --force && composer install --no-scripts && chmod +x jwt-instal.sh && ./jwt-instal.sh'
+          sshpass -e ssh -v -o stricthostkeychecking=no ssh deploy@134.209.38.139 'git pull origin master --force && composer install --no-scripts && chmod +x jwt-instal.sh && ./jwt-instal.sh'
       # - name: change directory
       #   run: |
       #     cd public_html
