@@ -25,11 +25,11 @@ class ProjetStateProcessor implements ProcessorInterface
         if ($data instanceof Projet) {
             if ($operation instanceof Post) {
                 if ($data->getCahierDecharge() == null) {
-
                     return new JsonResponse(['error' => 'Veuilelz fournir un cahier de charge '], 403);
                 }
                 
                 return $this->processorInterface->process($data, $operation, $uriVariables, $context);
+                
             } else if ($data instanceof Projet && $operation instanceof Patch) {
                 $uriTemaplate = $operation->getUriTemplate();
                 switch ($uriTemaplate) {
@@ -37,8 +37,6 @@ class ProjetStateProcessor implements ProcessorInterface
                         return $this->validatorPatchEditerCahierDeCharge($data, $operation, $uriTemaplate, $context);
                         break;
                 }
-
-
 
                 // return $this->processorInterface->process($data, $operation, $uriVariables, $context);
             }

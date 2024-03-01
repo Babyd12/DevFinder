@@ -83,7 +83,7 @@ class CustomProjetController extends AbstractController
         $entityManager->flush();
         $showData = [
             'Titre' => $data->getTitre(),
-            'cachier_de_charge' => $data->getNomImage(),
+            'cachier_de_charge' => $data->getNomFichier(),
             'Nombre de participant' => $data->getNombreDeParticipant(),
             'Date_limite' => $data->getDateLimite(),
         ];
@@ -111,13 +111,13 @@ class CustomProjetController extends AbstractController
         $entityManager->flush();
         $showData = [
             'Titre' => $projet->getTitre(),
-            'cachier_de_charge' => $projet->getNomImage(),
+            'cachier_de_charge' => $projet->getNomFichier(),
             'Nombre de participant' => $projet->getNombreDeParticipant(),
             'Date_limite' => $projet->getDateLimite(),
         ];
         return new JsonResponse(['message' => 'Vous avez été retiré du projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
-    
+
     #[Route('/api/projet/{id}', name: 'app_projet_editer',  methods: ['PATCH', 'POST'])]
     public function editerCahierDeCharge(Request $request, $id, EntityManagerInterface $entityManager)
     {
@@ -129,10 +129,24 @@ class CustomProjetController extends AbstractController
             throw $this->createNotFoundException('Projet non trouvé');
         }
 
+
         $nouveauFichier = $request->files->get('CahierDecharge');
         if ($nouveauFichier) {
+
+            $extension = $nouveauFichier->getClientOriginalExtension();
+
+            // Définir les extensions autorisées
+            $extensionsAutorisees = ['pdf', 'docx'];
+
+            // Vérifier si l'extension est autorisée
+            if (!in_array(strtolower($extension), $extensionsAutorisees)) {
+                return new JsonResponse([
+                    "message" => "L'extension du fichier n'est pas autorisée. veuillez chargé uniqument",
+                    "extension autorise" =>  $extensionsAutorisees,
+                ], 400);
+            }
             // Supprimer l'ancien fichier s'il existe
-            $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getNomImage();
+            $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getNomFichier();
             if (file_exists($ancienFichier)) {
                 unlink($ancienFichier);
             } else {
@@ -147,7 +161,7 @@ class CustomProjetController extends AbstractController
         $nouveauFichier->move($destination, $nomUniqueDeFichier);
 
         // Mettre à jour le nom du fichier dans l'entité Projet
-        $projet->setNomImage($nomUniqueDeFichier);
+        $projet->setNomFichier($nomUniqueDeFichier);
         //   upload_tmp_dir = "C:\xampp\tmp"
 
         // Mettre à jour la taille du fichier si nécessaire

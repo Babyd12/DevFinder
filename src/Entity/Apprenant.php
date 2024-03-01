@@ -130,7 +130,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?int $id = null;
 
-    private ?int $id_getAble = null;
+
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le champ ne doit pas être vide')]
@@ -171,7 +171,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         [
             'apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update',
             /**
-             * ici lorsque jaffiche un projet qui a enregistré des apprenants, 
+             *@info ici lorsque jaffiche un projet qui a enregistré des apprenants, 
              * je charge les informations de l'apprenant au lieu de l'uri
              * @see App\Entity\Projet
              * @return string
@@ -225,7 +225,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(
         [
             'apprenant:create', 'apprenant:update', 'apprenant:show', 'apprenant:index',
-
         ]
     )]
     private ?string $description = null;
@@ -298,16 +297,7 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getIdGetable(): ?int
-    {
-        return $this->id_getAble;
-    }
-    public function setIdGetable(int $id_getAble): ?int
-    {
-        return $this->$id_getAble = $this->getId();
-        return $this;
-    }
-
+   
     public function getNomComplet(): ?string
     {
         return $this->nom_complet;

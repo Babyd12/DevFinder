@@ -79,7 +79,16 @@ class Livrable
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['livrable:index', 'livrable:show'])]
+    #[Groups(
+        [
+            'livrable:index', 'livrable:show',
+             /**
+             * @info Quand j'affiche une immersion qui a enregistré un livrable affiche le lien du livrable au lieu de l'uri
+             */
+            'immersion:show', 'immersion:index',
+            'brief:show', 'brief:index', 
+        ]
+    )]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -94,8 +103,8 @@ class Livrable
              * @info Quand j'affiche une immersion qui a enregistré un livrable affiche le lien du livrable au lieu de l'uri
              */
             'immersion:show', 'immersion:index',
-            'brief:show', 'brief:index', 
-            
+            'brief:show', 'brief:index',
+
         ]
     )]
     private ?string $lien_du_livrable = null;

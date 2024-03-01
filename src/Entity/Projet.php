@@ -55,12 +55,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
 
+
         new Post(
             shortName: 'Module Gestion de Publication de Projet - Association',
             uriTemplate: '/projet/editer/cachier_charge/{id}',
             securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
             securityMessage: "Vous n'avez pas l'autrorisaton requise",
-            denormalizationContext: ['groups' => ['projet:create']],
+            denormalizationContext: ['groups' => ['projet:updateFile']],
             inputFormats: ['multipart' => 'multipart/form-data',],
             controller: CustomProjetController::class,
             name: 'app_projet_editer',
@@ -74,8 +75,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             denormalizationContext: ['groups' => ['projet:livrable']],
             inputFormats: ['json' => 'application/json'],
             // processor: ProjetStateProcessor::class,
-
-
         )
     ]
 )]
@@ -119,17 +118,17 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 )]
 
-#[Patch(
-    shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate: '/projet/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-    securityMessage: "Vous n'avez pas l'autrorisaton requise",
-    denormalizationContext: ['groups' => ['projet:updateOne']],
-    inputFormats: ['multipart' => 'multipart/form-data',],
-    controller: CustomProjetController::class,
-    name: 'app_projet_editer',
+// #[Patch(
+//     shortName: 'Module Gestion de Publication de Projet - Association',
+//     uriTemplate: '/projet/{id}',
+//     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
+//     securityMessage: "Vous n'avez pas l'autrorisaton requise",
+//     denormalizationContext: ['groups' => ['projet:updateOne']],
+//     inputFormats: ['multipart' => 'multipart/form-data',],
+//     controller: CustomProjetController::class,
+//     name: 'app_projet_editer',
 
-)]
+// )]
 
 #[Delete(
     uriTemplate: '/projet/{id}',
@@ -164,7 +163,7 @@ class Projet
     )]
     private ?int $id = null;
 
-    #[Vich\UploadableField(mapping: 'projets', fileNameProperty: 'nomImage', size: 'imageSize')]
+    #[Vich\UploadableField(mapping: 'projets', fileNameProperty: 'nomFichier', size: 'imageSize')]
     #[Assert\File(
         mimeTypes: [
             'application/pdf',
@@ -182,7 +181,7 @@ class Projet
     )]
     #[Groups(
         [
-            'projet:create',
+            'projet:create', 'projet:updateFile',
         ]
     )]
     private ?File $CahierDecharge = null;
@@ -200,7 +199,7 @@ class Projet
             'apprenant:show'
         ]
     )]
-    private ?string $nomImage = null;
+    private ?string $nomFichier = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
@@ -277,8 +276,8 @@ class Projet
     #[Assert\NotBlank(
         message: 'Ce champ ne doit pas être vide',
         /**
-     * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
-     */
+         * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
+         */
         groups: ['projet:create']
     )]
     #[Groups(
@@ -486,14 +485,14 @@ class Projet
         return $this->CahierDecharge;
     }
 
-    public function setNomImage(?string $nomImage): void
+    public function setNomFichier(?string $nomFichier): void
     {
-        $this->nomImage = $nomImage;
+        $this->nomFichier = $nomFichier;
     }
 
-    public function getNomImage(): ?string
+    public function getNomFichier(): ?string
     {
-        return $this->nomImage;
+        return $this->nomFichier;
     }
 
     public function setImageSize(?int $imageSize): void

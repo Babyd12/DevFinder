@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use App\Controller\CustomImmersionController;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -27,10 +28,20 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Vich\Uploadable]
 #[ApiResource(
     shortName: 'Module gestion de publication immersion -Administrateur',
-    // outputFormats: [ 'json' => 'application/merge-patch+json' ],
+    operations: [
 
+        new Post(
+            // shortName: 'Module Gestion de Publication de Projet - Association',
+            uriTemplate: '/immersion/editer/cachier_charge/{id}',
+            securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
+            securityMessage: "Vous n'avez pas l'autrorisaton requise",
+            denormalizationContext: ['groups' => ['immersion:updateFile']],
+            inputFormats: ['multipart' => 'multipart/form-data',],
+            controller: CustomImmersionController::class,
+            name: 'app_immersion_editer',
+        ),
+    ]
 )]
-
 
 #[GetCollection(
     uriTemplate: 'immersion/liste',
@@ -60,8 +71,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Put(
     uriTemplate: 'immersion/{id}',
     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-    // normalizationContext: ['groups' => ['immersion:update']],
-    denormalizationContext: ['groups' => ['immersion:update']]
+    denormalizationContext: ['groups' => ['immersion:update']],
+    inputFormats: ['json' => 'application/json'],
 
 )]
 
@@ -70,6 +81,9 @@ use Symfony\Component\Validator\Constraints as Assert;
     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
 )]
 
+/**
+ * je dois ajouter un processorr pour valider manuellemnt les données
+ */
 class Immersion
 {
     use CommonDateTrait;
@@ -77,10 +91,10 @@ class Immersion
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['immersion:show', 'immersion:index', 'immersion:update'])]
+    #[Groups(['immersion:show', 'immersion:index'])]
     private ?int $id = null;
 
-    #[Vich\UploadableField(mapping: 'immersions', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Vich\UploadableField(mapping: 'immersions', fileNameProperty: 'nomFichier', size: 'imageSize')]
     #[Assert\File(
         mimeTypes: [
             'application/pdf',
@@ -88,10 +102,10 @@ class Immersion
         ],
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(message: "Ce champs ne pas être vide", groups: ['immersion:update'] )]
     #[Groups(
         [
-            'immersion:create', 'immersion:update',
+            'immersion:create', 'immersion:updateFile',
             /**
              * 
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
@@ -114,7 +128,7 @@ class Immersion
         ]
     )]
 
-    private ?string $imageName = null;
+    private ?string $nomFichier = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
@@ -237,14 +251,14 @@ class Immersion
         return $this->cahierDeCharge;
     }
 
-    public function setImageName(?string $imageName): void
+    public function setNomFichier(?string $nomFichier): void
     {
-        $this->imageName = $imageName;
+        $this->nomFichier = $nomFichier;
     }
 
-    public function getImageName(): ?string
+    public function getNomFichier(): ?string
     {
-        return $this->imageName;
+        return $this->nomFichier;
     }
 
     public function setImageSize(?int $imageSize): void

@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -18,13 +19,25 @@ class ExceptionListener
     {
         $exception = $event->getThrowable();
 
+        if ($exception instanceof ForeignKeyConstraintViolationException) {
+
+            $sqlState = $exception->getSQLState();
+            // $errorCode = $exception->getErrorCode();
+
+            // Obtenez la requête SQL qui a déclenché l'exception
+            $query = $exception->getQuery();
+
+            dd($exception);
+            // Obtenez des informations spécifiques sur l'exception, par exemple, les noms des tables concernées
+         
+        }
         if ($exception instanceof HttpExceptionInterface) {
             switch (true) {
-
+                
                 case ($exception instanceof AuthenticationException && strpos($exception->getMessage(), 'Expired JWT Token') !== false):
                     $statusCode = JsonResponse::HTTP_UNAUTHORIZED;
                     $errorMessage = sprintf('Token JWT expiré. Veuillez vous reconnecter. %d', $statusCode);
-                    break;                
+                    break;
 
                 case $exception instanceof AccessDeniedException || $exception instanceof AccessDeniedHttpException:
                     $statusCode = JsonResponse::HTTP_FORBIDDEN;
@@ -51,7 +64,7 @@ class ExceptionListener
                 case $exception->getCode() == 401:
                     $errorMessage = 'Information de connexion invalide';
                     $response = sprintf('Erreur : %s', $errorMessage);
-                    
+
                     break;
 
                 case $exception->getCode() == 417:

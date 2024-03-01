@@ -11,6 +11,7 @@ use App\Repository\BriefRepository;
 use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Trait\CommonDateTrait;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CustomBriefController;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -24,6 +25,18 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[Vich\Uploadable]
 #[ApiResource(
     shortName: 'Module gestion de publication brief -Administrateur',
+    operations: [
+        new Post(
+            // shortName: 'Module Gestion de Publication de Projet - Association',
+            uriTemplate: '/brief/editer/cachier_charge/{id}',
+            securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
+            securityMessage: "Vous n'avez pas l'autrorisaton requise",
+            denormalizationContext: ['groups' => ['brief:updateFile']],
+            inputFormats: ['multipart' => 'multipart/form-data',],
+            controller: CustomBriefController::class,
+            name: 'app_brief_editer',
+        ),
+    ]
 )]
 
 #[GetCollection(
@@ -75,7 +88,7 @@ class Brief
     private ?int $id = null;
 
 
-    #[Vich\UploadableField(mapping: 'briefs', fileNameProperty: 'imageName', size: 'imageSize')]
+    #[Vich\UploadableField(mapping: 'briefs', fileNameProperty: 'nomFichier', size: 'imageSize')]
     #[Assert\File(
         mimeTypes: [
             'application/pdf',
@@ -84,10 +97,10 @@ class Brief
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: ['brief:update', ])]
     #[Groups(
         [
-            'brief:create', 'brief:update',
+            'brief:create', 'brief:updateFile',
         ]
     )]
     private ?File $cahierDeCharge = null;
@@ -98,7 +111,7 @@ class Brief
             'brief:index', 'brief:show',
         ]
     )]
-    private ?string $imageName = null;
+    private ?string $nomFichier = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $imageSize = null;
@@ -110,7 +123,7 @@ class Brief
         ]
     )]
     private ?\DateTimeImmutable $updatedAt = null;
-
+    
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups(
@@ -244,20 +257,20 @@ class Brief
             // $this->updatedAt = new \DateTimeImmutable();
         }
     }
-
+    
     public function getCahierDecharge(): ?File
     {
         return $this->cahierDeCharge;
     }
 
-    public function setImageName(?string $imageName): void
+    public function setNomFichier(?string $nomFichier): void
     {
-        $this->imageName = $imageName;
+        $this->nomFichier = $nomFichier;
     }
 
-    public function getImageName(): ?string
+    public function getNomFichier(): ?string
     {
-        return $this->imageName;
+        return $this->nomFichier;
     }
 
     public function setImageSize(?int $imageSize): void
