@@ -45,7 +45,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
-        ),
+        ), 
         new Get(
             uriTemplate: '/apprenant/quitter/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
@@ -65,7 +65,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             controller: CustomProjetController::class,
             name: 'app_projet_editer',
         ),
-        
+
         new Patch(
             shortName: 'Module Gestion de participation Projet - Apprenant',
             uriTemplate: '/apprenant/soumettre/livrableProjet/{id}',
