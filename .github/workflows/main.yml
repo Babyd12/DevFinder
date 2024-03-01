@@ -28,12 +28,11 @@ jobs:
 
       - name: Deploy
         run: |
-          -i /c/Users/simplon/.ssh/id_rsa -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
-
+          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} 'git pull origin master --force && composer install --no-scripts && chmod +x jwt-instal.sh && ./jwt-instal.sh'
       # - name: change directory
       #   run: |
       #     cd public_html
-  
+
       - name: git pull origin master
         run: |
           git pull origin master --force
