@@ -25,15 +25,10 @@ jobs:
       - name: Display variables
         run: echo "APP_USER=${{ secrets.APP_USER }} APP_HOST=${{ secrets.APP_HOST }}"
 
+
       - name: Deploy
         run: |
-          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} "git pull origin master --force && composer install --no-scripts && chmod +x jwt-instal.sh && ./jwt-instal.sh"
-    
-    
-
-      # - name: Deploy
-      #   run: |
-      #     sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} 
+          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} 
 
       # - name: change directory
       #   run: |
@@ -68,4 +63,4 @@ jobs:
       - name: After deployment jwt key publish 
         run: |
           ./jwt-instal.sh 
-        #last comment
+          
