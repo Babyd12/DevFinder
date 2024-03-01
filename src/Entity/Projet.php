@@ -55,7 +55,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
 
-
         new Post(
             shortName: 'Module Gestion de Publication de Projet - Association',
             uriTemplate: '/projet/editer/cachier_charge/{id}',
@@ -66,7 +65,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             controller: CustomProjetController::class,
             name: 'app_projet_editer',
         ),
-
+        
         new Patch(
             shortName: 'Module Gestion de participation Projet - Apprenant',
             uriTemplate: '/apprenant/soumettre/livrableProjet/{id}',
