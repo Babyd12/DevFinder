@@ -34,33 +34,33 @@ jobs:
       #   run: |
       #     cd public_html
 
-      # - name: git pull origin master
-      #   run: |
-      #     git pull origin master --force
+      - name: git pull origin master
+        run: |
+          git pull origin master --force
 
-      # - name: Install composer
-      #   run: |
-      #     composer install --no-scripts 
+      - name: Install composer
+        run: |
+          composer install --no-scripts 
           
-      # # - name: Clean old migrations
-      # #   run: |
-      # #     rm -rf migrations/*
-
-      # # - name: Make migration
-      # #   run: |
-
-      # #     php bin/console doctrine:migrations:migrate --dry-run
-
-      #   #  php bin/console doctrine:migrations:dump-schema
-      #   # php bin/console doctrine:migrations:diff
-
-      # - name: set permissions to jwt-instal 
+      # - name: Clean old migrations
       #   run: |
-      #     chmod +x jwt-instal.sh
-      #     chmod +rwx .
+      #     rm -rf migrations/*
+
+      # - name: Make migration
+      #   run: |
+
+      #     php bin/console doctrine:migrations:migrate --dry-run
+
+        #  php bin/console doctrine:migrations:dump-schema
+        # php bin/console doctrine:migrations:diff
+
+      - name: set permissions to jwt-instal 
+        run: |
+          chmod +x jwt-instal.sh
+          chmod +rwx .
 
           
-      # - name: After deployment jwt key publish 
-      #   run: |
-      #     ./jwt-instal.sh 
+      - name: After deployment jwt key publish 
+        run: |
+          ./jwt-instal.sh 
           
