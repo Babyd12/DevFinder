@@ -28,7 +28,7 @@ jobs:
 
       - name: Deploy
         run: |
-          sshpass -e ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }} 
+          ssh -v -o stricthostkeychecking=no ${{ secrets.APP_USER }}@${{ secrets.APP_HOST }}
 
       # - name: change directory
       #   run: |
