@@ -60,7 +60,7 @@ class CreateAdminCommand extends Command
             $question = new Question('Quel est l\'email de ' . $nom_complet . ' : ');
             $email = $helper->ask($input, $output, $question);
         }
-        
+         
         $plainPassword = $input->getArgument('mot_de_passe');
         if (!$plainPassword) {
             $question = new Question('Quel est le mot de passe de ' . $nom_complet . ' : ');
