@@ -94,9 +94,6 @@ class CreateAdminCommand extends Command
 
         $io->success('Le nouvel administrateur a été créé !');
 
-
-
-
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 
         return Command::SUCCESS;
