@@ -27,17 +27,17 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
             $user = $event->getUser();
             $data = json_decode($content->getContent(), true);
             $token = $data['token'];
+            // dd($user->isEtat());
             if (
                 (
                     $user instanceof Administrateur || $user instanceof Apprenant
                     || $user instanceof Association || $user instanceof Entreprise
                 )
-                && !$user->isEtat()
+                && $user->isEtat() == false
             ) {
                 
-                if($user->getRoles() !== 'ROLE_ADMIN'){
-
-                }
+              
+              
                 $event->setResponse(new JsonResponse([
                     'nom_complet' => $user->getNomComplet(),
                     'email' => $user->getUserIdentifier(),
@@ -46,6 +46,7 @@ class SuccesLoginSubscriber implements EventSubscriberInterface
                     'role' => $user->getRoles(),
                     'telephone' => in_array('ROLE_ADMIN', $user->getRoles() ) ? false: $user->getTelephone() ,
                     'description' => in_array('ROLE_ADMIN', $user->getRoles() ) ? false : $user->getDescription() ,
+                    'etat'=> $user->isEtat(),
                     'token' => $token,
                 ], JsonResponse::HTTP_OK));
                 

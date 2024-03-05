@@ -41,20 +41,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
             normalizationContext: ['groups' => ['apprenant:monitorer']],
             inputFormats: ['json' => 'application/json'],
         ),
-        // new Patch(
-
-        //     uriTemplate: '/apprenant/competence/ajouter',
-        //     // processor: AddUserToRelationProcessor::class,
-        //     security: "is_granted('ROLE_ADMIN')",
-        //     denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
-        // ),
-        // new Delete(
-
-        //     uriTemplate: '/apprenant/competence/supprimer/{id}',
-        //     // processor: AddUserToRelationProcessor::class,
-        //     security: "is_granted('ROLE_ADMIN')",
-        //     denormalizationContext: ['groups' => ['apprenant:ajouterCompetence']]
-        // )
 
     ],
 )]
@@ -92,25 +78,16 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[Patch(
     uriTemplate: 'apprenant/change_password/{id}',
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
-    // normalizationContext: ['groups' => ['apprenant:updateOne']],
     denormalizationContext: ['groups' => ['apprenant:updateOne']],
-    formats: ['json' => 'application/json']
+    inputFormats: ['json' => 'application/json']
 )]
-
+// request.attributes.get('id') == user.getId()",
 
 #[Delete(
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
     uriTemplate: 'apprenant/{id}',
 )]
 
-#[UniqueEntity(
-    fields: 'email',
-    message: 'Cet email existe déjà.',
-)]
-#[UniqueEntity(
-    fields: 'telephone',
-    message: 'Ce numero existe déjà.',
-)]
 
 class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -131,11 +108,15 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
 
-
+   
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le champ ne doit pas être vide')]
+    #[Assert\NotBlank(message: 'Le champ ne doit pas être vide',) ]
     #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[Assert\Regex(
+        "/^[a-zA-Z0-9À-ÿ]+(['.\-\s][a-zA-Z0-9À-ÿ]+)*[a-zA-Z0-9À-ÿ\s]*$/",
+        message: "La valeur {{ value }}ne peut pas être vide ou composée uniquement d'espaces ou de caractères spéciaux"
+    )]
     #[Groups(
         [
             'apprenant:show', 'apprenant:index', 'apprenant:create', 'apprenant:update',
@@ -202,7 +183,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $mot_de_passe = null;
 
     #[ORM\Column]
-    // #[Groups(['apprenant:index', 'apprenant:update', 'apprenant:updateOne'])]
     private array $roles = [];
 
     #[ORM\Column(type: Types::BINARY, nullable: true)]
@@ -213,7 +193,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(
         [
             'apprenant:create', 'apprenant:update', 'apprenant:show', 'apprenant:index',
-
         ]
     )]
     private ?string $telephone = null;
@@ -405,7 +384,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-
     /**
      * @return Collection<int, Entreprise>
      */
@@ -570,4 +548,6 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+
 }

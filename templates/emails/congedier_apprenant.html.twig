@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+	</head>
+	<body>
+		<h1>Cher(e) {{ apprenant.getNomComplet() }},</h1>
+
+		<p>
+			Nous espérons que ce message vous trouve en bonne santé. 
+            C'est avec regret que nous vous informons que l'entreprise {{ entreprise.getNomComplet() }}
+			a pris la décision d'annuler la demande de recrutement quelle avait précédemment formulée ou de révoquer votre emploi au sein de leur organisation.
+		</p>
+
+		<p>
+			Cette décision a été prise après mûre réflexion et ne reflète en aucun cas sur vos compétences et qualifications, 
+            mais plutôt sur des considérations internes spécifiques à l'entreprise {{ entreprise.getNomComplet() }}.
+		</p>
+
+		<p>
+			Nous vous remercions de l'intérêt que vous avez porté à {{ entreprise.getNomComplet() }}, 
+            et nous vous souhaitons tout le succès dans la recherche de nouvelles opportunités professionnelles.
+		</p>
+		<p>
+			Si vous avez des questions ou si vous souhaitez discuter de cette situation plus en détail, n'hésitez pas à contacter l'entreprise.
+		</p>
+
+		<p>
+			Coordonnées de l'entreprise :
+			<ul>
+				<li>
+					<strong>Nom de l'entreprise :</strong>
+					{{ entreprise.getNomComplet() }}</li>
+				<li>
+					<strong>Adresse e-mail :</strong>
+					{{ entreprise.getEmail() }}</li>
+				<li>
+					<strong>Numéro de téléphone :</strong>
+					{{ entreprise.getTelephone() }}</li>
+			</ul>
+		</p>
+
+		<p>Expéditeur: DevFinder
+		</p>
+	</body>
+</html>

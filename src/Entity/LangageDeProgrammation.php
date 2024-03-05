@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\LangageDeProgrammationRepository;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: LangageDeProgrammationRepository::class)]
 #[ApiResource(
@@ -67,6 +68,12 @@ class LangageDeProgrammation
     private ?int $id = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
+    #[Assert\Length(
+        min: 2,
+        max: 20,
+        minMessage: 'Le champ doit faireau moins {{ limit }} caractères',
+        maxMessage: 'Le champ ne peut pas dépasser {{ limit }} caractères',
+    )]
     #[Groups(
         [
             'langageDeProgrammation:show', 'langageDeProgrammation:index',
@@ -77,7 +84,8 @@ class LangageDeProgrammation
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du lanage de programmation au lieu de l'uri
              */
-            'apprenant:show'
+            'apprenant:show', 'apprenant:index',
+            'projet:show', 'projet:index',
 
         ]
     )]

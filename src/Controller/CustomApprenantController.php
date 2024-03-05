@@ -23,10 +23,6 @@ class CustomApprenantController extends AbstractController
         $this->security = $security;
     }
 
-    private function getUserId()
-    {
-        
-    }
     
     public function getSecurity(EntityManagerInterface $entityManager, string $id)
     {
@@ -50,7 +46,9 @@ class CustomApprenantController extends AbstractController
     }
 
 
-
+    /**
+     * @see getSecurity
+     */
     #[Route('/api/apprenant/projets', name: 'mesProjets', methods: ['GET', 'POST'] )]
     public function mesProjets( EntityManagerInterface $entityManager)
     {
@@ -66,13 +64,10 @@ class CustomApprenantController extends AbstractController
         $apprenant = $entityManager->getRepository(Apprenant::class)->findOneByEmail($apprenantLogged);
         $apprenantProjets = $apprenant->getProjet() ;
         
-        dd($apprenant->getPojet());
+        // dd($apprenant->getPojet());
         return new JsonResponse( $apprenant->getProjet());
 
     }
 
-    #[Route('/api/apprenant/pj', name: 'apprenantPj', methods: ['GET', 'get', 'Get']) ]
-    public function test(){
-        dd('bonsource;');
-    }
+   
 }

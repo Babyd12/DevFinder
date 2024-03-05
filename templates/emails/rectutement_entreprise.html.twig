@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>Cher(e) {{ apprenant.getNomComplet() }},</h1>
+
+    <p>
+        Nous espérons que cette journée se déroule bien pour vous. Nous sommes ravis de vous informer qu'une entreprise a examiné votre profil et est très intéressée par votre parcours et vos compétences. Ils ont exprimé un vif intérêt à vous recruter pour une opportunité passionnante au sein de leur équipe.
+    </p>
+
+    <p>
+        Voici les coordonnées de l'entreprise :
+    </p>
+
+    <ul>
+        <li><strong>Nom de l'entreprise :</strong> {{ entreprise.getNomComplet() }}</li>
+        <li><strong>Adresse e-mail :</strong> {{ entreprise.getEmail() }}</li>
+        <li><strong>Numéro de téléphone :</strong> {{ entreprise.getTelephone() }}</li>
+    </ul>
+
+    <p>
+        Si cette opportunité vous intéresse, nous vous encourageons vivement à prendre contact directement avec {{ entreprise.getNomComplet() }} à l'adresse e-mail ou au numéro de téléphone indiqué ci-dessus. N'hésitez pas à poser des questions supplémentaires ou à demander plus de détails sur le poste proposé.
+    </p>
+
+    <p>
+        Nous vous souhaitons le meilleur dans la suite de votre parcours professionnel, et nous espérons que cette opportunité soit une étape passionnante pour vous.
+    </p>
+
+    <p>Cordialement,<br>[DevFinder]</p>
+
+    {# [Coordonnées de contact] #}
+</body>
+</html>

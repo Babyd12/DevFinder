@@ -96,6 +96,10 @@ class Association implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Ce champ ne doit pas être vide')]
     #[Assert\Length(min: 2, max: 20, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
+    #[Assert\Regex(
+        "/^[a-zA-Z0-9À-ÿ]+(['.\-\s][a-zA-Z0-9À-ÿ]+)*[a-zA-Z0-9À-ÿ\s]*$/",
+        message: "La valeur {{ value }}ne peut pas être vide ou composée uniquement d'espaces ou de caractères spéciaux"
+    )]
     #[Groups(
         [
             'association:show', 'association:index', 'association:create', 'association:update',

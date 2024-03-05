@@ -41,7 +41,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[Put(
     uriTemplate: 'livrable/brief/{id}',
-    denormalizationContext: ['groups' => 'livrableBrief:updateOne'],
+    denormalizationContext: ['groups' => 'livrable:updateOne'],
     securityPostDenormalize: "is_granted('ROLE_APPRENANT') and previous_object.getApprenant().getUserIdentifier() == user.getUserIdentifier() ",
 
 )]
@@ -63,17 +63,25 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[UniqueEntity(
     fields: ['brief', 'apprenant'],
     errorPath: 'Doublon',
-    message: "Vous pouvez pas ajouter deux fois le même livrable pour une brief",
+    message: "Vous pouvez pas ajouter deux fois le même livrable pour une brief ou l'apprenant connecté ne correspond pas a l'id fourni",
 )]
 
 #[UniqueEntity(
     fields: ['immersion', 'apprenant'],
     errorPath: 'Doublon',
-    message: "Vous pouvez pas ajouter deux fois le même livrable pour une immersion",
+    message: "Vous pouvez pas ajouter deux fois le même livrable pour une immersion ou l'apprenant connecté ne correspond pas a l'id fourni",
 )]
 
 // #[ApiFilter(SearchFilter::class, properties: ['tite' => 'brief.titre', 'price' => 'exact', 'description' => 'partial'])]
-#[ApiFilter(SearchFilter::class, properties: ['brief.titre' => 'ipartial', 'immersion.titre' => 'ipartial'])]
+#[ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'brief.titre' => 'ipartial',
+            'immersion.titre' => 'ipartial',
+            'apprenant.nom_complet' => 'ipartial'
+        ]
+    )
+]
 class Livrable
 {
     #[ORM\Id]
@@ -82,11 +90,11 @@ class Livrable
     #[Groups(
         [
             'livrable:index', 'livrable:show',
-             /**
+            /**
              * @info Quand j'affiche une immersion qui a enregistré un livrable affiche le lien du livrable au lieu de l'uri
              */
             'immersion:show', 'immersion:index',
-            'brief:show', 'brief:index', 
+            'brief:show', 'brief:index',
         ]
     )]
     private ?int $id = null;
@@ -98,7 +106,7 @@ class Livrable
     )]
     #[Groups(
         [
-            'livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne',
+            'livrable:create', 'livrable:index', 'livrable:show', 'livrable:updateOne',
             /**
              * @info Quand j'affiche une immersion qui a enregistré un livrable affiche le lien du livrable au lieu de l'uri
              */
@@ -111,15 +119,15 @@ class Livrable
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:updateOne'])]
     private ?Apprenant $apprenant = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
-    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:updateOne'])]
     private ?Brief $brief = null;
 
     #[ORM\ManyToOne(inversedBy: 'livrables')]
-    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:update', 'livrable:updateOne'])]
+    #[Groups(['livrable:create', 'livrable:index', 'livrable:show', 'livrable:updateOne'])]
     private ?Immersion $immersion = null;
 
     public function getId(): ?int

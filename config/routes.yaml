@@ -8,10 +8,10 @@ auth:
     path: /api/connexion
     methods: ['POST']
     
-app_logout:
-    path:
-        /api/deconexion
-    methods: ['POST']
+# app_logout:
+#     path:
+#         /api/deconexion
+#     methods: ['POST']
 
 app_refresh:
     path: /api/token/refresh

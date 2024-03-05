@@ -41,14 +41,22 @@ class PasswordSubscriber implements EventSubscriberInterface
                 // Le mot de passe est déjà haché avec l'algorithme actue
                 return;
             } else {
+
                 //si le mot de passe n'est pas hasher alors il s'agit d'une inscription
-                if ($this->isNotUniqueEmailInDatabase($entity)) {
+                if ($this->isNotUniqueEmailInDatabase($entity) &&  in_array($method, [Request::METHOD_POST])) {
                     $response = new JsonResponse(['message' => 'Cette adresse email existe déjà']);
+                    $event->setResponse($response);
+                    return;
+                }
+
+                if ($this->isNotUniqueTelephoneInDatabase($entity) &&  in_array($method, [Request::METHOD_POST])) {
+                    $response = new JsonResponse(['message' => 'Ce numéro de téléphone existe déjà']);
                     $event->setResponse($response);
                     return;
                 }
                 $hashedPassword = $this->userPasswordHasherInterface->hashPassword($entity, $plainPassword);
                 $entity->setMotDePasse($hashedPassword);
+                $entity->setEtat(false);
             }
         } else {
             return;
@@ -63,7 +71,22 @@ class PasswordSubscriber implements EventSubscriberInterface
 
         if ($existingApprenant == null  && $existingAssociation == null && $existingEntreprise == null) {
             return false;
-        
+        } else {
+            return true;
+        }
+    }
+
+    public function isNotUniqueTelephoneInDatabase($entity): bool
+    {
+        if ($entity instanceof Administrateur) {
+            return true;
+        }
+        $existingApprenant = $this->entityManager->getRepository(Apprenant::class)->findOneBy(['telephone' => $entity->getTelephone()]);
+        $existingAssociation = $this->entityManager->getRepository(Association::class)->findOneBy(['telephone' => $entity->getTelephone()]);
+        $existingEntreprise = $this->entityManager->getRepository(Entreprise::class)->findOneBy(['telephone' => $entity->getTelephone()]);
+
+        if ($existingApprenant == null  && $existingAssociation == null && $existingEntreprise == null) {
+            return false;
         } else {
             return true;
         }

@@ -16,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\Patch;
 use App\Controller\CustomImmersionController;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -68,13 +69,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['immersion:create']],
 )]
 
-#[Put(
-    uriTemplate: 'immersion/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-    denormalizationContext: ['groups' => ['immersion:update']],
-    inputFormats: ['json' => 'application/json'],
-
-)]
+// #[Patch(
+//     uriTemplate: 'immersion/{id}',
+//     securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
+//     denormalizationContext: ['groups' => ['immersion:update']],
+//     inputFormats: ['json' => 'application/json'],
+// )]
 
 #[Delete(
     uriTemplate: 'immersion/{id}',
@@ -93,7 +93,7 @@ class Immersion
     #[ORM\Column]
     #[Groups(['immersion:show', 'immersion:index'])]
     private ?int $id = null;
-
+    
     #[Vich\UploadableField(mapping: 'immersions', fileNameProperty: 'nomFichier', size: 'imageSize')]
     #[Assert\File(
         mimeTypes: [
@@ -102,7 +102,7 @@ class Immersion
         ],
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
-    #[Assert\NotBlank(message: "Ce champs ne pas être vide", groups: ['immersion:update'] )]
+    #[Assert\NotBlank(message: "Ce champs ne pas être vide", )]
     #[Groups(
         [
             'immersion:create', 'immersion:updateFile',
@@ -114,8 +114,8 @@ class Immersion
              * @see src/Entity/Apprenant
              */
             'apprenant:show'
-        ]
-    )]
+        ], 
+    )]  
     private ?File $cahierDeCharge = null;
     #[ORM\Column(nullable: true)]
     #[Groups(
@@ -126,8 +126,8 @@ class Immersion
              */
             'livrable:show', 'livrable:index',
         ]
-    )]
-
+    )]  
+    
     private ?string $nomFichier = null;
 
     #[ORM\Column(nullable: true)]
@@ -138,9 +138,19 @@ class Immersion
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Regex(
+        "/^[a-zA-Z0-9À-ÿ]+(['.\-\s][a-zA-Z0-9À-ÿ]+)*[a-zA-Z0-9À-ÿ\s]*$/",
+        message: "La valeur {{ value }}ne peut pas être vide ou composée uniquement d'espaces ou de caractères spéciaux"
+    )]
+    #[Assert\Length(
+        min: 10,
+        max: 250,
+        minMessage: 'Votre titre doit comporter au moins {{ limit }} caractères',
+        maxMessage: 'Votre titre ne peut pas dépasser {{ limit }} caractères'  
+    )]
     #[Groups(
         [
-            'immersion:show', 'immersion:index', 'immersion:create', 'immersion:update',
+            'immersion:show', 'immersion:index', 'immersion:create', 'immersion:update', 'immersion:updateFile',
             /**
              * @info Quand j'affiche un livrable qui a une relation avec une immersion jaffiche le pdf au lieu de luri
              */
@@ -150,11 +160,11 @@ class Immersion
     private ?string $titre = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank()]
     #[Assert\Url(
         message: 'L\'url {{ value }} n\'est pas une url valide',
     )]
-    #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update'])]
+    #[Groups(['immersion:show', 'immersion:index', 'immersion:create', 'immersion:update', 'immersion:updateFile',])]
     private ?string $lien_support = null;
 
     #[ORM\OneToMany(mappedBy: 'immersion', targetEntity: Livrable::class)]

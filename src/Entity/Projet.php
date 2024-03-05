@@ -23,6 +23,7 @@ use App\State\ShowCollectionsStateProvider;
 use Doctrine\Common\Collections\Collection;
 use App\Controller\CustomApprenantController;
 use App\State\GetUserAndHerRelationsProvider;
+use App\State\ProjePostStateProcessor;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -35,7 +36,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\HasLifecycleCallbacks]
 #[Vich\Uploadable]
 #[ApiResource(
-    shortName: 'Module Gestion de Participation -Projet',
+    shortName: 'Module Gestion de participation Projet - Apprenant',
     operations: [
         new Get(
             uriTemplate: '/apprenant/participer/projet/{id}',
@@ -45,7 +46,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             normalizationContext: ['groups' => 'apprenantPojet:show'],
             denormalizationContext: ['groups' => 'apprenant:participate'],
             securityMessage: 'Only authenticated users can access this resource.',
-        ), 
+        ),
         new Get(
             uriTemplate: '/apprenant/quitter/projet/{id}',
             security: "is_granted('ROLE_APPRENANT')",
@@ -55,26 +56,28 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
             denormalizationContext: ['groups' => 'apprenantQuitterProjet:create'],
         ),
 
+
         new Post(
             shortName: 'Module Gestion de Publication de Projet - Association',
-            uriTemplate: '/projet/editer/cachier_charge/{id}',
+            uriTemplate: '/projet/{id}',
             securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') ",
             securityMessage: "Vous n'avez pas l'autrorisaton requise",
             denormalizationContext: ['groups' => ['projet:updateFile']],
             inputFormats: ['multipart' => 'multipart/form-data',],
-            controller: CustomProjetController::class,
-            name: 'app_projet_editer',
+            processor: ProjetStateProcessor::class,
+            // name: 'app_projet_editer',
         ),
 
-        new Patch(
+        new Post(
             shortName: 'Module Gestion de participation Projet - Apprenant',
             uriTemplate: '/apprenant/soumettre/livrableProjet/{id}',
             security: "is_granted('ROLE_APPRENANT') and object.apprenantIsInProjet(user) == true ",
             securityMessage: "Vous n'êtes pas apprenant ou ne faite pas partir de ce projet",
             denormalizationContext: ['groups' => ['projet:livrable']],
-            inputFormats: ['json' => 'application/json'],
-            // processor: ProjetStateProcessor::class,
+            inputFormats: ['multipart' => 'multipart/form-data',],
+            processor: ProjetStateProcessor::class,
         )
+
     ]
 )]
 
@@ -103,31 +106,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     shortName: 'Module Gestion de Publication de Projet - Association',
     uriTemplate: '/projet/ajouter',
     denormalizationContext: ['groups' => ['projet:create']],
-    processor: ProjetStateProcessor::class,
 )]
 
-#[Put(
-    shortName: 'Module Gestion de Publication de Projet - Association',
-    uriTemplate: '/projet/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-    // securityMessage: 'Sorry, but you are not this projet owner.',
-    denormalizationContext: ['groups' => ['projet:update']],
-    processor: ProjetStateProcessor::class,
-    inputFormats: ['json' => 'application/json'],
-
-)]
-
-// #[Patch(
-//     shortName: 'Module Gestion de Publication de Projet - Association',
-//     uriTemplate: '/projet/{id}',
-//     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getAssociation(user) == user ",
-//     securityMessage: "Vous n'avez pas l'autrorisaton requise",
-//     denormalizationContext: ['groups' => ['projet:updateOne']],
-//     inputFormats: ['multipart' => 'multipart/form-data',],
-//     controller: CustomProjetController::class,
-//     name: 'app_projet_editer',
-
-// )]
 
 #[Delete(
     uriTemplate: '/projet/{id}',
@@ -135,11 +115,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     shortName: 'Module Gestion de Publication de Projet - Association',
 )]
 
-#[UniqueEntity(
-    fields: ['titre', 'association'],
-    errorPath: 'association',
-    message: 'Cette association a déjà un projet portant ce titre',
-)]
+
 
 class Projet
 {
@@ -150,7 +126,7 @@ class Projet
     #[ORM\Column]
     #[Groups(
         [
-            'projet:index', 'projet:show', 'projet:create', 'projet:update',
+            'projet:index', 'projet:show', 
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -171,16 +147,10 @@ class Projet
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.',
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank(
-        message: 'Ce champs ne dois pas être vide',
-        /**
-         * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
-         */
-        groups: ['projet:livrable']
-    )]
+    // #[Assert\NotBlank]
     #[Groups(
         [
-            'projet:create', 'projet:updateFile',
+            'projet:create', 'projet:updateFile', 
         ]
     )]
     private ?File $CahierDecharge = null;
@@ -216,12 +186,22 @@ class Projet
         type: 'string',
         message: 'La valeur {{ value }} nest pas un type {{ type }} valide.',
     )]
-    #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+        "/^[a-zA-Z0-9À-ÿ]+(['.\-\s][a-zA-Z0-9À-ÿ]+)*[a-zA-Z0-9À-ÿ\s]*$/",
+        message: "La valeur {{ value }}ne peut pas être vide ou composée uniquement d'espaces ou de caractères spéciaux"
+    )]
+    #[Assert\Length(
+        min: 10,
+        max: 250,
+        minMessage: 'Votre titre doit comporter au moins {{ limit }} caractères',
+        maxMessage: 'Votre titre ne peut pas dépasser {{ limit }} caractères'  
+    )]
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'projet:show', 'projet:index', 'projet:create', 'projet:updateFile',
             /**
-             * 
+             *
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
              * 
@@ -234,13 +214,14 @@ class Projet
 
     #[ORM\Column(length: 10, nullable: true)]
     #[Assert\Regex(
-        pattern: '/^[1-9]$/',
+        pattern: '/^(?!\s*$)[1-9]$/',
         match: true,
         message: "La valeur de '{{ value }}' doit être un entier et compris entre 1 et 9.",
     )]
+
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:create',
+            'projet:show', 'projet:index', 'projet:create', 'projet:updateFile',
             /**
              * 
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
@@ -255,11 +236,13 @@ class Projet
 
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Assert\GreaterThan('today')]
+
+    #[Assert\GreaterThan('today', message: 'Veuillez fournir une date correcte suppérieur à aujourd\'hui')]
     #[Assert\NotBlank(message: 'Ce champs ne dois pas être vide')]
+
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:create',
+            'projet:show', 'projet:index', 'projet:create', 'projet:updateFile',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -271,17 +254,12 @@ class Projet
     private ?\DateTimeInterface $date_limite = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    // #[Assert\NotBlank()]
+    // #[Assert\Regex('/^\S.*$/', message: "La valeur {{ value }} ne peut pas être vide ou composée uniquement d'espaces")]
     #[Assert\Url(message: 'L\'url {{ value }} n\'est pas une url valide')]
-    #[Assert\NotBlank(
-        message: 'Ce champ ne doit pas être vide',
-        /**
-         * @info il s'agit de préciser les attribues d'une opération(verbe) qui peuvent être vide lors qu'un projet est instancié
-         */
-        groups: ['projet:create']
-    )]
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:livrable',
+            'projet:show', 'projet:index', 'projet:updateFile', 'projet:livrable',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -296,7 +274,7 @@ class Projet
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(
         [
-            'projet:show', 'projet:update',
+            'projet:show', 'projet:show', 'projet:index',
             /**
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
              * je charge les informations du projet au lieu de l'uri
@@ -307,9 +285,9 @@ class Projet
     )]
     private ?Association $association = null;
 
-    // #[ORM\Column(['string'])]
+
     #[ORM\ManyToMany(targetEntity: LangageDeProgrammation::class, inversedBy: 'projets')]
-    #[Groups(['projet:create', 'projet:show'])]
+    #[Groups(['projet:create', 'projet:show', 'projet:index', 'projet:updateFile',])]
     private Collection $langage_de_programmation;
 
     #[ORM\ManyToMany(targetEntity: Apprenant::class, mappedBy: 'projet')]
@@ -323,7 +301,7 @@ class Projet
     #[ORM\Column(type: "string", enumType: ProjetStatu::class)]
     #[Groups(
         [
-            'projet:show', 'projet:index', 'projet:create', 'projet:update',
+            'projet:show', 'projet:index', 'projet:create', 'projet:updateFile',
             /**
              * 
              * ici lorsque jaffiche un apprenant ayant participé à un projet, 
@@ -348,6 +326,8 @@ class Projet
         $this->apprenants = new ArrayCollection();
         $this->messages = new ArrayCollection();
     }
+
+
 
     public function getId(): ?int
     {
@@ -391,6 +371,14 @@ class Projet
         return $this;
     }
 
+    /**
+     *@param App\Entity\Association
+     *@return boolean
+     */
+    public function isProjectOwner(Association $association): bool
+    {
+        return $this->association === $association;
+    }
     /**
      * @return Collection<int, LangageDeProgrammation>
      */
@@ -441,6 +429,8 @@ class Projet
 
         return $this;
     }
+
+   
 
     /**
      * @param string $apprenant

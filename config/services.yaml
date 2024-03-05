@@ -22,6 +22,8 @@ services:
             - '../src/Kernel.php'
            
 
+
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     App\EventListener\ExceptionListener:
@@ -47,21 +49,16 @@ services:
     App\State\ProjetStateProcessor:
         bind: 
             $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
+            $requestStack: '@request_stack'
 
-    App\State\UpdateFile:
-        bind: 
-            $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
-            $entityManager: '@doctrine.orm.entity_manager'
-            $request: '@request_stack'
-
-    # App\State\GetUserAndHerRelations:
-    #     bind: 
-    #         $processorInterface: '@api_platform.doctrine.orm.state.persist_processor'
     
     App\State\GetUserAndHerRelationsProvider:
         bind: 
             $providerInterface: '@api_platform.doctrine.orm.state.item_provider'
             
-    App\State\GetBriefRelations:
-        bind: 
-            $providerInterface: '@api_platform.doctrine.orm.state.item_provider'
+
+
+    App\Services\SendMailService:
+        bind:
+            $mailer: '@Symfony\Component\Mailer\MailerInterface'
+            

@@ -12,6 +12,8 @@ trait CommonDateTrait
             'brief:index', 'brief:show',
             'immersion:index', 'immersion:show',
             'projet:index', 'projet:show',
+            'message:index', 'message:show',
+            
         ]
     )]
     private ?\DateTimeImmutable $createdAt = null;
@@ -50,6 +52,12 @@ trait CommonDateTrait
         }
         $this->setUpdatedAt(new \DateTimeImmutable());
     }
+
+    // #[ORM\PrePersist]
+    // public function onPrePersist(): void
+    // {
+    //     $this->updateDate();
+    // }
 
 
 }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Odm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use MessageFormatter;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
@@ -22,20 +24,30 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AdministrateurRepository::class)]
 
 #[ApiResource(
 
     operations: [
+        // new Post(
+        //     shortName: 'Deconnexion',
+        //     uriTemplate: '/deconnexion',
+        //     routeName: 'app_logout',
+        //     security: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_ENTREPRISE') ",
+        //     normalizationContext: ['groups' => 'apprenantPojet:show'],
+        //     denormalizationContext: ['groups' => 'apprenant:participate'],
+        //     securityMessage: 'Vous devez être connecté.',
+        // ),
+
         new Post(
-            shortName: 'Deconnexion',
-            uriTemplate: '/deconnexion',
-            routeName: 'app_logout',
-            security: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION') or is_granted('ROLE_ADMINISTRATEUR') or is_granted('ROLE_ENTREPRISE') ",
-            normalizationContext: ['groups' => 'apprenantPojet:show'],
-            denormalizationContext: ['groups' => 'apprenant:participate'],
-            securityMessage: 'Vous devez être connecté.',
+            shortName: 'Mot de passe oublié',
+            // uriTemplate: '/api/test/motDePasseOublie',
+            denormalizationContext: ['groups' => 'admin:restorer'],
+            inputFormats:['multipart'=>'multipart/form-data'],  
+            controller:CustumAdminController::class,
+            name: 'app_mot_de_passe_oublie',
         ),
 
         new Post(
@@ -67,32 +79,33 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 )]
 
 #[GetCollection(
-    shortName: 'Module gestion de publication -Administrateur',
+    shortName: 'Module gestion de compte -Administrateur',
     uriTemplate: '/administrateur',
     normalizationContext: ['groups' => ['admin:index']],
     // provider: GetUserLoggedInfoStateProvier::class,
 )]
 
 #[Put(
-    shortName: 'Module gestion de publication -Administrateur',
+    shortName: 'Module gestion de compte -Administrateur',
     requirements: ['id' => '\d+'],
     uriTemplate: '/administrateur/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
     denormalizationContext: ['groups' => ['admin:update']],
     normalizationContext: ['groups' => ['admin:updateRead']],
 )]
 
 #[Patch(
-    shortName: 'Module gestion de publication -Administrateur',
+    shortName: 'Module gestion de compte -Administrateur',
     requirements: ['id' => '\d+'],
     uriTemplate: '/administrateur/change_password{id}',
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') and previous_object.getUserIdentifier() == user.getUserIdentifier() ",
+    securityPostDenormalize: "is_granted('ROLE_ADMIN')",
     formats: ['json' => 'application/json'],
     denormalizationContext: ['groups' => ['admin:updateOne']],
-    normalizationContext: ['groups' => ['admin:updateOne']],
+    // normalizationContext: ['groups' => ['admin:updateOne']],
 )]
 
 
+// #[ApiFilter(SearchFilter::class, properties: ['brief.titre' => 'ipartial', 'immersion.titre' => 'ipartial'])]
 class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -101,11 +114,16 @@ class Administrateur  implements UserInterface, PasswordAuthenticatedUserInterfa
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['admin:index', 'admin:update', 'admin:updateOne'])]
+    #[Groups(['admin:index', 'admin:update', ])]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['admin:index', 'admin:update', 'admin:updateOne'])]
+    #[Assert\NotBlank]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9]{1,}([.]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
+        message: 'Veuillez entrer un format d\'email correcte.'
+    )]
+    #[Groups(['admin:index', 'admin:update','admin:restorer'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]

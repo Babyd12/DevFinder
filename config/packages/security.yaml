@@ -75,11 +75,12 @@ security:
         # - { path: ^/admin, roles: IS_AUTHENTICATED_FULLY  }
         # General acccess control nfuisfioshfioshio
         - { path: '.*inscription$', roles: 'PUBLIC_ACCESS', methods: [POST] } 
+        - { path: '.*motDePasseOublie$', roles: 'PUBLIC_ACCESS', methods: [POST] } 
         - { path: '.*connexion$', roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: '.*liste$', roles: 'PUBLIC_ACCESS', methods: [GET] } 
         - { path: '.*\d+$', roles: 'PUBLIC_ACCESS', methods: [GET] }
         - { path: '^/api/', roles: IS_AUTHENTICATED_FULLY}
-        
+   
         # specific access control
             # public URI path
         # - { path: /connexion, roles: PUBLIC_ACCESS }

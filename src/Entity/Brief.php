@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Entity\Trait\CommonDateTrait;
 use ApiPlatform\Metadata\GetCollection;
 use App\Controller\CustomBriefController;
+use App\State\BriefStateProcessor;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -36,6 +37,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             controller: CustomBriefController::class,
             name: 'app_brief_editer',
         ),
+
     ]
 )]
 
@@ -43,7 +45,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     uriTemplate: 'brief/liste',
     forceEager: false,
     normalizationContext: ['groups' => ['brief:index']],
-    // denormalizationContext:[ 'groups' => ['brief:index'] ],
     // outputFormats: [ 'json' => 'application/json+ld'],
     // inputFormats: [ 'json' => 'application/json+ld; charset=utf-8']  
 )]
@@ -64,13 +65,6 @@ use Symfony\Component\Validator\Constraints as Assert;
     denormalizationContext: ['groups' => ['brief:create']],
 )]
 
-#[Put(
-    uriTemplate: 'brief/{id}',
-    securityPostDenormalize: "is_granted('ROLE_ADMIN') ",
-    // normalizationContext: [ 'groups' => ['brief:update']],
-    denormalizationContext: ['groups' => ['brief:update']]
-
-)]
 
 #[Delete(
     uriTemplate: 'brief/{id}',
@@ -84,9 +78,8 @@ class Brief
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['brief:show', 'brief:index', 'brief:create', 'brief:update'])]
+    #[Groups(['brief:show', 'brief:index', 'brief:modif'])]
     private ?int $id = null;
-
 
     #[Vich\UploadableField(mapping: 'briefs', fileNameProperty: 'nomFichier', size: 'imageSize')]
     #[Assert\File(
@@ -97,7 +90,7 @@ class Brief
         mimeTypesMessage: 'Veuillez inserer un fichier de type pdf ou docx.'
     )]
     // #[Assert\Image(minWidth: 200, maxWidth: 400, minHeight: 200, maxHeight: 400)]
-    #[Assert\NotBlank(groups: ['brief:update', ])]
+    #[Assert\NotBlank]
     #[Groups(
         [
             'brief:create', 'brief:updateFile',
@@ -123,12 +116,22 @@ class Brief
         ]
     )]
     private ?\DateTimeImmutable $updatedAt = null;
-    
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Regex(
+        "/^[a-zA-Z0-9À-ÿ]+(['.\-\s][a-zA-Z0-9À-ÿ]+)*[a-zA-Z0-9À-ÿ\s]*$/",
+        message: "La valeur {{ value }}ne peut pas être vide ou composée uniquement d'espaces ou de caractères spéciaux"
+    )]
+    #[Assert\Length(
+        min: 10,
+        max: 250,
+        minMessage: 'Votre titre doit comporter au moins {{ limit }} caractères',
+        maxMessage: 'Votre titre ne peut pas dépasser {{ limit }} caractères'  
+    )]
     #[Groups(
         [
-            'brief:show', 'brief:index', 'brief:create', 'brief:update',
+            'brief:show', 'brief:index', 'brief:create', 'brief:updateFile',
             /**
              * @info quand j'affiche un livrable qui a une relation avec une brief, j'affiche le titre au lieu de l'uri
              * @return string
@@ -143,14 +146,23 @@ class Brief
     #[Assert\Url(
         message: 'L\'url {{ value }} n\'est pas une url valide',
     )]
-    #[Groups(['brief:show', 'brief:create', 'brief:update'])]
+    #[Groups(
+        [
+            'brief:show', 'brief:create', 'brief:updateFile',
+             /**
+             * @info quand j'affiche un livrable qui a une relation avec une brief, j'affiche le titre au lieu de l'uri
+             * @return string
+             */
+            'livrable:show', 'livrable:index',
+        ]
+    )]
     private ?string $lient_support = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Groups(
         [
-            'brief:show', 'brief:index', 'brief:create', 'brief:update',
+            'brief:show', 'brief:index', 'brief:create', 'brief:updateFile',
             /**
              * @info quand j'affiche un livrable qui a une relation avec une brief, j'affiche le titre au lieu de l'uri
              * @return string
@@ -158,13 +170,21 @@ class Brief
             'livrable:show', 'livrable:index',
         ]
     )]
-    #[Assert\Regex('/^[a-zA-Z0-9À-ÿ\s]*$/', message: 'Le format du texte saisi est incorrecte.')]
+    #[Assert\Regex(
+        "/^(?!\s*$)(?![0-9]+$)(?![^a-zA-Z0-9À-ÿ\s]+$)[a-zA-Z0-9À-ÿ':\s]*$/", 
+        message: 'Le format du texte saisi est incorrecte.')]
+    #[Assert\Length(
+        min: 10,
+        max: 200,
+        minMessage: 'Votre titre doit comporter au moins {{ limit }} caractères',
+        maxMessage: 'Votre titre ne peut pas dépasser {{ limit }} caractères'  
+    )]
     private ?string $niveau_de_competence = null;
-
+    
     #[ORM\OneToMany(mappedBy: 'brief', targetEntity: Livrable::class)]
     #[Groups(['brief:show', 'brief:index'])]
     private Collection $livrables;
-
+    
 
     public function __construct()
     {
@@ -257,7 +277,7 @@ class Brief
             // $this->updatedAt = new \DateTimeImmutable();
         }
     }
-    
+
     public function getCahierDecharge(): ?File
     {
         return $this->cahierDeCharge;

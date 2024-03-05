@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use App\State\SetUserToRelationClass;
 use ApiPlatform\Metadata\GetCollection;
+use App\Controller\CustumAdminController;
 use App\Repository\EntrepriseRepository;
 use App\State\AddUserToRelationProcessor;
 use Doctrine\Common\Collections\Collection;
@@ -22,8 +23,8 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-
 #[ORM\Entity(repositoryClass: EntrepriseRepository::class)]
 
 #[ApiResource(
@@ -36,6 +37,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
         new Post(
             requirements: ['id' => '\d+'],
             uriTemplate: 'entreprise/recruter/apprenant/{id}',
+            // name: 'app_recruter_apprenant',
+            // controller: CustumAdminController::class,
             processor: AddUserToRelationProcessor::class,
             security: "is_granted('ROLE_ENTREPRISE')",
             denormalizationContext: ['groups' => ['entreprise:recruter'] ]
@@ -78,7 +81,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[Post(
     shortName: 'Module gestion de compte -Entreprise',
     uriTemplate: 'entreprise/inscription',
-    denormalizationContext: ['groups' => ['entreprise:create']]
+    denormalizationContext: ['groups' => ['entreprise:create' ]]
 )]
 
 #[Put(
@@ -103,6 +106,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 )]
 
+
 class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -112,16 +116,21 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups:['entreprise:recruter'])]
     #[Assert\Length(min: 2, max: 25, minMessage: 'veuillez saisir au moins 3 lettres', maxMessage: 'veuillez saisir moins de 20 lettres')]
     #[Assert\Type(type: 'string', message: 'La valeur {{ value }} doit être de type {{ type }}.')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
+    #[Assert\Regex(
+        "/^[a-zA-Z0-9À-ÿ]+(['.\-\s][a-zA-Z0-9À-ÿ]+)*[a-zA-Z0-9À-ÿ\s]*$/",
+        message: "La valeur {{ value }}ne peut pas être vide ou composée uniquement d'espaces ou de caractères spéciaux"
+    )]
     private ?string $nom_complet = null;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
     #[Assert\Regex(
         pattern: '/^[a-zA-Z0-9]{1,}([.]{0,1}[a-zA-Z0-9]+){1,26}@[a-z]+[.][a-z]{2,}$/',
-        message: 'Veuillez entrer un format d\'email correcte.'
+        message: 'Veuillez entrer un format d\'email correcte.',
+        groups:['entreprise:recruter']
      )]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $email = null;
@@ -141,12 +150,12 @@ class Entreprise implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $apprenants;
 
     #[ORM\Column(length: 255,  unique: true, type: 'string')]
-    #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement) ')]
+    #[Assert\Regex('/^7[7\-8\-6\-0\-5]+[0-9]{7}$/', message: 'Veuillez entre un format de numéro valide (Sénégal uniquement)', groups:['entreprise:recruter'] )]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]
     private ?string $telephone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups:['entreprise:recruter'])]
     #[Assert\Length(min: 35, max: 250, minMessage: 'Veuillez saisir au minimum 35 caractères', maxMessage: 'Veuillez saisir moins 250 caractères',)]
     #[Assert\Regex(pattern: '/[\d@*{}<>]+/', match: false, message: 'Le format de la description est incorrect')]
     #[Groups(['entreprise:show', 'entreprise:index', 'entreprise:create', 'entreprise:update'])]

@@ -27,7 +27,7 @@ class ExceptionListener
             // Obtenez la requête SQL qui a déclenché l'exception
             $query = $exception->getQuery();
 
-            dd($exception);
+            // dd($exception);
             // Obtenez des informations spécifiques sur l'exception, par exemple, les noms des tables concernées
          
         }

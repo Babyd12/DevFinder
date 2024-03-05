@@ -39,8 +39,6 @@ class LangageDeProgrammationController extends AbstractController
         $langage->flush();
         $showData = [
             'Langage' => $langage->nom,
-        
-
         ];
         return new JsonResponse(['message' => 'Vous avez été édité ce projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }

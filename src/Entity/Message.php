@@ -3,14 +3,51 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Trait\CommonDateTrait;
 use App\Repository\MessageRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
+
 #[ApiResource]
+
+#[Post(
+    uriTemplate: 'message/envoyer',
+    denormalizationContext: ['groups' => ['message:create']],
+
+    // securityPostDenormalize: "is_granted('ROLE_APPRENANT') and object.getProjet().apprenantIsInProjet(user) or is_granted('ROLE_ASSOCIATION') and object.getProjet().isProjectOwner(user)",
+)]
+
+#[Get(
+    uriTemplate: 'message/{id}',
+    normalizationContext: ['groups'=> ['message:show']],
+    securityPostDenormalize: "is_granted('ROLE_APPRENANT') or is_granted('ROLE_ASSOCIATION')",
+)]
+
+#[GetCollection(
+    uriTemplate: 'message/listes',
+    normalizationContext: ['groups' => ['message:index']],
+
+)]
+#[Put(
+    uriTemplate: 'message/modifier/{id}',
+
+    denormalizationContext: ['groups'=> ['message:updateOne']],
+)]
+
+#[Delete(
+    uriTemplate: 'message/supprimer/{id}',
+    denormalizationContext: ['groups'=> ['message:delete']],
+)]
+
 class Message
 {
     use CommonDateTrait;
@@ -21,21 +58,27 @@ class Message
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('message:create','message:index','message:updateOne', 'message:delete' )]
     private ?string $message = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('message:index','message:show')]
     private ?\DateTimeImmutable $updatedAt = null;
+   
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups('message:create','message:index','message:updateOne', 'message:delete' )]
     private ?Association $association = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
+    #[Groups('message:create','message:index','message:updateOne', 'message:delete' )]
     private ?Apprenant $apprenant = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('message:create','message:index','message:updateOne', 'message:delete' )]
     private ?Projet $projet = null;
 
     public function __construct()
@@ -97,4 +140,5 @@ class Message
 
         return $this;
     }
+
 }

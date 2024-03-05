@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints\Url;
 
 class CustomProjetController extends AbstractController
 {
@@ -46,9 +48,8 @@ class CustomProjetController extends AbstractController
         return ['apprenant' => $apprenant, 'projet' => $projet];
     }
 
-
     /**
-     * @see UserLogged 
+     * @see getUserLogged 
      */
     #[Route('/api/apprenant/participer/projet/{id}', name: 'participerProjet', methods: ['GET'])]
     public function addApprenantToProject(EntityManagerInterface $entityManager, string $id): JsonResponse
@@ -118,58 +119,91 @@ class CustomProjetController extends AbstractController
         return new JsonResponse(['message' => 'Vous avez été retiré du projet avec succès', 'données' => $showData], Response::HTTP_OK);
     }
 
-    #[Route('/api/projet/{id}', name: 'app_projet_editer',  methods: ['PATCH', 'POST'])]
-    public function editerCahierDeCharge(Request $request, $id, EntityManagerInterface $entityManager)
-    {
-        $projet = $entityManager->getRepository(Projet::class)->find($id);
-        // $file = $request->files->get('CahierDecharge');
+    // #[Route('/api/projet/{id}', name: 'app_projet_editer',  methods: ['PATCH', 'POST'])]
+    // public function editerCahierDeCharge(Request $request, $id, EntityManagerInterface $entityManager)
+    // {
+    //     $projet = $entityManager->getRepository(Projet::class)->find($id);
+    //     // $file = $request->files->get('CahierDecharge');
 
 
-        if (!$projet) {
-            throw $this->createNotFoundException('Projet non trouvé');
-        }
+    //     if (!$projet) {
+    //         throw $this->createNotFoundException('Projet non trouvé');
+    //     }
+
+    //     $titre = $request->get('titre');
+    //     $lien = $request->get('lien_du_repertoire_distant');
+    //     $nouveauFichier = $request->files->get('cahierDeCharge');
+    //     $nombre_de_participant = $request->get('nombre_de_participant');
+    //     $date_limite = $request->get('date_limite');
+
+    //     if (
+    //         empty($titre)
+    //         || empty($lien)
+    //         || empty($date_limite)
+    //         || empty($nouveauFichier)
+    //         || empty($nombre_de_participant)
+    //     ) {
+    //         return new JsonResponse([
+    //             "message" => "Veuillez remplir les champs vides",
+    //             "Champs requis" =>
+    //             [
+    //                 $titre ? '' : 'titre',
+    //                 $lien ? '' : 'lien_support',
+    //                 $nouveauFichier ? '' : 'cahierDeCharge',
+    //                 $nombre_de_participant ? '' : 'niveau_de_competence',
+    //                 $date_limite ? '' : 'date_limite',
+    //             ]
+    //         ], 422);
+    //     }
+
+    //     $regex_titre = "/^(?!\s*$)(?![0-9]+$)(?![^a-zA-Z0-9À-ÿ\s]+$)[a-zA-Z0-9À-ÿ'\s]*$/";
+    //     $regex_nombre_participant = "/^(?!\s*$)[1-9]$/";
 
 
-        $nouveauFichier = $request->files->get('CahierDecharge');
-        if ($nouveauFichier) {
+    //     $nouveauFichier = $request->files->get('CahierDecharge');
+    //     if ($nouveauFichier) {
 
-            $extension = $nouveauFichier->getClientOriginalExtension();
+    //         $extension = $nouveauFichier->getClientOriginalExtension();
 
-            // Définir les extensions autorisées
-            $extensionsAutorisees = ['pdf', 'docx'];
+    //         // Définir les extensions autorisées
+    //         $extensionsAutorisees = ['pdf', 'docx'];
 
-            // Vérifier si l'extension est autorisée
-            if (!in_array(strtolower($extension), $extensionsAutorisees)) {
-                return new JsonResponse([
-                    "message" => "L'extension du fichier n'est pas autorisée. veuillez chargé uniqument",
-                    "extension autorise" =>  $extensionsAutorisees,
-                ], 400);
-            }
-            // Supprimer l'ancien fichier s'il existe
-            $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getNomFichier();
-            if (file_exists($ancienFichier)) {
-                unlink($ancienFichier);
-            } else {
-                return new JsonResponse(["message" => "Lefichier n'existe pas ou à été temporairement déplacé"], 404);
-            }
-        }
+    //         // Vérifier si l'extension est autorisée
+    //         if (!in_array(strtolower($extension), $extensionsAutorisees)) {
+    //             return new JsonResponse([
+    //                 "message" => "L'extension du fichier n'est pas autorisée. veuillez chargé uniqument",
+    //                 "extension autorise" =>  $extensionsAutorisees,
+    //             ], 400);
+    //         }
+    //         // Supprimer l'ancien fichier s'il existe
+    //         $ancienFichier = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/' . $projet->getNomFichier();
+    //         if (file_exists($ancienFichier)) {
+    //             unlink($ancienFichier);
+    //         } else {
+    //             return new JsonResponse(["message" => "Lefichier n'existe pas ou à été temporairement déplacé"], 404);
+    //         }
+    //     }
 
-        $uuid = Uuid::uuid4();
-        $nomUniqueDeFichier = $uuid->toString() . '.' . $nouveauFichier->getClientOriginalExtension();
+    //     $uuid = Uuid::uuid4();
+    //     $nomUniqueDeFichier = $uuid->toString() . '.' . $nouveauFichier->getClientOriginalExtension();
 
-        $destination = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/';
-        $nouveauFichier->move($destination, $nomUniqueDeFichier);
+    //     $destination = $this->getParameter('kernel.project_dir') . '/public/fichiers/projets/';
+    //     $nouveauFichier->move($destination, $nomUniqueDeFichier);
 
-        // Mettre à jour le nom du fichier dans l'entité Projet
-        $projet->setNomFichier($nomUniqueDeFichier);
-        //   upload_tmp_dir = "C:\xampp\tmp"
+    //     // Mettre à jour le nom du fichier dans l'entité Projet
+    //     $projet->setNomFichier($nomUniqueDeFichier);
+    //     //   upload_tmp_dir = "C:\xampp\tmp"
 
-        // Mettre à jour la taille du fichier si nécessaire
-        //   $projet->setImageSize($nouveauFichier->getSize());
+    //     // Mettre à jour la taille du fichier si nécessaire
+    //     //   $projet->setImageSize($nouveauFichier->getSize());
 
 
-        $entityManager->flush();
-        return new JsonResponse(["message" => "Vous avez éditer le cahier de charge avec succès"], 200);
-        // dd($nouveauFichier);
-    }
+    //     $entityManager->flush();
+    //     return new JsonResponse(["message" => "Vous avez éditer le cahier de charge avec succès"], 200);
+    //     // dd($nouveauFichier);
+    // }
+
+   
+
+
 }
