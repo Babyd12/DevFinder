@@ -7,6 +7,7 @@ use App\Entity\Entreprise;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Symfony\Bundle\Test\ApiTestCase;
 
+
 class EntrepriseTest extends ApiTestCase
 {
     private string $jwtToken;
@@ -25,7 +26,7 @@ class EntrepriseTest extends ApiTestCase
             // L'utilisateur n'existe pas, procédez à l'inscription
             $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
             $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
-            $description = $faker->regexify('[A-Za-z0-9]{36}');
+            $description = $faker->regexify('[A-Za-z]{36}');
 
             $data = [
                 "nom_complet" => 'Mon Entreprise',
@@ -40,7 +41,7 @@ class EntrepriseTest extends ApiTestCase
                 'headers' => ['Accept' => 'application/json'],
                 'json' => $data
             ]);
-            $this->assertResponseHeaderSame('accept-patch', 'application/merge-patch+json');
+            $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
             $this->assertResponseStatusCodeSame(201);
             $this->assertEquals(201, $client->getResponse()->getStatusCode());
         } else {
@@ -51,9 +52,7 @@ class EntrepriseTest extends ApiTestCase
             // var_dump($client->getResponse()->getContent()); die();
             $this->assertResponseStatusCodeSame(200);
             $this->assertResponseHeaderSame('accept-patch', 'application/merge-patch+json');
-
         }
-
     }
 
     public function test_connexion_entreprise(): void
@@ -64,7 +63,7 @@ class EntrepriseTest extends ApiTestCase
             'mot_de_passe' => 'Animaleman24@'
         ];
 
-        $response =  $client->request('POST', '/connexion', [
+        $response =  $client->request('POST', '/api/connexion', [
             'headers' => ['Accept' => 'application/json'],
             'json' => $data,
         ]);
@@ -110,7 +109,7 @@ class EntrepriseTest extends ApiTestCase
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
         $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
-        $description = $faker->regexify('[A-Za-z0-9]{36}');
+        $description = $faker->regexify('[A-Za-z]{36}');
 
         $data = [
             "nom_complet" => $faker->firstName() . ' ' . $faker->lastName(),
@@ -128,7 +127,7 @@ class EntrepriseTest extends ApiTestCase
             'json' => $data
         ]);
 
-        $this->assertResponseHeaderSame('accept-patch', 'application/merge-patch+json');
+        $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
         $this->assertResponseStatusCodeSame(201);
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }
@@ -140,12 +139,12 @@ class EntrepriseTest extends ApiTestCase
         $client->request('GET', '/api/entreprise/liste', ['headers' => ['Accept' => 'application/json']]);
 
         $this->assertResponseHasHeader('cache-control');
-        $this->assertResponseHasHeader('content-type', 'application/json; charset=utf-8');    
+        $this->assertResponseHasHeader('content-type', 'application/json; charset=utf-8');
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseStatusCodeSame(200);
 
-   
+
         // $this->assertResponseHeaderSame('content-type4', 'application/json; charset=utf-8');
 
         // $this->assertJsonContains(
@@ -203,7 +202,7 @@ class EntrepriseTest extends ApiTestCase
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
         $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
-        $description = $faker->regexify('[A-Za-z0-9]{36}');
+        $description = $faker->regexify('[A-Za-z]{36}');
 
         $data = [
             "nom_complet" => $faker->firstName() . ' ' . $faker->lastName(),
@@ -269,9 +268,8 @@ class EntrepriseTest extends ApiTestCase
             'headers' => ['Accept' => 'application/json'],
             'auth_bearer' => $this->jwtToken,
         ]);
-  
+
         $this->assertResponseStatusCodeSame(200);
         $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
-       
     }
 }

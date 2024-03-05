@@ -519,6 +519,9 @@ class Apprenant implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    
+    
+
     /**
      * @return Collection<int, Message>
      */

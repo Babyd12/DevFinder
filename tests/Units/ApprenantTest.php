@@ -7,6 +7,7 @@ use App\Entity\Apprenant;
 use App\Entity\Competence;
 use App\Entity\Entreprise;
 use PHPUnit\Framework\TestCase;
+use App\Entity\DescriptionCompetence;
 use Doctrine\Common\Collections\Collection;
 
 class ApprenantTest extends TestCase
@@ -22,7 +23,7 @@ class ApprenantTest extends TestCase
         $this->assertNull($this->apprenant->getId());
     }
 
-    public function testgetNomComplet() : void
+    public function testgetNomComplet(): void
     {
         $nom = "Nom de l'apprenant";
         $this->apprenant->setNomComplet($nom);
@@ -54,14 +55,14 @@ class ApprenantTest extends TestCase
 
     public function testGetProjet()
     {
-        $projet = new Projet(); 
+        $projet = new Projet();
         $this->apprenant->addProjet($projet);
         $this->assertInstanceOf(Collection::class, $this->apprenant->getProjet());
         $this->assertTrue($this->apprenant->getProjet()->contains($projet));
     }
 
     public function testsetTelephone(): void
-    {      
+    {
         $this->apprenant->setTelephone('708778675');
         $this->assertEquals('708778675', $this->apprenant->getTelephone());
     }
@@ -73,40 +74,55 @@ class ApprenantTest extends TestCase
         $this->assertEquals('786667676', $this->apprenant->GetTelephone());
     }
 
-    public function testaddCompetence(): void
+  
+    public function testAddDescriptionCompetence()
     {
-        $competence = new Competence();
-        $competence->setNom('Php');
-        $competence->setDescription('Developpement d\'une api rest laravel');
-        $competences = $this->apprenant->getCompetences();
+        // Créer une instance de Apprenant
+        $apprenant = new Apprenant();
 
-        $this->apprenant->addCompetence($competence);
-        $this->assertInstanceOf(Collection::class, $competences);
-        $this->assertCount(1, $competences);
-        
+        // Créer une instance de DescriptionCompetence
+        $descriptionCompetence = new DescriptionCompetence();
+
+        // Appeler la méthode addDescriptionCompetence
+        $result = $apprenant->addDescriptionCompetence($descriptionCompetence);
+
+        // Vérifier que la méthode renvoie $this
+        $this->assertSame($apprenant, $result);
+
+        // Vérifier que la collection contient $descriptionCompetence
+        $this->assertTrue($apprenant->getDescriptionCompetences()->contains($descriptionCompetence));
+
+        // Vérifier que $descriptionCompetence a été correctement associé à $apprenant
+        $this->assertSame($apprenant, $descriptionCompetence->getApprenant());
     }
-    public function testsetCompetence(): void
+
+    public function testRemoveDescriptionCompetence()
     {
-        $competence = new Competence();
-        $competence->setNom('Php');
-        $competence->setDescription('Developpement d\'une api rest laravel');
+        // Créez une instance de l'entité Apprenant
+        $apprenant = new Apprenant();
 
-        $competences = $this->apprenant->getCompetences();
+        // Créez une instance de l'entité DescriptionCompetence
+        $descriptionCompetence = new DescriptionCompetence();
 
-        $this->apprenant->addCompetence($competence);
-        $this->assertInstanceOf(Collection::class, $competences);
-        $this->assertCount(1, $competences);
+        // Ajoutez la DescriptionCompetence à l'Apprenant
+        $apprenant->addDescriptionCompetence($descriptionCompetence);
 
-        $competenceAjoute = $competences->first();
-        $this->assertInstanceOf(Competence::class, $competenceAjoute);
-        $this->assertEquals('Php', $competenceAjoute->getNom());
+        // Assurez-vous que la DescriptionCompetence a été ajoutée
+        $this->assertCount(1, $apprenant->getDescriptionCompetences());
 
+        // Appelez la méthode removeDescriptionCompetence pour supprimer la DescriptionCompetence
+        $apprenant->removeDescriptionCompetence($descriptionCompetence);
+
+        // Assurez-vous que la DescriptionCompetence a été supprimée
+        $this->assertCount(0, $apprenant->getDescriptionCompetences());
+
+        // Assurez-vous que la relation a été correctement mise à jour
+        $this->assertNull($descriptionCompetence->getApprenant());
     }
 
     public function testGetEntreprise(): void
     {
         $entreprise = new Entreprise();
-        $this->assertInstanceOf(Collection::class, $this->apprenant->getEntreprises() );
+        $this->assertInstanceOf(Collection::class, $this->apprenant->getEntreprises());
     }
-
 }

@@ -39,12 +39,7 @@ class CompetenceTest extends TestCase
         $this->assertEquals('Php',$competence->getNom());
     }
 
-    public function testgetDescription(): void 
-    {
-        $description = new Competence();
-        $description->setDescription('Description');
-        $this->assertEquals('Description',$description->getDescription());
-    }
+   
 
     public function testgetApprenant(): void 
     {

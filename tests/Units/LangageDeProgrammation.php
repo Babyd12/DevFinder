@@ -78,7 +78,7 @@ class LangageDeProgrammationTest extends TestCase
         $projets = $this->langageDeProgrammation->getProjets();
         $this->assertTrue($this->langageDeProgrammation->isUsedInProjects());
 
-        $projet->setStatu(ProjetStatu::en_attente );
+        $projet->setStatu(ProjetStatu::en_cours );
         $this->assertFalse($this->langageDeProgrammation->isUsedInProjects());
 
     }
@@ -92,7 +92,7 @@ class LangageDeProgrammationTest extends TestCase
         $this->assertTrue($canRemove);
 
         //j'ajoute un projet en attente pour simuler le retour du message d'erreur
-        $projet->setStatu(ProjetStatu::en_attente );
+        $projet->setStatu(ProjetStatu::en_cours );
         $this->assertFalse($canRemove);
 
     }

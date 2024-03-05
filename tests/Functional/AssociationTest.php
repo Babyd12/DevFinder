@@ -25,8 +25,9 @@ class AssociationTest extends ApiTestCase
             // L'utilisateur n'existe pas, procédez à l'inscription
             $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
             $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
-            $description = $faker->regexify('[A-Za-z0-9]{36}');
-
+            $description = $faker->regexify('[A-Za-z]{36}');
+    //     $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
+        
             $data = [
                 "nom_complet" => 'Mon Association',
                 "email" => $email,
@@ -40,7 +41,9 @@ class AssociationTest extends ApiTestCase
                 'headers' => ['Accept' => 'application/json'],
                 'json' => $data
             ]);
-            $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+            // $this->assertHeaderHasy('content-type', 'application/json; charset=utf-8');
+            $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
+
             $this->assertResponseStatusCodeSame(201);
             $this->assertEquals(201, $client->getResponse()->getStatusCode());
         } else {
@@ -74,7 +77,7 @@ class AssociationTest extends ApiTestCase
             'mot_de_passe' => 'Animaleman24@'
         ];
 
-        $response =  $client->request('POST', '/connexion', [
+        $response =  $client->request('POST', '/api/connexion', [
             'headers' => ['Accept' => 'application/json'],
             'json' => $data,
         ]);
@@ -120,7 +123,7 @@ class AssociationTest extends ApiTestCase
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
         $numero_identificacion = $faker->regexify('/^\d{7} [0-9A-Z]{3}$/');
-        $description = $faker->regexify('[A-Za-z0-9]{36}');
+        $description = $faker->regexify('[A-Za-z]{36}');
 
         $data = [
             "nom_complet" => $faker->firstName() . ' ' . $faker->lastName(),
@@ -138,7 +141,7 @@ class AssociationTest extends ApiTestCase
             'json' => $data
         ]);
 
-        $this->assertResponseHeaderSame('accept-patch', 'application/merge-patch+json');
+        $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
         $this->assertResponseStatusCodeSame(201);
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }

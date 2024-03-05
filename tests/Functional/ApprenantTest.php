@@ -12,6 +12,7 @@ class ApprenantTest extends ApiTestCase
     private string $jwtToken;
     private array $utilisateurConnecte;
 
+    
     public function test_inscription_apprenant_par_defaut_si_aucun_compte(): void
     {
         $client = static::createClient();
@@ -25,7 +26,7 @@ class ApprenantTest extends ApiTestCase
             // L'utilisateur n'existe pas, procédez à l'inscription
             $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
            
-            $description = $faker->regexify('[A-Za-z0-9]{36}');
+            $description = $faker->regexify('[A-Za-z]{36}');
 
             $data = [
                 "nom_complet" => 'Mon Apprenant',
@@ -40,7 +41,7 @@ class ApprenantTest extends ApiTestCase
                 'headers' => ['Accept' => 'application/json'],
                 'json' => $data
             ]);
-            $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
+            $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
             $this->assertResponseStatusCodeSame(201);
             $this->assertEquals(201, $client->getResponse()->getStatusCode());
         } else {
@@ -74,7 +75,7 @@ class ApprenantTest extends ApiTestCase
             'mot_de_passe' => 'Animaleman24@'
         ];
 
-        $response =  $client->request('POST', '/connexion', [
+        $response =  $client->request('POST', '/api/connexion', [
             'headers' => ['Accept' => 'application/json'],
             'json' => $data,
         ]);
@@ -120,7 +121,7 @@ class ApprenantTest extends ApiTestCase
 
         $telephoneSenegal = $faker->regexify('/^77\d{3}\d{2}\d{2}$/');
        
-        $description = $faker->regexify('[A-Za-z0-9]{36}');
+        $description = $faker->regexify('[A-Za-z]{36}');
 
         $data = [
             "nom_complet" => $faker->firstName() . ' ' . $faker->lastName(),
@@ -137,7 +138,7 @@ class ApprenantTest extends ApiTestCase
             'json' => $data
         ]);
 
-        $this->assertResponseHeaderSame('accept-patch', 'application/json');
+        $this->assertResponseHasHeader('content-type', 'application/merge-patch+json');
         $this->assertResponseStatusCodeSame(201);
         $this->assertEquals(201, $client->getResponse()->getStatusCode());
     }

@@ -12,6 +12,7 @@ use App\Entity\ProjetStatu;
 use PHPUnit\Framework\TestCase;
 use App\Entity\LangageDeProgrammation;
 use Doctrine\Common\Collections\Collection;
+use Faker\Core\File;
 
 class ProjetTest extends TestCase
 {
@@ -26,17 +27,20 @@ class ProjetTest extends TestCase
         $this->assertNull($this->projet->getId());
     }
 
-    public function testsgetTitre() : void
+    public function testsetgetCahierDecharge() : void
     {
-        $nom = "Nom du projet";
-        $this->projet->setTitre($nom);
-        $this->assertEquals($nom, $this->projet->getTitre());
+      
+        $nomFichier = 'mon_fichier.txt';
+        $this->projet->setNomFichier($nomFichier);
+        $this->assertSame($nomFichier, $this->projet->getNomFichier());
+
     }
 
-    public function testgetDescription(): void 
+    public function testgetCahierDecharge(): void 
     {
-        $this->projet->setDescription('description');
-        $this->assertEquals('description', $this->projet->getDescription());
+        $file = $this->createMock(\Symfony\Component\HttpFoundation\File\File::class);
+        $this->projet->setCahierDecharge($file);
+        $this->assertEquals($file, $this->projet->getCahierDecharge());
     }
 
     public function testgetNombreDeParticipant(): void
@@ -134,13 +138,13 @@ class ProjetTest extends TestCase
 
     public function testGetStatu(): void
     {
-        $this->projet->setStatu(ProjetStatu::en_attente);
+        $this->projet->setStatu(ProjetStatu::en_cours);
         $this->assertInstanceOf(ProjetStatu::class, $this->projet->getStatu());
     }
 
     public function testSetStatu(): void
     {  
-        $statu = ProjetStatu::en_attente;
+        $statu = ProjetStatu::en_cours;
         $this->projet->setStatu($statu);
         $this->assertEquals($statu, $this->projet->getStatu());
     }
