@@ -63,12 +63,7 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
     denormalizationContext: ['groups' => ['association:update']],
 )]
 
-// #[Patch(
-//     uriTemplate: 'association/change_password/{id}',
-//     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()  ",
-//     // denormalizationContext: ['groups' => ['association:updateOne']],
-//     inputFormats: ['json' => ['application/json']],
-// )]
+
 #[Patch(
     uriTemplate: 'association/updateOne/{id}',
     securityPostDenormalize: "is_granted('ROLE_ASSOCIATION') and previous_object.getUserIdentifier() == user.getUserIdentifier()",
