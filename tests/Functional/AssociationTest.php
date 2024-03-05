@@ -55,18 +55,6 @@ class AssociationTest extends ApiTestCase
             $this->assertResponseStatusCodeSame(200);
             $this->assertResponseHeaderSame('content-type', 'application/json; charset=utf-8');
         }
-
-        // $this->assertJsonContains(
-        //     [
-        //         '@context' => '/api/contexts/Module%20gestion%20de%20compte%20-Association',
-        //         '@id' => '/api/association/liste',
-        //         "@type" => "hydra:Collection",
-        //         'hydra:member' => [],
-        //     ]
-        // ); 
-        // $this->assertArrayHasKey('hydra:totalItems', json_decode($client->getResponse()->getContent(), true));
-        // $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
     }
 
     public function test_connexion_association(): void
