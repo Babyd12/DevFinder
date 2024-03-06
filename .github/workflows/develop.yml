@@ -5,6 +5,7 @@ on:
     branches:
       - develop
       - feature/f6-testUnitaire
+      - master
 
 jobs:
   TesDIntegrationContinue:
